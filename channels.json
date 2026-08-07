@@ -1,13 +1,13 @@
 [
   {
     "id": 1,
-    "name": "T Sports",
-    "category": "Sports",
+    "name": "Al Jazeera",
+    "category": "News",
     "country": "Bangladesh",
     "logo": "logos/tsports.png",
     "live": true,
     "featured": true,
-    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    "url": "https://static.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/aljazeera.stream/playlist.m3u8?wmsAuthSign=|Referer=https://www.jagobd.com/"
   },
   {
     "id": 2,
