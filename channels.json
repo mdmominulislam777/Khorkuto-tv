@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "T Sports",
+    "category": "Sports",
+    "country": "Bangladesh",
+    "logo": "logos/tsports.png",
+    "live": true,
+    "featured": true,
+    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+  },
+  {
+    "id": 2,
+    "name": "Somoy TV",
+    "category": "News",
+    "country": "Bangladesh",
+    "logo": "logos/somoy.png",
+    "live": true,
+    "featured": false,
+    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+  },
+  {
+    "id": 3,
+    "name": "Peace TV Bangla",
+    "category": "Islamic",
+    "country": "International",
+    "logo": "logos/peace.png",
+    "live": true,
+    "featured": false,
+    "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+  }
+]
