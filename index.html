@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Live TV Sports 24</title>
+
+    <meta name="theme-color" content="#E50914">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- External Libraries -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <img src="logo.png" class="splash-logo" alt="Live TV Logo">
+        <h1>LIVE TV PRO</h1>
+        <div class="loader"></div>
+    </div>
+
+    <!-- Settings Bottom Sheet -->
+    <div id="settingsSheet" class="settings-sheet">
+        <div class="sheet-content">
+            <div class="sheet-header">
+                <h2>⚙️ Settings</h2>
+                <button id="closeSettings" type="button" aria-label="Close Settings">✖</button>
+            </div>
+
+            <div class="setting-item" id="playlistBtn">
+                📂 Load M3U Playlist
+            </div>
+
+            <div class="setting-item" id="shareApp">
+                📤 Share App
+            </div>
+
+            <div class="setting-item" id="darkModeBtn">
+                🌙 Dark Mode
+            </div>
+
+            <div class="setting-item" id="clearHistoryBtn">
+                🕒 Clear History
+            </div>
+
+            <div class="setting-item" id="clearFavBtn">
+                ❤️ Clear Favorites
+            </div>
+
+            <div class="setting-item" id="aboutBtn">
+                ℹ️ About App
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="top-header">
+        <div class="header-left">
+            <img src="logo.png" class="logo" alt="App Logo">
+            <div>
+                <h2>Live TV</h2>
+                <p>Sports 24</p>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <button id="searchBtn" type="button" aria-label="Search">🔍</button>
+            <button id="refreshBtn" type="button" aria-label="Refresh Channels">🔄</button>
+        </div>
+    </header>
+
+    <!-- Search Area -->
+    <div class="search-area">
+        <input id="search" type="text" placeholder="Search Channel...">
+    </div>
+
+    <!-- Category Slider -->
+    <div class="category-slider">
+        <div class="cat active" data-category="All">
+            📺 <span>All</span>
+        </div>
+        <div class="cat" data-category="Sports">
+            ⚽ <span>Sports</span>
+        </div>
+        <div class="cat" data-category="News">
+            📰 <span>News</span>
+        </div>
+        <div class="cat" data-category="Islamic">
+            🕌 <span>Islamic</span>
+        </div>
+        <div class="cat" data-category="Movie">
+            🎬 <span>Movie</span>
+        </div>
+        <div class="cat" data-category="Music">
+            🎵 <span>Music</span>
+        </div>
+    </div>
+
+    <!-- Featured Banner Slider -->
+    <section class="featured-slider">
+        <div class="banner">
+            <img src="banner1.jpg" alt="Featured Sports Banner">
+            <div class="banner-info">
+                <h2>⚽ Watch Live Sports</h2>
+                <p>HD Live Streaming Anytime</p>
+                <button class="watch-btn" type="button">
+                    ▶ Watch Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Player -->
+    <section class="player-box">
+        <video id="video" controls playsinline poster="banner1.jpg">
+            Your browser does not support playing video.
+        </video>
+
+        <div class="player-controls">
+            <button id="fullscreenBtn" type="button">
+                ⛶ Full Screen
+            </button>
+        </div>
+    </section>
+
+    <!-- Featured Channels -->
+    <section id="featuredSection">
+        <h2 class="section-title">
+            ⭐ Featured Channels
+        </h2>
+        <div id="featuredList" class="featured-list">
+            <!-- Dynamic items rendered via JS -->
+        </div>
+    </section>
+
+    <!-- Main Channel List -->
+    <main>
+        <div id="channelList" class="channel-list">
+            <!-- Channels will be populated here -->
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="homeNav">
+            <span>🏠</span>
+            <small>Home</small>
+        </div>
+
+        <div class="nav-item" id="sportsNav">
+            <span>⚽</span>
+            <small>Sports</small>
+        </div>
+
+        <div class="nav-item" id="favoriteNav">
+            <span>❤️</span>
+            <small>Favorite</small>
+        </div>
+
+        <div class="nav-item" id="historyNav">
+            <span>🕒</span>
+            <small>History</small>
+        </div>
+
+        <div class="nav-item" id="searchNav">
+            <span>🔍</span>
+            <small>Search</small>
+        </div>
+    </nav>
+
+    <!-- Main JavaScript File -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>
