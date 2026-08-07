@@ -1,0 +1,368 @@
+// ==========================================
+// Khorkuto TV - Final Consolidated Script
+// ==========================================
+
+// --- Global State ---
+let channels = [];
+let currentCategory = "All";
+let isSpecialView = false;
+let hls = null;
+
+// --- DOM References ---
+let channelList, featuredList, featuredSection, video, search;
+
+document.addEventListener("DOMContentLoaded", () => {
+    channelList = document.getElementById("channelList");
+    featuredList = document.getElementById("featuredList");
+    featuredSection = document.getElementById("featuredSection");
+    video = document.getElementById("video");
+    search = document.getElementById("search");
+
+    initApp();
+});
+
+function initApp() {
+    setupEventListeners();
+    loadChannels();
+    setupBannerSlider();
+    setupTelegram();
+}
+
+// ------------------------------------------
+// 1. Load Channels & Auto Restore
+// ------------------------------------------
+async function loadChannels() {
+    if (!channelList) return;
+
+    channelList.innerHTML = `
+        <div style="text-align:center;padding:30px">
+            ⏳ Loading Channels...
+        </div>`;
+
+    try {
+        const response = await fetch(
+            "https://raw.githubusercontent.com/mominul186265/Live-tv-mini-app/main/channels.json?t=" + Date.now()
+        );
+
+        if (!response.ok) throw new Error("Failed to load channels");
+
+        channels = await response.json();
+
+        renderFeaturedChannels();
+        renderChannels();
+
+        // Auto load last played channel
+        loadLastChannel();
+
+    } catch (err) {
+        console.error(err);
+        channelList.innerHTML = `
+            <div style="text-align:center;padding:30px;color:red;">
+                ❌ Unable to load channels.
+            </div>`;
+    }
+}
+
+function loadLastChannel() {
+    const lastChannelData = localStorage.getItem("lastChannel");
+    if (!lastChannelData || !video) return;
+
+    try {
+        const channel = JSON.parse(lastChannelData);
+        if (channel && channel.url) {
+            playChannel(channel, false);
+        }
+    } catch (err) {
+        console.warn("Could not load last channel:", err);
+    }
+}
+
+// ------------------------------------------
+// 2. Render Featured Channels
+// ------------------------------------------
+function renderFeaturedChannels() {
+    if (!featuredList || !featuredSection) return;
+
+    const featured = channels.filter(c => c.featured === true);
+
+    if (featured.length === 0) {
+        featuredSection.style.display = "none";
+        return;
+    }
+
+    featuredSection.style.display = "block";
+    featuredList.innerHTML = "";
+
+    featured.forEach(channel => {
+        const card = document.createElement("div");
+        card.className = "featured-card";
+        card.innerHTML = `
+            <img src="${channel.logo || 'logo.png'}" onerror="this.src='logo.png'">
+            <h4>${channel.name}</h4>
+            <p>${channel.category}</p>
+        `;
+
+        card.onclick = () => playChannel(channel, true);
+        featuredList.appendChild(card);
+    });
+}
+
+// ------------------------------------------
+// 3. Render Main Channel List
+// ------------------------------------------
+function renderChannels(list = channels) {
+    if (!channelList) return;
+
+    channelList.innerHTML = "";
+    const keyword = search ? search.value.toLowerCase() : "";
+
+    const filtered = list.filter(channel => {
+        const matchName = channel.name.toLowerCase().includes(keyword);
+        const matchCategory = isSpecialView || currentCategory === "All" || channel.category === currentCategory;
+
+        return matchName && matchCategory;
+    });
+
+    if (filtered.length === 0) {
+        channelList.innerHTML = "<p style='text-align:center;padding:20px;'>No Channel Found</p>";
+        return;
+    }
+
+    filtered.forEach(channel => {
+        const isFav = localStorage.getItem("fav_" + channel.name) === "true";
+        const card = document.createElement("div");
+        card.className = "channel";
+
+        card.innerHTML = `
+            <img src="${channel.logo || 'logo.png'}" onerror="this.src='logo.png'">
+            <div class="info">
+                <h3>${channel.name}</h3>
+                <p>${channel.category} ${channel.country ? '• ' + channel.country : ''}</p>
+                <span class="live-badge">🔴 LIVE</span>
+            </div>
+            <button class="fav-btn">
+                ${isFav ? "❤️" : "🤍"}
+            </button>
+        `;
+
+        card.onclick = (e) => {
+            if (e.target.classList.contains("fav-btn")) return;
+            playChannel(channel, true);
+        };
+
+        const favBtn = card.querySelector(".fav-btn");
+        if (favBtn) {
+            favBtn.onclick = (e) => {
+                e.stopPropagation();
+                toggleFavorite(channel.name);
+            };
+        }
+
+        channelList.appendChild(card);
+    });
+}
+
+// ------------------------------------------
+// 4. Player & Local Storage
+// ------------------------------------------
+function playChannel(channel, autoPlay = true) {
+    if (!video) return;
+
+    if (hls) {
+        hls.destroy();
+    }
+
+    if (typeof Hls !== "undefined" && Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(channel.url);
+        hls.attachMedia(video);
+    } else {
+        video.src = channel.url;
+    }
+
+    if (autoPlay) {
+        video.play().catch(e => console.warn("Autoplay prevented:", e));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    localStorage.setItem("lastChannel", JSON.stringify(channel));
+
+    if (autoPlay) {
+        let history = JSON.parse(localStorage.getItem("history") || "[]");
+        history = history.filter(item => item.url !== channel.url);
+        history.unshift(channel);
+        history = history.slice(0, 20);
+        localStorage.setItem("history", JSON.stringify(history));
+    }
+}
+
+function toggleFavorite(channelName) {
+    const key = "fav_" + channelName;
+    if (localStorage.getItem(key)) {
+        localStorage.removeItem(key);
+    } else {
+        localStorage.setItem(key, "true");
+    }
+    renderChannels();
+}
+
+// ------------------------------------------
+// 5. Events & Controls
+// ------------------------------------------
+function setupEventListeners() {
+    if (search) {
+        search.addEventListener("input", () => renderChannels());
+    }
+
+    const searchBtn = document.getElementById("searchBtn");
+    if (searchBtn && search) {
+        searchBtn.onclick = () => search.focus();
+    }
+
+    const refreshBtn = document.getElementById("refreshBtn");
+    if (refreshBtn) {
+        refreshBtn.onclick = () => loadChannels();
+    }
+
+    document.querySelectorAll(".cat").forEach(btn => {
+        btn.onclick = () => {
+            setActiveCategory(btn.dataset.category || "All", btn);
+        };
+    });
+
+    const homeNav = document.getElementById("homeNav");
+    const sportsNav = document.getElementById("sportsNav");
+    const favoriteNav = document.getElementById("favoriteNav");
+    const historyNav = document.getElementById("historyNav");
+    const searchNav = document.getElementById("searchNav");
+
+    if (homeNav) homeNav.onclick = () => setActiveCategory("All");
+    if (sportsNav) sportsNav.onclick = () => setActiveCategory("Sports");
+
+    if (favoriteNav) {
+        favoriteNav.onclick = () => {
+            isSpecialView = true;
+            if (featuredSection) featuredSection.style.display = "none";
+            const favList = channels.filter(c => localStorage.getItem("fav_" + c.name));
+            renderChannels(favList);
+        };
+    }
+
+    if (historyNav) {
+        historyNav.onclick = () => {
+            isSpecialView = true;
+            if (featuredSection) featuredSection.style.display = "none";
+            const history = JSON.parse(localStorage.getItem("history") || "[]");
+            renderChannels(history);
+        };
+    }
+
+    if (searchNav && search) {
+        searchNav.onclick = () => search.focus();
+    }
+
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    if (fullscreenBtn && video) {
+        fullscreenBtn.onclick = () => {
+            if (video.requestFullscreen) {
+                video.requestFullscreen();
+            } else if (video.webkitRequestFullscreen) {
+                video.webkitRequestFullscreen();
+            }
+        };
+    }
+
+    const settingsSheet = document.getElementById("settingsSheet");
+    const closeSettings = document.getElementById("closeSettings");
+
+    if (settingsSheet && closeSettings) {
+        closeSettings.onclick = () => settingsSheet.classList.remove("show");
+    }
+
+    const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+    if (clearHistoryBtn) {
+        clearHistoryBtn.onclick = () => {
+            localStorage.removeItem("history");
+            alert("History Cleared!");
+            if (settingsSheet) settingsSheet.classList.remove("show");
+            renderChannels();
+        };
+    }
+
+    const clearFavBtn = document.getElementById("clearFavBtn");
+    if (clearFavBtn) {
+        clearFavBtn.onclick = () => {
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith("fav_")) localStorage.removeItem(key);
+            });
+            alert("Favorites Cleared!");
+            if (settingsSheet) settingsSheet.classList.remove("show");
+            renderChannels();
+        };
+    }
+
+    const shareApp = document.getElementById("shareApp");
+    if (shareApp) {
+        shareApp.onclick = async () => {
+            const data = {
+                title: "Khorkuto TV",
+                text: "Watch Live TV",
+                url: window.location.href
+            };
+            if (navigator.share) {
+                try { await navigator.share(data); } catch (e) {}
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Link copied to clipboard.");
+            }
+        };
+    }
+
+    const watchBtn = document.querySelector(".watch-btn");
+    if (watchBtn) {
+        watchBtn.onclick = () => {
+            if (channels.length > 0) playChannel(channels[0], true);
+        };
+    }
+
+    window.addEventListener("load", () => {
+        const splash = document.getElementById("splash");
+        if (splash) {
+            setTimeout(() => { splash.style.display = "none"; }, 1500);
+        }
+    });
+}
+
+function setActiveCategory(category, targetBtn = null) {
+    currentCategory = category;
+    isSpecialView = false;
+
+    if (featuredSection) featuredSection.style.display = "block";
+
+    document.querySelectorAll(".cat").forEach(x => {
+        const matches = targetBtn ? x === targetBtn : x.dataset.category === category;
+        x.classList.toggle("active", matches);
+    });
+
+    renderChannels();
+}
+
+function setupBannerSlider() {
+    const bannerImg = document.querySelector(".banner img");
+    if (!bannerImg) return;
+
+    const banners = ["banner1.jpg", "banner2.jpg", "banner3.jpg"];
+    let i = 0;
+
+    setInterval(() => {
+        i = (i + 1) % banners.length;
+        bannerImg.src = banners[i];
+    }, 4000);
+}
+
+function setupTelegram() {
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+}
