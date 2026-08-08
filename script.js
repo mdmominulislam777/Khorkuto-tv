@@ -73,19 +73,9 @@ async function loadChannels() {
     channelList.innerHTML = ` <div style="text-align:center;padding:30px;color:red;"> ❌ Unable to load channels. </div>`;
   }
 }
-
 function loadLastChannel() {
-  const lastChannelData = localStorage.getItem("lastChannel");
-  if (!lastChannelData || !video) return;
-
-  try {
-    const channel = JSON.parse(lastChannelData);
-    if (channel && channel.url) {
-      playChannel(channel, false);
-    }
-  } catch (err) {
-    console.warn("Could not load last channel:", err);
-  }
+    return;
+}
 }
 
 // ------------------------------------------
