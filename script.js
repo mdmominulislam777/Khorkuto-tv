@@ -176,12 +176,23 @@ function playChannel(channel, autoPlay = true) {
         hls = new Hls();
         hls.loadSource(channel.url);
         hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            if (autoPlay) {
+                video.play().catch(e => console.warn("Autoplay prevented:", e));
+            }
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // iOS / Safari সাপোর্ট
+        video.src = channel.url;
+        if (autoPlay) {
+            video.play().catch(e => console.warn("Autoplay prevented:", e));
+        }
     } else {
         video.src = channel.url;
     }
 
     if (autoPlay) {
-        video.play().catch(e => console.warn("Autoplay prevented:", e));
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -195,6 +206,7 @@ function playChannel(channel, autoPlay = true) {
         localStorage.setItem("history", JSON.stringify(history));
     }
 }
+
 
 function toggleFavorite(channelName) {
     const key = "fav_" + channelName;
