@@ -69,7 +69,7 @@
       "name": "RTV Server 1 (720p)",
       "category": "Entertainment",
       "logo": "",
-      "url": "http://tvsen5.aynascope.net/RtvHD/index.m3u8",
+      "url": "https://tvsen5.aynascope.net/RtvHD/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -157,7 +157,7 @@
       "name": "QAZ Sports HD",
       "category": "Sports",
       "logo": "",
-      "url": "http://stream.mcquack.net/72/index.m3u8",
+      "url": "https://stream.mcquack.net/72/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -181,7 +181,7 @@
       "name": "Arabica TV",
       "category": "Music & Entertainment",
       "logo": "",
-      "url": "http://istream.binarywaves.com:8081/hls/arabica/playlist.m3u8",
+      "url": "https://istream.binarywaves.com:8081/hls/arabica/playlist.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -221,7 +221,7 @@
       "name": "Quran TV",
       "category": "Islamic",
       "logo": "",
-      "url": "http://m.live.net.sa:1935/live/quran/playlist.m3u8",
+      "url": "https://m.live.net.sa:1935/live/quran/playlist.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -229,7 +229,7 @@
       "name": "Somoy TV",
       "category": "News",
       "logo": "",
-      "url": "http://103.165.93.31:8095/somoyTv/tracks-v1a1/mono.m3u8",
+      "url": "https://103.165.93.31:8095/somoyTv/tracks-v1a1/mono.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -237,7 +237,7 @@
       "name": "Sunnah TV",
       "category": "Islamic",
       "logo": "",
-      "url": "http://m.live.net.sa:1935/live/sunnah/chunklist.m3u8?v=1",
+      "url": "https://m.live.net.sa:1935/live/sunnah/chunklist.m3u8?v=1",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -245,7 +245,7 @@
       "name": "AL Sunnah TV",
       "category": "Islamic",
       "logo": "",
-      "url": "http://m.live.net.sa:1935/live/sunnah/playlist.m3u8",
+      "url": "https://m.live.net.sa:1935/live/sunnah/playlist.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -261,7 +261,7 @@
       "name": "Bein Sports Direct HD",
       "category": "Sports",
       "logo": "",
-      "url": "http://145.239.5.177/557a/index.m3u8",
+      "url": "https://145.239.5.177/557a/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -293,7 +293,7 @@
       "name": "BTV",
       "category": "Entertainment",
       "logo": "",
-      "url": "http://103.165.93.31:8095/btv/tracks-v1a1/mono.m3u8",
+      "url": "https://103.165.93.31:8095/btv/tracks-v1a1/mono.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -485,7 +485,7 @@
       "name": "Al Quran Radio",
       "category": "Islamic",
       "logo": "",
-      "url": "http://66.45.232.131:9994/;stream.mp3",
+      "url": "https://66.45.232.131:9994/;stream.mp3",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -653,7 +653,7 @@
       "name": "Jalsha Movies",
       "category": "Movies",
       "logo": "",
-      "url": "http://103.165.93.31:8095/jalshaMovies/index.m3u8",
+      "url": "https://103.165.93.31:8095/jalshaMovies/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -661,7 +661,7 @@
       "name": "Jalsha Movies HD",
       "category": "Movies",
       "logo": "",
-      "url": "http://103.151.61.12/Jalsha_Movie/tracks-v1a1/mono.m3u8?token=i7bZaZWaFrSIE0",
+      "url": "https://103.151.61.12/Jalsha_Movie/tracks-v1a1/mono.m3u8?token=i7bZaZWaFrSIE0",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -741,7 +741,7 @@
       "name": "Zee Anmol TV",
       "category": "Entertainment",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/256/256_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/256/256_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -749,7 +749,7 @@
       "name": "Zee Action",
       "category": "Movies",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/270/270_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/270/270_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -757,7 +757,7 @@
       "name": "Big Magic",
       "category": "Entertainment",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/13/13_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/13/13_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -765,7 +765,7 @@
       "name": "Hindi Hits HD",
       "category": "Music",
       "logo": "",
-      "url": "http://146.59.253.52:8080/hindihitshd/index.m3u8",
+      "url": "https://146.59.253.52:8080/hindihitshd/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -773,7 +773,7 @@
       "name": "Goldmines Bollywood",
       "category": "Movies",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/52/52_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/52/52_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -789,7 +789,7 @@
       "name": "Greenland 2: Migration (2026) (Hindi)",
       "category": "VOD Movies",
       "logo": "",
-      "url": "http://premimum.online/movie/jen12345/jen54321/717746.mp4",
+      "url": "https://premimum.online/movie/jen12345/jen54321/717746.mp4",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -797,7 +797,7 @@
       "name": "Freelancer",
       "category": "VOD Movies",
       "logo": "",
-      "url": "http://premimum.online/movie/jen12345/jen54321/353751.mp4",
+      "url": "https://premimum.online/movie/jen12345/jen54321/353751.mp4",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -805,7 +805,7 @@
       "name": "Food Food",
       "category": "Lifestyle & Food",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/143/143_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/143/143_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -813,7 +813,7 @@
       "name": "Jana Nayagan (2026) (Hindi)",
       "category": "VOD Movies",
       "logo": "",
-      "url": "http://premimum.online/movie/jen12345/jen54321/724489.mp4",
+      "url": "https://premimum.online/movie/jen12345/jen54321/724489.mp4",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -821,7 +821,7 @@
       "name": "Star Sports 1 HD",
       "category": "Sports",
       "logo": "",
-      "url": "http://41.205.93.154/STARSPORTS1/index.m3u8",
+      "url": "https://41.205.93.154/STARSPORTS1/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -837,7 +837,7 @@
       "name": "9XM",
       "category": "Music",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/155/155_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/155/155_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -845,7 +845,7 @@
       "name": "E24",
       "category": "Entertainment & News",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/159/159_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/159/159_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -853,7 +853,7 @@
       "name": "Nat Geo HD",
       "category": "Documentary",
       "logo": "",
-      "url": "http://202.70.146.135:8000/play/a05o/index.m3u8",
+      "url": "https://202.70.146.135:8000/play/a05o/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -877,7 +877,7 @@
       "name": "Nursery Rhymes",
       "category": "Kids",
       "logo": "",
-      "url": "http://23.237.104.106:8080/USA_NICKELODEON/index.m3u8",
+      "url": "https://23.237.104.106:8080/USA_NICKELODEON/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -885,7 +885,7 @@
       "name": "Music India",
       "category": "Music",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/158/158_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/158/158_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -917,7 +917,7 @@
       "name": "NHK World",
       "category": "News & International",
       "logo": "",
-      "url": "http://103.175.73.12:8080/live/417/417_0.m3u8",
+      "url": "https://103.175.73.12:8080/live/417/417_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -965,7 +965,7 @@
       "name": "MBC TV",
       "category": "Entertainment",
       "logo": "",
-      "url": "http://93.184.10.248/MBCBollywood/index.m3u8",
+      "url": "https://93.184.10.248/MBCBollywood/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -1005,7 +1005,7 @@
       "name": "Eurosport HD",
       "category": "Sports",
       "logo": "",
-      "url": "http://151.80.18.177:86/Eurosport_HD/index.m3u8",
+      "url": "https://151.80.18.177:86/Eurosport_HD/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
@@ -1013,7 +1013,7 @@
       "name": "Star Sports 2",
       "category": "Sports",
       "logo": "",
-      "url": "http://power8kse.xyz/s5b6tb5b8/c6a783a669/441103",
+      "url": "https://power8kse.xyz/s5b6tb5b8/c6a783a669/441103",
       "user_agent": "KhorkutoTV/1.0"
     },
     {
