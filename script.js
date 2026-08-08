@@ -46,7 +46,10 @@ async function loadChannels() {
 
         if (!response.ok) throw new Error("Failed to load channels");
 
-        channels = await response.json();
+        const data = await response.json();
+
+        // JSON Array অথবা Object উভয় ক্ষেত্রের জন্য সেফ পার্সিং
+        channels = Array.isArray(data) ? data : (data.channels || []);
 
         renderFeaturedChannels();
         renderChannels();
@@ -97,7 +100,7 @@ function renderFeaturedChannels() {
         const card = document.createElement("div");
         card.className = "featured-card";
         card.innerHTML = `
-            <img src="${channel.logo || 'logo.png'}" onerror="this.src='logo.png'">
+            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png';">
             <h4>${channel.name}</h4>
             <p>${channel.category}</p>
         `;
@@ -114,13 +117,16 @@ function renderChannels(list = channels) {
     if (!channelList) return;
 
     channelList.innerHTML = "";
-    const keyword = search ? search.value.toLowerCase() : "";
+    const keyword = search ? search.value.toLowerCase().trim() : "";
 
     const filtered = list.filter(channel => {
-        const matchName = channel.name.toLowerCase().includes(keyword);
-        const matchCategory = isSpecialView || currentCategory === "All" || channel.category === currentCategory;
+        const nameMatch = channel.name.toLowerCase().includes(keyword);
+        
+        // ফ্লেক্সিবল ক্যাটাগরি ম্যাচিং (যেমন 'Movie' এবং 'Movies' বা 'Entertainment & Sports')
+        const catMatch = isSpecialView || currentCategory === "All" || 
+            channel.category.toLowerCase().includes(currentCategory.toLowerCase());
 
-        return matchName && matchCategory;
+        return nameMatch && catMatch;
     });
 
     if (filtered.length === 0) {
@@ -134,7 +140,7 @@ function renderChannels(list = channels) {
         card.className = "channel";
 
         card.innerHTML = `
-    <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png';">
+            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png';">
             <div class="info">
                 <h3>${channel.name}</h3>
                 <p>${channel.category} ${channel.country ? '• ' + channel.country : ''}</p>
@@ -183,7 +189,7 @@ function playChannel(channel, autoPlay = true) {
             }
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // iOS / Safari সাপোর্ট
+        // iOS / Safari
         video.src = channel.url;
         if (autoPlay) {
             video.play().catch(e => console.warn("Autoplay prevented:", e));
@@ -206,7 +212,6 @@ function playChannel(channel, autoPlay = true) {
         localStorage.setItem("history", JSON.stringify(history));
     }
 }
-
 
 function toggleFavorite(channelName) {
     const key = "fav_" + channelName;
@@ -234,6 +239,19 @@ function setupEventListeners() {
     const refreshBtn = document.getElementById("refreshBtn");
     if (refreshBtn) {
         refreshBtn.onclick = () => loadChannels();
+    }
+
+    // Settings Toggle
+    const settingsBtn = document.getElementById("settingsBtn");
+    const settingsSheet = document.getElementById("settingsSheet");
+    const closeSettings = document.getElementById("closeSettings");
+
+    if (settingsBtn && settingsSheet) {
+        settingsBtn.onclick = () => settingsSheet.classList.add("show");
+    }
+
+    if (settingsSheet && closeSettings) {
+        closeSettings.onclick = () => settingsSheet.classList.remove("show");
     }
 
     document.querySelectorAll(".cat").forEach(btn => {
@@ -284,13 +302,6 @@ function setupEventListeners() {
         };
     }
 
-    const settingsSheet = document.getElementById("settingsSheet");
-    const closeSettings = document.getElementById("closeSettings");
-
-    if (settingsSheet && closeSettings) {
-        closeSettings.onclick = () => settingsSheet.classList.remove("show");
-    }
-
     const clearHistoryBtn = document.getElementById("clearHistoryBtn");
     if (clearHistoryBtn) {
         clearHistoryBtn.onclick = () => {
@@ -313,12 +324,19 @@ function setupEventListeners() {
         };
     }
 
+    const aboutBtn = document.getElementById("aboutBtn");
+    if (aboutBtn) {
+        aboutBtn.onclick = () => {
+            alert("Khorkuto TV v7.0\nDeveloped by Khorkuto Media Network");
+        };
+    }
+
     const shareApp = document.getElementById("shareApp");
     if (shareApp) {
         shareApp.onclick = async () => {
             const data = {
                 title: "Khorkuto TV",
-                text: "Watch Live TV",
+                text: "Watch Live TV Online",
                 url: window.location.href
             };
             if (navigator.share) {
@@ -340,7 +358,7 @@ function setupEventListeners() {
     window.addEventListener("load", () => {
         const splash = document.getElementById("splash");
         if (splash) {
-            setTimeout(() => { splash.style.display = "none"; }, 1500);
+            setTimeout(() => { splash.style.display = "none"; }, 1200);
         }
     });
 }
@@ -349,7 +367,6 @@ function setActiveCategory(category, targetBtn = null) {
     currentCategory = category;
     isSpecialView = false;
 
-    // Featured section চেক করে দেখানো
     renderFeaturedChannels();
 
     document.querySelectorAll(".cat").forEach(x => {
@@ -359,7 +376,6 @@ function setActiveCategory(category, targetBtn = null) {
 
     renderChannels();
 }
-
 
 function setupBannerSlider() {
     const bannerImg = document.querySelector(".banner img");
