@@ -44,6 +44,7 @@
       "id": 4,
       "name": "Gazi TV",
       "category": "Entertainment & Sports",
+      "featured": true,
       "logo": "",
       "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/gazibdz.stream/live-orgin/gazibdz.stream/playlist.m3u8",
       "user_agent": "KhorkutoTV/1.0"
@@ -92,6 +93,7 @@
       "id": 10,
       "name": "RTV HD",
       "category": "Entertainment",
+      "featured": true,
       "logo": "",
       "url": "https://tvsen5.aynaott.com/RtvHD/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
@@ -100,6 +102,7 @@
       "id": 11,
       "name": "T Sports (1080p)",
       "category": "Sports",
+      "featured": true,
       "logo": "T sports.png",
       "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLm/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
@@ -204,6 +207,7 @@
       "id": 24,
       "name": "Live Quran TV",
       "category": "Islamic",
+      "featured": true,
       "logo": "",
       "url": "https://live.kwikmotion.com/sharjahtvquranlive/shqurantv.smil/playlist.m3u8",
       "user_agent": "KhorkutoTV/1.0"
@@ -228,6 +232,7 @@
       "id": 27,
       "name": "Somoy TV",
       "category": "News",
+      "featured": true,
       "logo": "",
       "url": "https://103.165.93.31:8095/somoyTv/tracks-v1a1/mono.m3u8",
       "user_agent": "KhorkutoTV/1.0"
@@ -652,6 +657,7 @@
       "id": 80,
       "name": "Jalsha Movies",
       "category": "Movies",
+      "featured": true,
       "logo": "",
       "url": "https://103.165.93.31:8095/jalshaMovies/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
@@ -820,6 +826,7 @@
       "id": 101,
       "name": "Star Sports 1 HD",
       "category": "Sports",
+      "featured": true,
       "logo": "",
       "url": "https://41.205.93.154/STARSPORTS1/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
