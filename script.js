@@ -19,6 +19,21 @@ document.addEventListener("DOMContentLoaded", () => {
   search = document.getElementById("search");
 
   initApp();
+  document.addEventListener("DOMContentLoaded", () => {
+    channelList = document.getElementById("channelList");
+    featuredList = document.getElementById("featuredList");
+    featuredSection = document.getElementById("featuredSection");
+    video = document.getElementById("video");
+    search = document.getElementById("search");
+
+    initApp();
+
+    // Safety net: ৪ সেকেন্ড পর splash জোর করে সরানো হবে
+    setTimeout(() => {
+        const splash = document.getElementById("splash");
+        if (splash) splash.style.display = "none";
+    }, 4000);
+});
 });
 
 function initApp() {
