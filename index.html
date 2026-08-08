@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Khokuto TV</title>
+    <title>Khorkuto TV</title>
 
     <meta name="theme-color" content="#E50914">
 
@@ -22,7 +22,7 @@
     <!-- Splash Screen -->
     <div id="splash">
         <img src="logo.png" class="splash-logo" alt="Live TV Logo">
-        <h1>Khorkuto TV</h1>
+        <h1 style="margin-top: 15px;">Khorkuto TV</h1>
         <div class="loader"></div>
     </div>
 
@@ -42,10 +42,6 @@
                 📤 Share App
             </div>
 
-            <div class="setting-item" id="darkModeBtn">
-                🌙 Dark Mode
-            </div>
-
             <div class="setting-item" id="clearHistoryBtn">
                 🕒 Clear History
             </div>
@@ -63,7 +59,7 @@
     <!-- Header -->
     <header class="top-header">
         <div class="header-left">
-            <img src="logo.png" class="logo" alt="App Logo">
+            <img src="logo.png" class="logo" alt="App Logo" onerror="this.src='https://via.placeholder.com/55?text=TV'">
             <div>
                 <h2>Khorkuto</h2>
                 <p>TV</p>
@@ -73,6 +69,7 @@
         <div class="header-right">
             <button id="searchBtn" type="button" aria-label="Search">🔍</button>
             <button id="refreshBtn" type="button" aria-label="Refresh Channels">🔄</button>
+            <button id="settingsBtn" type="button" aria-label="Settings">⚙️</button>
         </div>
     </header>
 
@@ -95,18 +92,21 @@
         <div class="cat" data-category="Islamic">
             🕌 <span>Islamic</span>
         </div>
-        <div class="cat" data-category="Movie">
-            🎬 <span>Movie</span>
+        <div class="cat" data-category="Movies">
+            🎬 <span>Movies</span>
         </div>
         <div class="cat" data-category="Music">
             🎵 <span>Music</span>
+        </div>
+        <div class="cat" data-category="Kids">
+            👶 <span>Kids</span>
         </div>
     </div>
 
     <!-- Featured Banner Slider -->
     <section class="featured-slider">
         <div class="banner">
-            <img src="banner1.jpg" alt="Featured Sports Banner">
+            <img src="banner1.jpg" alt="Featured Sports Banner" onerror="this.src='https://via.placeholder.com/600x220?text=Khorkuto+TV'">
             <div class="banner-info">
                 <h2>⚽ Watch Live Sports</h2>
                 <p>HD Live Streaming Anytime</p>
