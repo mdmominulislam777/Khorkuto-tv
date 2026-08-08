@@ -134,7 +134,7 @@ function renderChannels(list = channels) {
         card.className = "channel";
 
         card.innerHTML = `
-            <img src="${channel.logo || 'logo.png'}" onerror="this.src='logo.png'">
+    <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png';">
             <div class="info">
                 <h3>${channel.name}</h3>
                 <p>${channel.category} ${channel.country ? '• ' + channel.country : ''}</p>
