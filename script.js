@@ -349,7 +349,8 @@ function setActiveCategory(category, targetBtn = null) {
     currentCategory = category;
     isSpecialView = false;
 
-    if (featuredSection) featuredSection.style.display = "block";
+    // Featured section চেক করে দেখানো
+    renderFeaturedChannels();
 
     document.querySelectorAll(".cat").forEach(x => {
         const matches = targetBtn ? x === targetBtn : x.dataset.category === category;
@@ -358,6 +359,7 @@ function setActiveCategory(category, targetBtn = null) {
 
     renderChannels();
 }
+
 
 function setupBannerSlider() {
     const bannerImg = document.querySelector(".banner img");
