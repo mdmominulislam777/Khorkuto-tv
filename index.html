@@ -3,98 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khorkuto TV - Cricfy Style</title>
+    <title>Khorkuto TV</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <div class="notice-marquee">
-        <marquee behavior="scroll" direction="left">
-            • Welcome to Khorkuto TV • Live Sports & TV Channels Updates • Tap here to join Telegram •
-        </marquee>
+    <div class="app-loader" id="appLoader">
+        <div class="spinner"></div>
+        <p>ডাটা লোড হচ্ছে, অপেক্ষা করুন...</p>
     </div>
 
     <header class="app-header">
-        <div class="header-left" onclick="toggleDrawer()">
-            <i class="fa-solid fa-bars menu-icon"></i>
-            <img src="logo.png" alt="Logo" class="app-logo" onerror="this.src='https://via.placeholder.com/35'">
-            <span class="app-title">Khorkuto TV</span>
-        </div>
-        <div class="header-right">
-            <button class="icon-btn" onclick="fetchLiveSports()"><i class="fa-solid fa-rotate-right"></i></button>
-            <button class="icon-btn" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button class="icon-btn" onclick="toggleDrawer()"><i class="fa-solid fa-gear"></i></button>
-        </div>
+        <button class="back-btn" id="backBtn" onclick="showCategoriesView()" style="display: none;">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <h2 class="header-title" id="headerTitle">Categories</h2>
     </header>
 
-    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-    <div class="side-drawer" id="sideDrawer">
-        <div class="drawer-header">
-            <img src="logo.png" alt="Logo" class="drawer-logo" onerror="this.src='https://via.placeholder.com/45'">
-            <h3>Khorkuto TV</h3>
-        </div>
-        <div class="drawer-menu">
-            <a href="#"><i class="fa-solid fa-globe"></i> Network Stream</a>
-            <a href="#"><i class="fa-solid fa-list-ul"></i> Playlists</a>
-            <a href="#"><i class="fa-solid fa-baseball-bat-ball"></i> Cric Score</a>
-            <a href="#"><i class="fa-solid fa-futbol"></i> Foot Score</a>
-            <a href="#"><i class="fa-solid fa-tv"></i> Floating Player</a>
-            <a href="#"><i class="fa-solid fa-bolt"></i> Enable Low Quality</a>
-            <a href="#"><i class="fa-solid fa-shield-halved"></i> Copyright</a>
-            <div class="menu-divider">Communicate</div>
-            <a href="#"><i class="fa-brands fa-telegram"></i> Telegram</a>
-            <a href="#"><i class="fa-solid fa-envelope"></i> Contact</a>
-            <a href="#"><i class="fa-solid fa-share-nodes"></i> Share</a>
-            <a href="#"><i class="fa-solid fa-arrows-rotate"></i> Update App</a>
-        </div>
-    </div>
+    <main class="main-container">
+        <div class="category-grid" id="categoryList"></div>
 
-    <main class="main-content">
-        
-        <section id="viewLiveEvents" class="tab-view active">
-            
-            <div class="sports-cat-scroll" id="sportsCatBar">
-                </div>
-
-            <div class="status-pills-scroll" id="statusPillsBar">
-                </div>
-
-            <div class="matches-container" id="matchesList">
-                <div class="loading-state">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <p>লাইভ খেলার ডাটা লোড করা হচ্ছে...</p>
-                </div>
-            </div>
-
-        </section>
-
-        <section id="viewSportsGrid" class="tab-view">
-            <div class="channels-grid" id="sportsChannelsGrid">
-                </div>
-        </section>
-
-        <section id="viewLiveTV" class="tab-view">
-            <div class="channels-grid" id="allChannelsGrid">
-                </div>
-        </section>
-
+        <div class="channel-grid" id="channelList" style="display: none;"></div>
     </main>
-
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchMainTab('viewLiveEvents', this)">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>Live Events</span>
-        </button>
-        <button class="nav-item" onclick="switchMainTab('viewSportsGrid', this)">
-            <i class="fa-solid fa-baseball-bat-ball"></i>
-            <span>Sports</span>
-        </button>
-        <button class="nav-item" onclick="switchMainTab('viewLiveTV', this)">
-            <i class="fa-solid fa-tv"></i>
-            <span>Live TV</span>
-        </button>
-    </nav>
 
     <script src="script.js"></script>
 </body>
