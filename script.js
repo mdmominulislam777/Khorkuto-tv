@@ -1,5 +1,5 @@
 // ==========================================
-// Khorkuto TV - Final Consolidated Script (v10.2)
+// Khorkuto TV - Final Script (v10.3)
 // ==========================================
 
 let channels = [];
@@ -7,14 +7,6 @@ let currentCategory = "All";
 let hls = null;
 
 let categorizedContainer, video, search, playerModal, playingChannelTitle, sportsMatchesList;
-
-// নমুনা লাইভ ম্যাচ আপডেট ডাটা
-const sampleSportsMatches = [
-    { title: "🏏 T Sports Live", match: "বাংলাদেশ বনাম ভারত", status: "🔴 LIVE", channelName: "T Sports" },
-    { title: "⚽ Gazi TV Live", match: "রিয়াল মাদ্রিদ বনাম বার্সেলোনা", status: "🔴 LIVE", channelName: "Gazi TV" },
-    { title: "🏏 A Sports HD", match: "পাকিস্তান বনাম অস্ট্রেলিয়া", status: "⏰ আজকের ম্যাচ", channelName: "A Sports HD" },
-    { title: "⚽ Pk Sports Live", match: "ম্যানচেস্টার সিটি বনাম চেলসি", status: "🔴 LIVE", channelName: "Pk Sports HD" }
-];
 
 document.addEventListener("DOMContentLoaded", () => {
     categorizedContainer = document.getElementById("categorizedChannels");
@@ -30,7 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
 function initApp() {
     setupEventListeners();
     loadChannels();
-    renderSportsMatches();
+    fetchLiveSportsMatches();
+    
+    // প্রতি ২ মিনিট পর পর অটোমেটিক লাইভ স্কোরের তথ্য রিফ্রেশ হবে
+    setInterval(fetchLiveSportsMatches, 120000);
+
     setupTelegram();
     hideSplash();
 }
@@ -46,36 +42,73 @@ function hideSplash() {
 }
 
 // ------------------------------------------
-// Live Sports Banner Updates
+// Automated Live Sports API Fetch
 // ------------------------------------------
-function renderSportsMatches() {
+async function fetchLiveSportsMatches() {
     if (!sportsMatchesList) return;
-    sportsMatchesList.innerHTML = "";
 
-    sampleSportsMatches.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "match-card";
-        card.innerHTML = `
-            <span class="match-status">${item.status}</span>
-            <div class="match-title">${item.title}</div>
-            <div class="match-sub">${item.match}</div>
-        `;
+    try {
+        const response = await fetch("https://site.api.espn.com/apis/site/v2/sports/cricket/13876/scoreboard");
+        
+        if (!response.ok) throw new Error("Sports API offline");
+        
+        const data = await response.json();
+        const events = data.events || [];
 
-        card.onclick = () => {
-            const targetChannel = channels.find(c => c.name.toLowerCase().includes(item.channelName.toLowerCase()));
-            if (targetChannel) {
-                playChannel(targetChannel);
-            } else {
-                alert("চ্যানেলটি লোড হচ্ছে, অনুগ্রহ করে একটু পর চেষ্টা করুন!");
-            }
-        };
+        sportsMatchesList.innerHTML = "";
 
-        sportsMatchesList.appendChild(card);
-    });
+        if (events.length === 0) {
+            sportsMatchesList.innerHTML = `
+                <div class="match-card">
+                    <span class="match-status" style="background:#64748b;">ℹ️ INFO</span>
+                    <div class="match-title">বর্তমানে কোনো লাইভ ম্যাচ নেই</div>
+                    <div class="match-sub">পরবর্তী ম্যাচ আপডেট শীঘ্রই আসছে</div>
+                </div>`;
+            return;
+        }
+
+        events.forEach(event => {
+            const matchTitle = event.name || "Live Match";
+            const statusDetail = event.status?.type?.detail || "🔴 LIVE";
+            const competitionName = event.season?.slug || "Cricket Match";
+
+            const card = document.createElement("div");
+            card.className = "match-card";
+            card.innerHTML = `
+                <span class="match-status">${statusDetail.includes("Final") ? "🏁 FINISHED" : "🔴 LIVE"}</span>
+                <div class="match-title">${matchTitle}</div>
+                <div class="match-sub">${competitionName}</div>
+            `;
+
+            card.onclick = () => {
+                const sportsChannel = channels.find(c => 
+                    (c.category && c.category.toLowerCase() === "sports") || 
+                    c.name.toLowerCase().includes("sports")
+                );
+
+                if (sportsChannel) {
+                    playChannel(sportsChannel);
+                } else {
+                    alert("স্ট্রিমিং দেখতে স্পোর্টস ক্যাটাগরি থেকে চ্যানেল বাছাই করুন।");
+                }
+            };
+
+            sportsMatchesList.appendChild(card);
+        });
+
+    } catch (error) {
+        console.warn("Sports API fallback executed:", error);
+        sportsMatchesList.innerHTML = `
+            <div class="match-card">
+                <span class="match-status">🔴 LIVE</span>
+                <div class="match-title">লাইভ স্পোর্টস টি ভি</div>
+                <div class="match-sub">খেলার সরাসরি সম্প্রচার দেখতে ক্লিক করুন</div>
+            </div>`;
+    }
 }
 
 // ------------------------------------------
-// Load Channels & Render Layout
+// Load Channels & Layout
 // ------------------------------------------
 async function loadChannels() {
     if (!categorizedContainer) return;
@@ -181,7 +214,7 @@ function renderCustomList(title, list) {
 }
 
 // ------------------------------------------
-// Video Streaming Player
+// Streaming Player Functionality
 // ------------------------------------------
 function playChannel(channel) {
     if (!video || !channel.url) return;
@@ -228,7 +261,7 @@ function closePlayer() {
 }
 
 // ------------------------------------------
-// Favorites & History
+// Favorites & History Management
 // ------------------------------------------
 function toggleFavorite(channel, btnElement) {
     const key = "fav_" + channel.name;
@@ -266,7 +299,7 @@ function renderHistory() {
 }
 
 // ------------------------------------------
-// Event Listeners & Controls
+// Event Listeners
 // ------------------------------------------
 function setupEventListeners() {
     if (search) {
@@ -283,7 +316,6 @@ function setupEventListeners() {
         });
     });
 
-    // Bottom Navigation Logic
     const setActiveNav = (id) => {
         document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
         document.getElementById(id)?.classList.add("active");
