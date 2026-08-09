@@ -1,160 +1,491 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Khorkuto TV - Live Streaming</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khorkuto TV & Sports Live Engine</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
 
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- HLS.js Library for M3U8 Streaming -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    body {
+      background-color: #0b0e17;
+      color: #ffffff;
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background-color: #0d1220;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* Marquee Notice */
+    .marquee-bar {
+      background-color: #121829;
+      font-size: 12px;
+      color: #cbd5e1;
+      padding: 6px 10px;
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    /* Sports Category Carousel */
+    .sports-carousel {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 14px 16px;
+      scrollbar-width: none;
+    }
+    .sports-carousel::-webkit-scrollbar { display: none; }
+
+    .sport-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 11px;
+      color: #94a3b8;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .icon-wrapper {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background-color: #161f33;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+      border: 1.5px solid #233052;
+    }
+
+    .sport-item.active .icon-wrapper {
+      border-color: #3b82f6;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+    }
+    .sport-item.active { color: #ffffff; }
+
+    .badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background-color: #ef4444;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 5px;
+      border-radius: 10px;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    /* Filter Pills */
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 12px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-pills::-webkit-scrollbar { display: none; }
+
+    .pill {
+      background: #121a2d;
+      border: 1px solid #213054;
+      color: #94a3b8;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .pill.active {
+      background: #1a284a;
+      border-color: #2563eb;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Event Cards Container */
+    .events-container {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Event Card */
+    .event-card {
+      background: #121828;
+      border: 1.5px solid #2143a5;
+      border-radius: 14px;
+      position: relative;
+      padding: 20px 12px 12px 12px;
+    }
+
+    .card-header-badge {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #080b12;
+      color: #e2e8f0;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 14px;
+      border-radius: 12px;
+      border: 1px solid #2143a5;
+      white-space: nowrap;
+    }
+
+    .card-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 32%;
+      text-align: center;
+    }
+
+    .team-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #1e293b;
+      padding: 2px;
+      margin-bottom: 6px;
+    }
+
+    .team-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+
+    .match-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 36%;
+      text-align: center;
+    }
+
+    .match-time { font-size: 13px; font-weight: bold; color: #ffffff; }
+    .match-date { font-size: 11px; color: #3b82f6; margin: 2px 0; }
+    .match-status { font-size: 11px; color: #94a3b8; }
+    .status-live { color: #ef4444; font-weight: bold; }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background-color: #0b101d;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #64748b;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .nav-item.active { color: #3b82f6; }
+    .nav-item span { margin-top: 3px; }
+  </style>
 </head>
 <body>
 
-    <!-- Splash / Loading Screen -->
-    <div id="splash">
-        <img src="logo.png" alt="Khorkuto TV" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=TV'">
-        <h2 style="margin-top: 15px; font-size: 20px; font-weight: bold;">Khorkuto TV</h2>
-        <div class="loader"></div>
+  <!-- Top Header -->
+  <div class="header">
+    <div class="header-left">
+      <button class="icon-btn">☰</button>
+      <span style="font-weight: bold; font-size: 16px;">Khorkuto TV</span>
     </div>
+    <div class="header-right">
+      <button class="icon-btn">★</button>
+      <button class="icon-btn" onclick="renderApp()">↻</button>
+      <button class="icon-btn">🔍</button>
+    </div>
+  </div>
 
-    <!-- Top Header -->
-    <header class="top-header">
-        <div class="header-left">
-            <img src="logo.png" alt="Logo" class="logo" onerror="this.src='https://via.placeholder.com/55?text=TV'">
-            <div>
-                <h2>Khorkuto TV</h2>
-                <p>Live TV Network</p>
+  <!-- Marquee Notice Bar -->
+  <div class="marquee-bar">
+    <marquee scrollamount="4">Khorkuto TV Sports: অটোমেটিক তারিখ অনুযায়ী লাইভ স্কোর ও আপডেট পোস্ট করা হচ্ছে!</marquee>
+  </div>
+
+  <!-- Sports Category Carousel -->
+  <div class="sports-carousel" id="sportCategories">
+    <!-- JS দিয়ে ডাইনামিক ক্যাটাগরি আইটেম লোড হবে -->
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="filter-pills" id="statusPills">
+    <!-- JS দিয়ে ফিল্টার বাটন লোড হবে -->
+  </div>
+
+  <!-- Events Container -->
+  <div class="events-container" id="eventsList">
+    <!-- খেলাগুলোর লিস্ট অটো লোড হবে -->
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <span style="font-size: 18px;">📡</span>
+      <span>Events</span>
+    </div>
+    <div class="nav-item">
+      <span style="font-size: 18px;">📺</span>
+      <span>Categories</span>
+    </div>
+    <div class="nav-item">
+      <span style="font-size: 18px;">⚽</span>
+      <span>Sports</span>
+    </div>
+  </div>
+
+  <script>
+    // ১. আপনার খেলার ডেটা베이스 (JSON / API থেকে আসতে পারে)
+    // সময় ফরম্যাট: YYYY-MM-DDTHH:MM:SS
+    const matchesDatabase = [
+      {
+        id: 1,
+        sport: "Cricket",
+        league: "The Hundred Women",
+        team1: "Sunrisers Leeds",
+        team2: "Welsh Fire",
+        team1_logo: "https://via.placeholder.com/40",
+        team2_logo: "https://via.placeholder.com/40",
+        startTime: "2026-08-09T16:00:00" // আজকের ম্যাচ
+      },
+      {
+        id: 2,
+        sport: "Cricket",
+        league: "ICC CWC League 2",
+        team1: "Scotland",
+        team2: "UAE",
+        team1_logo: "https://via.placeholder.com/40",
+        team2_logo: "https://via.placeholder.com/40",
+        startTime: "2026-08-09T18:30:00" // আজকের ম্যাচ
+      },
+      {
+        id: 3,
+        sport: "Football",
+        league: "Club Friendly Games",
+        team1: "Manchester City",
+        team2: "Atlético Madrid",
+        team1_logo: "https://via.placeholder.com/40",
+        team2_logo: "https://via.placeholder.com/40",
+        startTime: "2026-08-09T15:00:00" // লাইভ চলা ম্যাচ
+      },
+      {
+        id: 4,
+        sport: "Football",
+        league: "2. Bundesliga",
+        team1: "Energie Cottbus",
+        team2: "Hannover 96",
+        team1_logo: "https://via.placeholder.com/40",
+        team2_logo: "https://via.placeholder.com/40",
+        startTime: "2026-08-10T17:30:00" // আগামীকালের ম্যাচ
+      },
+      {
+        id: 5,
+        sport: "Tennis",
+        league: "Grand Slam",
+        team1: "Nadal",
+        team2: "Djokovic",
+        team1_logo: "https://via.placeholder.com/40",
+        team2_logo: "https://via.placeholder.com/40",
+        startTime: "2026-08-08T14:00:00" // গতকালের শেষ হওয়া ম্যাচ
+      }
+    ];
+
+    let currentSport = "All";
+    let currentStatus = "All";
+
+    // ২. অটোমেটিক তারিখ ও সময় প্রসেসিং লজিক
+    function getMatchStatus(startTimeStr) {
+      const now = new Date();
+      const matchTime = new Date(startTimeStr);
+      const diffMs = matchTime - now;
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      // খেলা ১.৫ ঘন্টা আগে শুরু হলে ধরে নেয়া হবে 'LIVE'
+      if (diffHours <= 0 && diffHours >= -2) {
+        return { status: "LIVE", text: "● LIVE", isLive: true };
+      } 
+      // খেলা শেষ
+      else if (diffHours < -2) {
+        return { status: "Finished", text: "Finished", isLive: false };
+      } 
+      // খেলা শুরু হতে বাকি
+      else {
+        const hoursLeft = Math.floor(diffHours);
+        const minsLeft = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        let timeText = hoursLeft > 0 ? `Starts in ${hoursLeft}h ${minsLeft}m` : `Starts in ${minsLeft}m`;
+        return { status: "Upcoming", text: timeText, isLive: false };
+      }
+    }
+
+    // ৩. রেন্ডার ফাংশন
+    function renderApp() {
+      const eventsContainer = document.getElementById("eventsList");
+      eventsContainer.innerHTML = "";
+
+      // ফিল্টারিং লজিক
+      let filtered = matchesDatabase.filter(m => {
+        const matchInfo = getMatchStatus(m.startTime);
+        
+        // স্পোর্টস ফিল্টার
+        const sportMatch = (currentSport === "All" || m.sport === currentSport);
+        
+        // স্ট্যাটাস ফিল্টার (All, Live, Upcoming, Finished)
+        let statusMatch = true;
+        if (currentStatus === "Live") statusMatch = matchInfo.status === "LIVE";
+        if (currentStatus === "Upcoming") statusMatch = matchInfo.status === "Upcoming";
+        if (currentStatus === "Finished") statusMatch = matchInfo.status === "Finished";
+
+        return sportMatch && statusMatch;
+      });
+
+      // স্ক্রিনে ম্যাচগুলো অটোমেটিক জেনারেট করা
+      if(filtered.length === 0) {
+        eventsContainer.innerHTML = `<div style="text-align:center; padding: 20px; color:#64748b;">কোনো খেলা পাওয়া যায়নি</div>`;
+        return;
+      }
+
+      filtered.forEach(m => {
+        const matchInfo = getMatchStatus(m.startTime);
+        const matchDateObj = new Date(m.startTime);
+        
+        const formattedTime = matchDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const formattedDate = matchDateObj.toLocaleDateString('en-GB');
+
+        const card = document.createElement("div");
+        card.className = "event-card";
+        card.innerHTML = `
+          <div class="card-header-badge">${m.sport} || ${m.league}</div>
+          <div class="card-content">
+            <div class="team">
+              <img class="team-logo" src="${m.team1_logo}" alt="Logo">
+              <span class="team-name">${m.team1}</span>
             </div>
-        </div>
-        <div class="header-right">
-            <button id="refreshBtn" title="রিফ্রেশ"><i class="fa-solid fa-rotate-right"></i></button>
-            <button id="searchBtn" title="সার্চ"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button id="settingsBtn" title="সেটিংস"><i class="fa-solid fa-gear"></i></button>
-        </div>
-    </header>
-
-    <!-- Search Input Area -->
-    <div class="search-area">
-        <input type="text" id="search" placeholder="চ্যানেল নাম দিয়ে খুঁজুন...">
-    </div>
-
-    <!-- Category Slider -->
-    <div class="category-slider">
-        <div class="cat active" data-category="All">
-            <i class="fa-solid fa-border-all"></i>
-            <span>সব চ্যানেল</span>
-        </div>
-        <div class="cat" data-category="News">
-            <i class="fa-solid fa-newspaper"></i>
-            <span>সংবাদ</span>
-        </div>
-        <div class="cat" data-category="Sports">
-            <i class="fa-solid fa-trophy"></i>
-            <span>খেলাধুলা</span>
-        </div>
-        <div class="cat" data-category="Entertainment">
-            <i class="fa-solid fa-film"></i>
-            <span>বিনোদন</span>
-        </div>
-        <div class="cat" data-category="Music">
-            <i class="fa-solid fa-music"></i>
-            <span>গান</span>
-        </div>
-    </div>
-
-    <!-- Banner / Featured Slider -->
-    <div class="featured-slider">
-        <div class="banner">
-            <img src="banner1.jpg" alt="Banner" onerror="this.src='https://via.placeholder.com/600x220?text=Khorkuto+TV'">
-            <div class="banner-info">
-                <h2>Khorkuto TV</h2>
-                <p>সব পছন্দের টিভি চ্যানেল এক জায়গায়</p>
-                <button class="watch-btn"><i class="fa-solid fa-play"></i> এখন দেখুন</button>
+            <div class="match-info">
+              <span class="match-time">${formattedTime}</span>
+              <span class="match-date">${formattedDate}</span>
+              <span class="match-status ${matchInfo.isLive ? 'status-live' : ''}">${matchInfo.text}</span>
             </div>
-        </div>
-    </div>
-
-    <!-- Video Player Section -->
-    <div class="player-box">
-        <video id="video" controls playsinline></video>
-        <div class="player-controls">
-            <button id="fullscreenBtn"><i class="fa-solid fa-expand"></i> ফুলস্ক্রিন করুন</button>
-        </div>
-    </div>
-
-    <!-- Featured Section (Auto hides if no featured channels) -->
-    <div id="featuredSection">
-        <div class="section-title">⭐ জনপ্রিয় চ্যানেলসমূহ</div>
-        <div id="featuredList" class="featured-list">
-            <!-- Dynamic Featured Channels -->
-        </div>
-    </div>
-
-    <!-- Main Channel List -->
-    <div class="section-title">📺 সমস্ত চ্যানেল</div>
-    <div id="channelList" class="channel-list">
-        <!-- Dynamic Main Channels -->
-    </div>
-
-    <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav">
-        <div class="nav-item active" id="homeNav">
-            <i class="fa-solid fa-house"></i>
-            <small>হোম</small>
-        </div>
-        <div class="nav-item" id="sportsNav">
-            <i class="fa-solid fa-futbol"></i>
-            <small>স্পোর্টস</small>
-        </div>
-        <div class="nav-item" id="favoriteNav">
-            <i class="fa-solid fa-heart"></i>
-            <small>ফেভারিট</small>
-        </div>
-        <div class="nav-item" id="historyNav">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <small>হিস্ট্রি</small>
-        </div>
-        <div class="nav-item" id="searchNav">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <small>সার্চ</small>
-        </div>
-    </nav>
-
-    <!-- Settings Sheet Overlay Backdrop -->
-    <div id="settingsOverlay" class="settings-overlay"></div>
-
-    <!-- Settings Bottom Sheet -->
-    <div id="settingsSheet" class="settings-sheet">
-        <div class="sheet-content">
-            <div class="sheet-header">
-                <h3>সেটিংস</h3>
-                <button id="closeSettings"><i class="fa-solid fa-xmark"></i></button>
+            <div class="team">
+              <img class="team-logo" src="${m.team2_logo}" alt="Logo">
+              <span class="team-name">${m.team2}</span>
             </div>
-            <div class="setting-item" id="clearFavBtn">
-                <i class="fa-solid fa-heart-crack"></i> ফেভারিট ক্লিয়ার করুন
-            </div>
-            <div class="setting-item" id="clearHistoryBtn">
-                <i class="fa-solid fa-trash"></i> হিস্ট্রি ক্লিয়ার করুন
-            </div>
-            <div class="setting-item" id="shareApp">
-                <i class="fa-solid fa-share-nodes"></i> অ্যাপ শেয়ার করুন
-            </div>
-            <div class="setting-item" id="aboutBtn">
-                <i class="fa-solid fa-circle-info"></i> আমাদের সম্পর্কে (About)
-            </div>
-        </div>
-    </div>
+          </div>
+        `;
+        eventsContainer.appendChild(card);
+      });
 
-    <!-- Logic Script -->
-    <script src="script.js"></script>
+      renderFilters();
+    }
+
+    // ৪. ফিল্টার বাটনসমূহ ডায়নামিকভাবে সাজানো
+    function renderFilters() {
+      // স্পোর্টস আইকন লোড
+      const sportsList = [
+        { name: "All", icon: "🌐" },
+        { name: "Football", icon: "⚽" },
+        { name: "Cricket", icon: "🏏" },
+        { name: "Tennis", icon: "🎾" }
+      ];
+
+      const carousel = document.getElementById("sportCategories");
+      carousel.innerHTML = sportsList.map(s => {
+        const count = s.name === "All" ? matchesDatabase.length : matchesDatabase.filter(m => m.sport === s.name).length;
+        return `
+          <div class="sport-item ${currentSport === s.name ? 'active' : ''}" onclick="setSport('${s.name}')">
+            <div class="icon-wrapper">${s.icon} <span class="badge">${count}</span></div>
+            <span>${s.name}</span>
+          </div>
+        `;
+      }).join('');
+
+      // স্ট্যাটাস ফিল্টার লোড
+      const statuses = ["All", "Live", "Upcoming", "Finished"];
+      const statusPills = document.getElementById("statusPills");
+      statusPills.innerHTML = statuses.map(st => {
+        return `<button class="pill ${currentStatus === st ? 'active' : ''}" onclick="setStatus('${st}')">${st}</button>`;
+      }).join('');
+    }
+
+    function setSport(sport) {
+      currentSport = sport;
+      renderApp();
+    }
+
+    function setStatus(status) {
+      currentStatus = status;
+      renderApp();
+    }
+
+    // প্রতি ১ মিনিট (৬০,০০০ মিলি-সেকেন্ড) পর পর পেজটি অটো আপডেট হবে
+    setInterval(renderApp, 60000);
+
+    // অ্যাপ চালুর প্রথম রেন্ডার
+    renderApp();
+  </script>
+
 </body>
 </html>
