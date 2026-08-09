@@ -8,7 +8,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- HLS.js Library for M3U8 Streaming -->
+    <!-- HLS.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <!-- Telegram WebApp SDK -->
@@ -19,7 +19,7 @@
 </head>
 <body>
 
-    <!-- Splash / Loading Screen -->
+    <!-- Splash Screen -->
     <div id="splash">
         <img src="logo.png" alt="Khorkuto TV" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=TV'">
         <h2 style="margin-top: 15px; font-size: 20px; font-weight: bold;">Khorkuto TV</h2>
@@ -42,7 +42,7 @@
         </div>
     </header>
 
-    <!-- Floating / Popup Video Player Modal (ক্লিক করলে ওপেন হবে) -->
+    <!-- Pop-up / Floating Video Player Modal -->
     <div id="playerModal" class="player-modal">
         <div class="player-container">
             <div class="player-header">
@@ -77,7 +77,7 @@
         </div>
         <div class="cat" data-category="Entertainment">
             <i class="fa-solid fa-film"></i>
-            <span>বিনোদনের</span>
+            <span>বিনোদন</span>
         </div>
         <div class="cat" data-category="Music">
             <i class="fa-solid fa-music"></i>
@@ -85,20 +85,19 @@
         </div>
     </div>
 
-    <!-- Banner / Featured Slider -->
-    <div class="featured-slider">
-        <div class="banner">
-            <img src="banner1.jpg" alt="Banner" onerror="this.src='https://via.placeholder.com/600x220?text=Khorkuto+TV'">
-            <div class="banner-info">
-                <h2>Khorkuto TV</h2>
-                <p>সব পছন্দের টিভি চ্যানেল এক জায়গায়</p>
-            </div>
+    <!-- Live Sports & Match Updates Section -->
+    <div class="sports-events-slider">
+        <div class="sports-section-title">
+            <span>🔥 লাইভ ম্যাচ ও খেলাধুলার আপডেট</span>
+        </div>
+        <div id="sportsMatchesList" class="matches-container">
+            <!-- Dynamic Sports Cards -->
         </div>
     </div>
 
-    <!-- Category-wise YuppTV Style Channels Container -->
+    <!-- YuppTV Style Categorized Channels Container -->
     <div id="categorizedChannels" class="categorized-container">
-        <!-- Dynamic Category Rows Will Render Here -->
+        <!-- Dynamic Category Rows -->
     </div>
 
     <!-- Bottom Navigation Bar -->
@@ -125,7 +124,7 @@
         </div>
     </nav>
 
-    <!-- Settings Sheet Overlay Backdrop -->
+    <!-- Settings Overlay Backdrop -->
     <div id="settingsOverlay" class="settings-overlay"></div>
 
     <!-- Settings Bottom Sheet -->
