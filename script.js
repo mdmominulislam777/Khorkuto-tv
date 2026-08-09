@@ -450,4 +450,45 @@ function setupTelegram() {
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
     }
-                                 }
+}                               }
+// =========================
+// KHORKUTO TV - PLAYER CONTROLS
+// =========================
+
+const tvPlayer = document.getElementById("tvPlayer");
+const closePlayer = document.getElementById("closePlayer");
+const playerTitle = document.getElementById("playerTitle");
+const playerFullscreen = document.getElementById("playerFullscreen");
+
+// Close Player
+if (closePlayer) {
+
+    closePlayer.onclick = () => {
+
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+
+        tvPlayer.classList.remove("show");
+    };
+
+}
+
+// Full Screen
+if (playerFullscreen) {
+
+    playerFullscreen.onclick = () => {
+
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+        }
+
+    };
+
