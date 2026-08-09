@@ -567,3 +567,180 @@ function setupTelegram() {
         window.Telegram.WebApp.expand();
     }
 }
+// ==========================================
+// Multi-Sport Cricfy Style Live/Upcoming API
+// ==========================================
+
+let activeStatusFilter = "all"; // 'all', 'live', 'recent', 'upcoming'
+let fetchedSportsEvents = [];
+
+async function fetchLiveSportsMatches() {
+    const sportsMatchesList = document.getElementById("sportsMatchesList") || document.getElementById("channelList");
+    if (!sportsMatchesList) return;
+
+    sportsMatchesList.innerHTML = `
+        <div style="font-size:14px; color:var(--text-muted); padding:20px; text-align:center;">
+            ⏳ সকল খেলার ডাটা লোড করা হচ্ছে...
+        </div>`;
+
+    // ESPN Public API Endpoints (Cricket, Soccer, Baseball, Tennis, Motorsport, MMA/Boxing)
+    const endpoints = {
+        cricket: "https://site.api.espn.com/apis/site/v2/sports/cricket/8880/scoreboard",
+        soccer: "https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard",
+        baseball: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard",
+        tennis: "https://site.api.espn.com/apis/site/v2/sports/tennis/all/scoreboard",
+        racing: "https://site.api.espn.com/apis/site/v2/sports/racing/f1/scoreboard",
+        mma: "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard"
+    };
+
+    try {
+        // সকল খেলা একসাথে Fetch করা
+        const fetchPromises = Object.entries(endpoints).map(async ([type, url]) => {
+            try {
+                const res = await fetch(url);
+                if (!res.ok) return [];
+                const data = await res.json();
+                return (data.events || []).map(evt => ({ ...evt, sportType: type }));
+            } catch (e) {
+                return [];
+            }
+        });
+
+        const results = await Promise.all(fetchPromises);
+        fetchedSportsEvents = results.flat();
+
+        renderSportsContainer(sportsMatchesList);
+
+    } catch (error) {
+        console.error("Sports API Error:", error);
+        sportsMatchesList.innerHTML = `
+            <div style="text-align:center; padding:20px; color:#ef4444;">
+                ❌ খেলার ডাটা লোড করতে সমস্যা হয়েছে।
+            </div>`;
+    }
+}
+
+// Cricfy Style Card rendering logic
+function renderSportsContainer(container) {
+    if (!container) return;
+
+    // Filter by Status State (in = Live, pre = Upcoming, post = Finished/Recent)
+    const filteredEvents = fetchedSportsEvents.filter(evt => {
+        const state = evt.status?.type?.state;
+        if (activeStatusFilter === "live" && state !== "in") return false;
+        if (activeStatusFilter === "recent" && state !== "post") return false;
+        if (activeStatusFilter === "upcoming" && state !== "pre") return false;
+        return true;
+    });
+
+    // Counts for Filter Tabs
+    const liveCount = fetchedSportsEvents.filter(e => e.status?.type?.state === "in").length;
+    const recentCount = fetchedSportsEvents.filter(e => e.status?.type?.state === "post").length;
+    const upcomingCount = fetchedSportsEvents.filter(e => e.status?.type?.state === "pre").length;
+    const totalCount = fetchedSportsEvents.length;
+
+    let html = `
+        <div class="sports-status-tabs" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:12px; margin-bottom:12px; scrollbar-width:none;">
+            <button class="status-tab ${activeStatusFilter==='all'?'active':''}" onclick="setStatusFilter('all')">
+                ✅ All (${totalCount})
+            </button>
+            <button class="status-tab ${activeStatusFilter==='live'?'active':''}" onclick="setStatusFilter('live')">
+                🔴 Live (${liveCount})
+            </button>
+            <button class="status-tab ${activeStatusFilter==='recent'?'active':''}" onclick="setStatusFilter('recent')">
+                ✔ Recent (${recentCount})
+            </button>
+            <button class="status-tab ${activeStatusFilter==='upcoming'?'active':''}" onclick="setStatusFilter('upcoming')">
+                ⏳ Upcoming (${upcomingCount})
+            </button>
+        </div>
+    `;
+
+    if (filteredEvents.length === 0) {
+        html += `
+            <div style="text-align:center; padding:30px; color:var(--text-muted);">
+                😃 বর্তমানে এই ট্যাবে কোনো ম্যাচ নেই।
+            </div>`;
+        container.innerHTML = html;
+        return;
+    }
+
+    html += `<div class="sports-cards-container" style="display:grid; gap:12px;">`;
+
+    filteredEvents.forEach(evt => {
+        const state = evt.status?.type?.state;
+        const statusDetail = evt.status?.type?.shortDetail || evt.status?.type?.detail || "";
+        const competition = evt.competitions?.[0];
+        const competitors = competition?.competitors || [];
+
+        const team1 = competitors[0] || {};
+        const team2 = competitors[1] || {};
+
+        const team1Name = team1.team?.shortDisplayName || team1.team?.displayName || "TBA";
+        const team2Name = team2.team?.shortDisplayName || team2.team?.displayName || "TBA";
+        const team1Logo = team1.team?.logo || "logo.png";
+        const team2Logo = team2.team?.logo || "logo.png";
+        const team1Score = team1.score !== undefined ? team1.score : "";
+        const team2Score = team2.score !== undefined ? team2.score : "";
+
+        // Status Badge Style
+        let statusBadge = "";
+        if (state === "in") {
+            statusBadge = `<span style="background:#e50914; color:#fff; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:bold; animation: pulse 1.5s infinite;">🔴 LIVE</span>`;
+        } else if (state === "pre") {
+            statusBadge = `<span style="background:#2563eb; color:#fff; padding:3px 10px; border-radius:12px; font-size:11px;">⏳ ${statusDetail}</span>`;
+        } else {
+            statusBadge = `<span style="background:#64748b; color:#fff; padding:3px 10px; border-radius:12px; font-size:11px;">FINISHED</span>`;
+        }
+
+        const leagueName = evt.season?.slug || evt.league?.name || evt.sportType.toUpperCase();
+
+        html += `
+            <div class="cricfy-match-card" style="background:var(--bg-card); border-radius:14px; padding:12px 16px; border:1px solid var(--border-color); cursor:pointer;" onclick="playSportsStream()">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:12px; color:var(--text-muted); border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:6px;">
+                    <span style="text-transform:uppercase; font-weight:bold;">🏆 ${leagueName}</span>
+                    ${statusBadge}
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                        <img src="${team1Logo}" onerror="this.src='logo.png'" style="width:28px; height:28px; object-fit:contain;">
+                        <span style="font-weight:bold; font-size:14px; color:#fff;">${team1Name}</span>
+                        ${team1Score !== "" ? `<span style="margin-left:auto; font-weight:bold; color:var(--primary); font-size:15px;">${team1Score}</span>` : ''}
+                    </div>
+
+                    <div style="padding:0 5px; font-size:11px; color:var(--text-muted); font-weight:bold;">VS</div>
+
+                    <div style="display:flex; align-items:center; gap:8px; flex:1; justify-content:flex-end;">
+                        ${team2Score !== "" ? `<span style="margin-right:auto; font-weight:bold; color:var(--primary); font-size:15px;">${team2Score}</span>` : ''}
+                        <span style="font-weight:bold; font-size:14px; color:#fff;">${team2Name}</span>
+                        <img src="${team2Logo}" onerror="this.src='logo.png'" style="width:28px; height:28px; object-fit:contain;">
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+// Tab Click Handler
+function setStatusFilter(status) {
+    activeStatusFilter = status;
+    const container = document.getElementById("sportsMatchesList") || document.getElementById("channelList");
+    renderSportsContainer(container);
+}
+
+// Play Channel on click
+function playSportsStream() {
+    if (typeof channels !== "undefined" && channels.length > 0) {
+        const sportsChannel = channels.find(c => 
+            (c.category && c.category.toLowerCase().includes("sports")) || 
+            c.name.toLowerCase().includes("sports")
+        ) || channels[0];
+
+        if (typeof playChannel === "function") {
+            playChannel(sportsChannel, true);
+        }
+    }
+}
