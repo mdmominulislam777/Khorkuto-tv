@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Khorkuto TV - Watch Live TV 24/7</title>
+    <title>Khorkuto TV - IPTV Portal</title>
 
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- HLS.js for Streaming Support -->
+    <!-- HLS.js for IPTV Streaming (.m3u8 & .ts) -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
-    <!-- Telegram Mini App Script -->
+    <!-- Telegram Mini App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Top Header -->
+    <!-- Header Area -->
     <header class="header">
         <div class="logo-area">
             <i class="fa-solid fa-tv logo-icon"></i>
@@ -28,11 +27,11 @@
 
         <div class="search-bar">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="চ্যানেল খুঁজুন..." oninput="handleSearch()">
+            <input type="text" id="searchInput" placeholder="১৩৯টি চ্যানেল থেকে খুঁজুন..." oninput="handleSearch()">
         </div>
 
         <div class="header-actions">
-            <button class="icon-btn" id="refreshBtn" title="রিফ্রেশ করুন" onclick="refreshApp()">
+            <button class="icon-btn" id="refreshBtn" title="রিফ্রেশ" onclick="refreshApp()">
                 <i class="fa-solid fa-rotate-right"></i>
             </button>
             <button class="icon-btn" id="settingsBtn" title="সেটিংস" onclick="toggleSettingsModal(true)">
@@ -41,48 +40,43 @@
         </div>
     </header>
 
-    <!-- Telegram & Notice Banner -->
+    <!-- Telegram Support Banner -->
     <div class="notice-banner" id="noticeBanner">
         <div class="banner-content">
             <i class="fa-brands fa-telegram"></i>
-            <span>আমাদের অফিশিয়াল টেলিগ্রাম চ্যানেলে যুক্ত থাকুন সব আপডেট পেতে!</span>
+            <span>Khorkuto Media Network - সব চ্যানেল ও স্ট্রিম আপডেট পেতে টেলিগ্রামে যুক্ত থাকুন!</span>
         </div>
-        <a href="https://t.me/" target="_blank" class="banner-btn">Join Now</a>
+        <a href="https://t.me/livetvsports24_bot" target="_blank" class="banner-btn">Support Bot</a>
         <button class="banner-close" onclick="closeBanner()"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
-    <!-- Category Filter Navigation -->
+    <!-- Dynamic Category Filter Navigation -->
     <nav class="categories-wrapper">
         <div class="categories" id="categoryContainer">
-            <button class="cat-btn active" onclick="filterCategory('all', this)"><i class="fa-solid fa-border-all"></i> সব</button>
-            <button class="cat-btn" onclick="filterCategory('news', this)"><i class="fa-solid fa-newspaper"></i> খবর</button>
-            <button class="cat-btn" onclick="filterCategory('sports', this)"><i class="fa-solid fa-trophy"></i> খেলাধুলা</button>
-            <button class="cat-btn" onclick="filterCategory('entertainment', this)"><i class="fa-solid fa-film"></i> বিনোদন</button>
-            <button class="cat-btn" onclick="filterCategory('favorites', this)"><i class="fa-solid fa-heart"></i> ফেভারিট</button>
-            <button class="cat-btn" onclick="filterCategory('history', this)"><i class="fa-solid fa-clock-rotate-left"></i> হিস্ট্রি</button>
+            <!-- JavaScript এর মাধ্যমে স্বয়ংক্রিয়ভাবে ক্যাটাগরি বাটন তৈরি হবে -->
         </div>
     </nav>
 
-    <!-- Main Content Area (Only Channel Grid) -->
+    <!-- Main Content Grid -->
     <main class="main-container">
         <div class="channel-grid" id="channelGrid">
-            <!-- JavaScript-এর মাধ্যমে চ্যানেল লোড হবে -->
+            <!-- Channel Cards Load Here -->
         </div>
     </main>
 
-    <!-- Full-Screen Dedicated Video Player View (Modal/Overlay) -->
+    <!-- Full-Screen Player Modal Window -->
     <div class="player-overlay hidden" id="playerModal">
-        <!-- Player Header Toolbar -->
+        <!-- Top Toolbar -->
         <div class="player-header">
             <button class="player-back-btn" onclick="closePlayer()" title="ফিরে যান">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
             
             <div class="player-info">
-                <img id="playerLogo" src="" alt="Logo" onerror="this.src='https://via.placeholder.com/40?text=TV'">
+                <img id="playerLogo" src="" alt="Logo" onerror="handleImageError(this, 'TV')">
                 <div class="player-title-wrap">
-                    <h3 id="playerChannelName">চ্যানেলের নাম</h3>
-                    <span class="live-tag"><i class="fa-solid fa-circle"></i> LIVE</span>
+                    <h3 id="playerChannelName">চ্যানেল প্লেয়ার</h3>
+                    <span class="live-tag"><i class="fa-solid fa-circle"></i> LIVE 24/7</span>
                 </div>
             </div>
 
@@ -96,10 +90,9 @@
             </div>
         </div>
 
-        <!-- Video Player Body -->
+        <!-- Video Display Frame -->
         <div class="player-body" id="playerContainer">
             <video id="videoPlayer" controls autoplay playsinline class="media-player"></video>
-            <iframe id="iframePlayer" class="media-player hidden" allowfullscreen allow="autoplay"></iframe>
             <div id="playerLoader" class="player-loader hidden">
                 <div class="spinner"></div>
                 <p>স্ট্রিম লোড হচ্ছে...</p>
@@ -107,7 +100,7 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
+    <!-- App Settings Modal -->
     <div class="modal-backdrop hidden" id="settingsModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -115,13 +108,18 @@
                 <button onclick="toggleSettingsModal(false)"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
+                <div class="setting-info">
+                    <p><strong>ভার্সন:</strong> v7.0 (IPTV Engine)</p>
+                    <p><strong>মোট চ্যানেল:</strong> ১৩৯ টি</p>
+                </div>
+                <hr style="border-color: var(--border-color); margin: 10px 0;">
                 <div class="setting-item">
-                    <span>ক্লিয়ার ওয়াচ হিস্ট্রি</span>
-                    <button class="btn-danger" onclick="clearHistory()">মুছে ফেলুন</button>
+                    <span>ওয়াচ হিস্ট্রি মুছুন</span>
+                    <button class="btn-danger" onclick="clearHistory()">ক্লিয়ার</button>
                 </div>
                 <div class="setting-item">
-                    <span>ক্লিয়ার ফেভারিট তালিকা</span>
-                    <button class="btn-danger" onclick="clearFavorites()">মুছে ফেলুন</button>
+                    <span>ফেভারিট তালিকা মুছুন</span>
+                    <button class="btn-danger" onclick="clearFavorites()">ক্লিয়ার</button>
                 </div>
             </div>
         </div>
