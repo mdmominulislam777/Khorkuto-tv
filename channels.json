@@ -1,175 +1,78 @@
 {
-  "info": {
-    "playlist_name": "Khorkuto TV Official IPTV Playlist",
-    "owner": "Khorkuto TV",
-    "Team": "Khorkuto Media Network",
-    "generated_by": "Khorkuto IPTV Engine",
-    "contact": "t.me/livetvsports24_bot",
-    "support": "https://t.me/livetvsports24_bot",
-    "version": "v7.0",
-    "github": "https://mdmominulislam777.github.io/Khorkuto-tv/",
-    "note": "This playlist is formatted specifically for Khorkuto TV Application.",
-    "disclaimer": "All stream links are collected from publicly available networks.",
-    "auto_update": true,
-    "update_interval": "1 hours",
-    "total_channels": 19,
-    "last_update": "2026-08-08 09:10 AM (BD Time)"
+  "app_config": {
+    "notice_text": "• Please update your app CRICFY v6.8 • Tap here to update now •",
+    "app_version": "6.8",
+    "telegram_link": "https://t.me/livetvsports24_bot"
   },
-  "channels": [
+
+  "live_events": [
     {
-      "id": 1,
-      "name": "Deshi TV (720p)",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://deshitv.deshitv24.net/live/myStream/playlist.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
+      "event_id": "match_101",
+      "sport": "cricket",
+      "league": "ICC CWC LEAGUE 2",
+      "status": "live", 
+      "time_or_status": "08:30:42",
+      "team1": {
+        "name": "SCO",
+        "flag": "https://i.ibb.co/flags/scotland.png"
+      },
+      "team2": {
+        "name": "UAE",
+        "flag": "https://i.ibb.co/flags/uae.png"
+      },
+      "stream_links": [
+        {
+          "server_name": "ICC TV - AQ",
+          "stream_url": "https://example.com/live/icc-tv/index.m3u8",
+          "quality": "1080p",
+          "headers": {
+            "User-Agent": "Mozilla/5.0"
+          }
+        },
+        {
+          "server_name": "FANCODE IN",
+          "stream_url": "https://example.com/live/fancode/index.m3u8",
+          "quality": "720p"
+        }
+      ]
     },
     {
-      "id": 2,
-      "name": "ATN Music (360p)",
-      "category": "Music",
-      "logo": "logo.png",
-      "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI/atnmusic.stream/playlist.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
+      "event_id": "match_102",
+      "sport": "football",
+      "league": "WOMENS AFRICA CUP OF NATIONS",
+      "status": "live",
+      "time_or_status": "01:30:40",
+      "team1": {
+        "name": "Cameroon",
+        "flag": "https://i.ibb.co/flags/cameroon.png"
+      },
+      "team2": {
+        "name": "Nigeria",
+        "flag": "https://i.ibb.co/flags/nigeria.png"
+      },
+      "stream_links": [
+        {
+          "server_name": "BEIN SPORTS 1 HD",
+          "stream_url": "https://example.com/live/bein1/index.m3u8"
+        }
+      ]
+    }
+  ],
+
+  "live_channels": [
+    {
+      "channel_id": "ch_01",
+      "name": "T Sports HD",
+      "category": "sports",
+      "logo": "https://i.ibb.co/logos/tsports.png",
+      "stream_url": "https://example.com/live/tsports/index.m3u8"
     },
     {
-      "id": 3,
-      "name": "Boishakhi TV",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://boishakhi.sonarbanglatv.com/boishakhi/boishakhitv/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 4,
-      "name": "Gazi TV",
-      "category": "Sports",
-      "featured": true,
-      "logo": "logo.png",
-      "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/gazibdz.stream/live-orgin/gazibdz.stream/playlist.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 5,
-      "name": "My TV",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/mytv-up-off.stream/live-orgin/mytv-up-off.stream/playlist.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 6,
-      "name": "Green TV (1080p)",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/greentv.stream/live-orgin/greentv.stream/playlist.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 7,
-      "name": "RTV Server 1 (720p)",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://tvsen5.aynascope.net/RtvHD/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 8,
-      "name": "RTV Server 2 (720p)",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/rtv-sg.stream/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 9,
-      "name": "NTV (720p)",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://tvsen5.aynaott.com/xV4jEKf3D9zc/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 10,
-      "name": "RTV HD",
-      "category": "Entertainment",
-      "featured": true,
-      "logo": "logo.png",
-      "url": "https://tvsen5.aynaott.com/RtvHD/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 11,
-      "name": "T Sports (1080p)",
-      "category": "Sports",
-      "featured": true,
-      "logo": "logo.png",
-      "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLm/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 12,
-      "name": "Rajdhani TV (1080p)",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://stream.shariarsuvo.com/hls5/rajdhanicable.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 13,
-      "name": "A Sports HD",
-      "category": "Sports",
-      "logo": "logo.png",
-      "url": "https://playztv-apps.pages.dev/asports/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 14,
-      "name": "Iran News",
-      "category": "News",
-      "logo": "logo.png",
-      "url": "https://dev-live.livetvstream.co.uk/LS-63503-4/chunklist_b1196000.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 15,
-      "name": "Pk Sports HD",
-      "category": "Sports",
-      "logo": "logo.png",
-      "url": "https://lbgo.bozztv.com/ssh101/ssh101/pksportshd/playlist.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 16,
-      "name": "Motor Vision",
-      "category": "Entertainment",
-      "logo": "logo.png",
-      "url": "https://mvg-mv-xumo.otteravision.com/mvg/mv/mv.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 17,
-      "name": "BBC Cbeebies",
-      "category": "Kids",
-      "logo": "logo.png",
-      "url": "https://live20.bozztv.com/giatvplayout7/giatv-209622/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 18,
-      "name": "QAZ Sports HD",
-      "category": "Sports",
-      "logo": "logo.png",
-      "url": "https://stream.mcquack.net/72/index.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
-    },
-    {
-      "id": 19,
-      "name": "PBS Kids",
-      "category": "Kids",
-      "logo": "logo.png",
-      "url": "https://2-fss-2.streamhoster.com/pl_140/amlst:200914-1298290/playlist.m3u8",
-      "user_agent": "KhorkutoTV/1.0"
+      "channel_id": "ch_02",
+      "name": "Star Sports 1",
+      "category": "sports",
+      "logo": "https://i.ibb.co/logos/starsports.png",
+      "stream_url": "https://example.com/live/starsports1/index.m3u8"
     }
   ]
 }
