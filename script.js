@@ -26,6 +26,7 @@ function initApp() {
     loadChannels();
     setupBannerSlider();
     setupTelegram();
+    hideSplash();
 }
 
 // ------------------------------------------
@@ -35,20 +36,17 @@ async function loadChannels() {
     if (!channelList) return;
 
     channelList.innerHTML = `
-        <div style="text-align:center;padding:30px">
-            ⏳ Loading Channels...
+        <div style="text-align:center; padding:30px; color:var(--text-muted);">
+            ⏳ চ্যানেল লোড হচ্ছে...
         </div>`;
 
     try {
-        // FIX: এখন লোকাল channels.json থেকে লোড হয় (আগে external GitHub URL
-        // থেকে লোড হতো, যেটা Telegram WebView-তে fetch fail/hang করত)
+        // Cache breaking timestamp query appended
         const response = await fetch("channels.json?t=" + Date.now());
 
         if (!response.ok) throw new Error("Failed to load channels");
 
         const data = await response.json();
-
-        // JSON Array অথবা Object উভয় ক্ষেত্রের জন্য সেফ পার্সিং
         channels = Array.isArray(data) ? data : (data.channels || []);
 
         renderFeaturedChannels();
@@ -60,8 +58,8 @@ async function loadChannels() {
     } catch (err) {
         console.error(err);
         channelList.innerHTML = `
-            <div style="text-align:center;padding:30px;color:red;">
-                ❌ Unable to load channels.
+            <div style="text-align:center; padding:30px; color:#ef4444;">
+                ❌ channels.json ফাইল লোড করা সম্ভব হয়নি।
             </div>`;
     }
 }
@@ -101,8 +99,8 @@ function renderFeaturedChannels() {
         card.className = "featured-card";
         card.innerHTML = `
             <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png';">
-            <h4>${channel.name}</h4>
-            <p>${channel.category}</p>
+            <h4>${channel.name || 'Unknown'}</h4>
+            <p>${channel.category || 'General'}</p>
         `;
 
         card.onclick = () => playChannel(channel, true);
@@ -120,17 +118,17 @@ function renderChannels(list = channels) {
     const keyword = search ? search.value.toLowerCase().trim() : "";
 
     const filtered = list.filter(channel => {
-        const nameMatch = channel.name.toLowerCase().includes(keyword);
+        const nameMatch = (channel.name || "").toLowerCase().includes(keyword);
+        const categoryStr = (channel.category || "").toLowerCase();
 
-        // ফ্লেক্সিবল ক্যাটাগরি ম্যাচিং (যেমন 'Movie' এবং 'Movies' বা 'Entertainment & Sports')
         const catMatch = isSpecialView || currentCategory === "All" ||
-            channel.category.toLowerCase().includes(currentCategory.toLowerCase());
+            categoryStr.includes(currentCategory.toLowerCase());
 
         return nameMatch && catMatch;
     });
 
     if (filtered.length === 0) {
-        channelList.innerHTML = "<p style='text-align:center;padding:20px;'>No Channel Found</p>";
+        channelList.innerHTML = "<p style='text-align:center; padding:30px; color:var(--text-muted);'>কোনো চ্যানেল পাওয়া যায়নি</p>";
         return;
     }
 
@@ -142,8 +140,8 @@ function renderChannels(list = channels) {
         card.innerHTML = `
             <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png';">
             <div class="info">
-                <h3>${channel.name}</h3>
-                <p>${channel.category} ${channel.country ? '• ' + channel.country : ''}</p>
+                <h3>${channel.name || 'Unknown'}</h3>
+                <p>${channel.category || 'General'} ${channel.country ? '• ' + channel.country : ''}</p>
                 <span class="live-badge">🔴 LIVE</span>
             </div>
             <button class="fav-btn">
@@ -151,8 +149,9 @@ function renderChannels(list = channels) {
             </button>
         `;
 
+        // Safe check for clicks inside the favorite button
         card.onclick = (e) => {
-            if (e.target.classList.contains("fav-btn")) return;
+            if (e.target.closest(".fav-btn")) return;
             playChannel(channel, true);
         };
 
@@ -172,7 +171,7 @@ function renderChannels(list = channels) {
 // 4. Player & Local Storage
 // ------------------------------------------
 function playChannel(channel, autoPlay = true) {
-    if (!video) return;
+    if (!video || !channel.url) return;
 
     if (hls) {
         hls.destroy();
@@ -189,7 +188,7 @@ function playChannel(channel, autoPlay = true) {
             }
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // iOS / Safari
+        // iOS / Safari Native M3U8
         video.src = channel.url;
         if (autoPlay) {
             video.play().catch(e => console.warn("Autoplay prevented:", e));
@@ -214,6 +213,7 @@ function playChannel(channel, autoPlay = true) {
 }
 
 function toggleFavorite(channelName) {
+    if (!channelName) return;
     const key = "fav_" + channelName;
     if (localStorage.getItem(key)) {
         localStorage.removeItem(key);
@@ -241,36 +241,51 @@ function setupEventListeners() {
         refreshBtn.onclick = () => loadChannels();
     }
 
-    // Settings Toggle
+    // Settings Sheet Toggle
     const settingsBtn = document.getElementById("settingsBtn");
     const settingsSheet = document.getElementById("settingsSheet");
+    const settingsOverlay = document.getElementById("settingsOverlay");
     const closeSettings = document.getElementById("closeSettings");
 
-    if (settingsBtn && settingsSheet) {
-        settingsBtn.onclick = () => settingsSheet.classList.add("show");
-    }
+    const openSheet = () => {
+        if (settingsSheet) settingsSheet.classList.add("show");
+        if (settingsOverlay) settingsOverlay.classList.add("show");
+    };
 
-    if (settingsSheet && closeSettings) {
-        closeSettings.onclick = () => settingsSheet.classList.remove("show");
-    }
+    const closeSheet = () => {
+        if (settingsSheet) settingsSheet.classList.remove("show");
+        if (settingsOverlay) settingsOverlay.classList.remove("show");
+    };
 
+    if (settingsBtn) settingsBtn.onclick = openSheet;
+    if (closeSettings) closeSettings.onclick = closeSheet;
+    if (settingsOverlay) settingsOverlay.onclick = closeSheet;
+
+    // Category Buttons
     document.querySelectorAll(".cat").forEach(btn => {
         btn.onclick = () => {
             setActiveCategory(btn.dataset.category || "All", btn);
         };
     });
 
+    // Bottom Navigation Handlers
     const homeNav = document.getElementById("homeNav");
     const sportsNav = document.getElementById("sportsNav");
     const favoriteNav = document.getElementById("favoriteNav");
     const historyNav = document.getElementById("historyNav");
     const searchNav = document.getElementById("searchNav");
 
-    if (homeNav) homeNav.onclick = () => setActiveCategory("All");
-    if (sportsNav) sportsNav.onclick = () => setActiveCategory("Sports");
+    const setNavActive = (activeNav) => {
+        document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+        if (activeNav) activeNav.classList.add("active");
+    };
+
+    if (homeNav) homeNav.onclick = () => { setNavActive(homeNav); setActiveCategory("All"); };
+    if (sportsNav) sportsNav.onclick = () => { setNavActive(sportsNav); setActiveCategory("Sports"); };
 
     if (favoriteNav) {
         favoriteNav.onclick = () => {
+            setNavActive(favoriteNav);
             isSpecialView = true;
             if (featuredSection) featuredSection.style.display = "none";
             const favList = channels.filter(c => localStorage.getItem("fav_" + c.name));
@@ -280,6 +295,7 @@ function setupEventListeners() {
 
     if (historyNav) {
         historyNav.onclick = () => {
+            setNavActive(historyNav);
             isSpecialView = true;
             if (featuredSection) featuredSection.style.display = "none";
             const history = JSON.parse(localStorage.getItem("history") || "[]");
@@ -288,9 +304,13 @@ function setupEventListeners() {
     }
 
     if (searchNav && search) {
-        searchNav.onclick = () => search.focus();
+        searchNav.onclick = () => {
+            setNavActive(searchNav);
+            search.focus();
+        };
     }
 
+    // Fullscreen Button
     const fullscreenBtn = document.getElementById("fullscreenBtn");
     if (fullscreenBtn && video) {
         fullscreenBtn.onclick = () => {
@@ -298,16 +318,19 @@ function setupEventListeners() {
                 video.requestFullscreen();
             } else if (video.webkitRequestFullscreen) {
                 video.webkitRequestFullscreen();
+            } else if (video.msRequestFullscreen) {
+                video.msRequestFullscreen();
             }
         };
     }
 
+    // Settings Menu Actions
     const clearHistoryBtn = document.getElementById("clearHistoryBtn");
     if (clearHistoryBtn) {
         clearHistoryBtn.onclick = () => {
             localStorage.removeItem("history");
-            alert("History Cleared!");
-            if (settingsSheet) settingsSheet.classList.remove("show");
+            alert("হিস্ট্রি ক্লিয়ার করা হয়েছে!");
+            closeSheet();
             renderChannels();
         };
     }
@@ -318,8 +341,8 @@ function setupEventListeners() {
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith("fav_")) localStorage.removeItem(key);
             });
-            alert("Favorites Cleared!");
-            if (settingsSheet) settingsSheet.classList.remove("show");
+            alert("ফেভারিট ক্লিয়ার করা হয়েছে!");
+            closeSheet();
             renderChannels();
         };
     }
@@ -327,7 +350,7 @@ function setupEventListeners() {
     const aboutBtn = document.getElementById("aboutBtn");
     if (aboutBtn) {
         aboutBtn.onclick = () => {
-            alert("Khorkuto TV v7.0\nDeveloped by Khorkuto Media Network");
+            alert("Khorkuto TV v10.0\nDeveloped by Khorkuto Media Network");
         };
     }
 
@@ -343,7 +366,7 @@ function setupEventListeners() {
                 try { await navigator.share(data); } catch (e) {}
             } else {
                 navigator.clipboard.writeText(window.location.href);
-                alert("Link copied to clipboard.");
+                alert("লিঙ্ক কপি করা হয়েছে!");
             }
         };
     }
@@ -354,13 +377,16 @@ function setupEventListeners() {
             if (channels.length > 0) playChannel(channels[0], true);
         };
     }
+}
 
-    window.addEventListener("load", () => {
-        const splash = document.getElementById("splash");
-        if (splash) {
-            setTimeout(() => { splash.style.display = "none"; }, 1200);
-        }
-    });
+// Safe Splash Screen Hide
+function hideSplash() {
+    const splash = document.getElementById("splash");
+    if (!splash) return;
+    setTimeout(() => {
+        splash.style.opacity = "0";
+        setTimeout(() => { splash.style.display = "none"; }, 400);
+    }, 1000);
 }
 
 function setActiveCategory(category, targetBtn = null) {
