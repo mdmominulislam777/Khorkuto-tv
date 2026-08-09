@@ -1,183 +1,232 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <title>Khorkuto TV</title>
-
-    <meta name="theme-color" content="#E50914">
-
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css">
-
-    <!-- External Libraries -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khorkuto TV - Live Streaming</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for Streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            background-color: #0b0f19; 
+            color: #f8fafc; 
+            font-family: system-ui, -apple-system, sans-serif; 
+        }
+        /* Loader Animation */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #1e293b;
+            border-bottom-color: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
+<body class="min-h-screen flex flex-col relative">
 
-<body>
-
-    <!-- Splash Screen -->
-    <div id="splash">
-        <img src="logo.png" class="splash-logo" alt="Live TV Logo">
-        <h1 style="margin-top: 15px;">Khorkuto TV</h1>
-        <div class="loader"></div>
-    </div>
-
-    <!-- Settings Bottom Sheet -->
-    <div id="settingsSheet" class="settings-sheet">
-        <div class="sheet-content">
-            <div class="sheet-header">
-                <h2>⚙️ Settings</h2>
-                <button id="closeSettings" type="button" aria-label="Close Settings">✖</button>
-            </div>
-
-            <div class="setting-item" id="playlistBtn">
-                📂 Load M3U Playlist
-            </div>
-
-            <div class="setting-item" id="shareApp">
-                📤 Share App
-            </div>
-
-            <div class="setting-item" id="clearHistoryBtn">
-                🕒 Clear History
-            </div>
-
-            <div class="setting-item" id="clearFavBtn">
-                ❤️ Clear Favorites
-            </div>
-
-            <div class="setting-item" id="aboutBtn">
-                ℹ️ About App
-            </div>
+    <!-- Splash / Loading Screen -->
+    <div id="splashScreen" class="fixed inset-0 z-50 bg-[#0b0f19] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="text-center p-4">
+            <img src="logo.png" alt="Khorkuto TV" class="w-28 h-28 object-contain mx-auto mb-4 rounded-2xl shadow-lg border border-slate-800" onerror="this.src='https://via.placeholder.com/120?text=Khorkuto+TV'">
+            <h1 class="text-2xl font-bold text-white mb-6">Khorkuto TV</h1>
+            <div class="spinner"></div>
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="top-header">
-        <div class="header-left">
-            <img src="logo.png" class="logo" alt="App Logo" onerror="this.src='https://via.placeholder.com/55?text=TV'">
-            <div>
-                <h2>Khorkuto</h2>
-                <p>TV</p>
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain rounded" onerror="this.src='https://via.placeholder.com/100x40?text=TV'">
+                <span class="text-lg font-bold bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">Khorkuto TV</span>
             </div>
-        </div>
-
-        <div class="header-right">
-            <button id="searchBtn" type="button" aria-label="Search">🔍</button>
-            <button id="refreshBtn" type="button" aria-label="Refresh Channels">🔄</button>
-            <button id="settingsBtn" type="button" aria-label="Settings">⚙️</button>
+            
+            <!-- Search Bar -->
+            <div class="relative flex-1 max-w-xs">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="searchInput" placeholder="খুঁজুন..." class="w-full pl-8 pr-3 py-1.5 bg-slate-800 border border-slate-700 rounded-full text-xs text-slate-200 focus:outline-none focus:border-red-500 transition">
+            </div>
         </div>
     </header>
 
-    <!-- Search Area -->
-    <div class="search-area">
-        <input id="search" type="text" placeholder="Search Channel...">
-    </div>
-
-    <!-- Category Slider -->
-    <div class="category-slider">
-        <div class="cat active" data-category="All">
-            📺 <span>All</span>
-        </div>
-        <div class="cat" data-category="Sports">
-            ⚽ <span>Sports</span>
-        </div>
-        <div class="cat" data-category="News">
-            📰 <span>News</span>
-        </div>
-        <div class="cat" data-category="Islamic">
-            🕌 <span>Islamic</span>
-        </div>
-        <div class="cat" data-category="Movies">
-            🎬 <span>Movies</span>
-        </div>
-        <div class="cat" data-category="Music">
-            🎵 <span>Music</span>
-        </div>
-        <div class="cat" data-category="Kids">
-            👶 <span>Kids</span>
-        </div>
-    </div>
-
-    <!-- Featured Banner Slider -->
-    <section class="featured-slider">
-        <div class="banner">
-            <img src="banner1.jpg" alt="Featured Sports Banner" onerror="this.src='https://via.placeholder.com/600x220?text=Khorkuto+TV'">
-            <div class="banner-info">
-                <h2>⚽ Watch Live Sports</h2>
-                <p>HD Live Streaming Anytime</p>
-                <button class="watch-btn" type="button">
-                    ▶ Watch Now
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 space-y-6">
+        
+        <!-- Video Player Section (Hidden by Default) -->
+        <section id="playerSection" class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl hidden">
+            <div class="aspect-video w-full bg-black relative">
+                <video id="videoPlayer" class="w-full h-full" controls autoplay></video>
+            </div>
+            <div class="p-3 flex justify-between items-center bg-slate-900">
+                <div>
+                    <h2 id="currentChannelName" class="text-base font-bold text-white">চ্যানেলের নাম</h2>
+                    <p id="currentCategory" class="text-xs text-slate-400">ক্যাটাগরি</p>
+                </div>
+                <button onclick="closePlayer()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition">
+                    <i class="fa-solid fa-xmark mr-1"></i> বন্ধ করুন
                 </button>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Video Player -->
-    <section class="player-box">
-        <video id="video" controls playsinline poster="banner1.jpg">
-            Your browser does not support playing video.
-        </video>
-
-        <div class="player-controls">
-            <button id="fullscreenBtn" type="button">
-                ⛶ Full Screen
-            </button>
+        <!-- Categories -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="categoryContainer">
+            <button class="category-btn active px-3.5 py-1.5 rounded-full text-xs font-medium bg-red-600 text-white whitespace-nowrap" onclick="filterCategory('All')">সব চ্যানেল</button>
+            <button class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap" onclick="filterCategory('News')">সংবাদ</button>
+            <button class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap" onclick="filterCategory('Sports')">খেলাধুলা</button>
+            <button class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap" onclick="filterCategory('Entertainment')">বিনোদন</button>
         </div>
-    </section>
 
-    <!-- Featured Channels -->
-    <section id="featuredSection">
-        <h2 class="section-title">
-            ⭐ Featured Channels
-        </h2>
-        <div id="featuredList" class="featured-list">
-            <!-- Dynamic items rendered via JS -->
+        <!-- Channels Grid -->
+        <div id="channelsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <!-- Channels render here -->
         </div>
-    </section>
 
-    <!-- Main Channel List -->
-    <main>
-        <div id="channelList" class="channel-list">
-            <!-- Channels will be populated here -->
-        </div>
     </main>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav">
-        <div class="nav-item active" id="homeNav">
-            <span>🏠</span>
-            <small>Home</small>
-        </div>
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+        <p>&copy; 2026 Khorkuto TV. All rights reserved.</p>
+    </footer>
 
-        <div class="nav-item" id="sportsNav">
-            <span>⚽</span>
-            <small>Sports</small>
-        </div>
+    <!-- Logic Script -->
+    <script>
+        let allChannels = [];
+        let currentCategory = 'All';
+        let hls = null;
 
-        <div class="nav-item" id="favoriteNav">
-            <span>❤️</span>
-            <small>Favorite</small>
-        </div>
+        // Force Hide Splash Screen Function
+        function hideSplash() {
+            const splash = document.getElementById('splashScreen');
+            if (splash && splash.style.display !== 'none') {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                }, 500);
+            }
+        }
 
-        <div class="nav-item" id="historyNav">
-            <span>🕒</span>
-            <small>History</small>
-        </div>
+        // Safety fallback: 3 সেকেন্ড পর জোরপূর্বক স্প্ল্যাশ স্ক্রিন বন্ধ হবে
+        setTimeout(hideSplash, 3000);
 
-        <div class="nav-item" id="searchNav">
-            <span>🔍</span>
-            <small>Search</small>
-        </div>
-    </nav>
+        // Fetch Channels
+        async function loadChannels() {
+            try {
+                const response = await fetch('./channels.json');
+                if (!response.ok) throw new Error('File load failed');
+                allChannels = await response.json();
+                renderChannels(allChannels);
+            } catch (error) {
+                console.error("Error loading channels:", error);
+                document.getElementById('channelsGrid').innerHTML = `
+                    <div class="col-span-full text-center py-10 text-slate-400">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-500 mb-2"></i>
+                        <p class="text-sm">channels.json ফাইলটি পাওয়া যায়নি বা ফরম্যাটে ভুল আছে!</p>
+                    </div>`;
+            } finally {
+                hideSplash(); // সফল বা ব্যর্থ যাই হোক, স্প্ল্যাশ সরবে
+            }
+        }
 
-    <!-- Main JavaScript File -->
-    <script src="script.js"></script>
+        // Render Channels
+        function renderChannels(channels) {
+            const grid = document.getElementById('channelsGrid');
+            grid.innerHTML = '';
 
+            if (channels.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-sm">কোনো চ্যানেল পাওয়া যায়নি</div>`;
+                return;
+            }
+
+            channels.forEach(channel => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col items-center text-center cursor-pointer hover:border-red-500/50 transition group';
+                card.onclick = () => playChannel(channel);
+
+                card.innerHTML = `
+                    <div class="w-full h-20 bg-slate-950 rounded-lg p-2 mb-2 flex items-center justify-center overflow-hidden">
+                        <img src="${channel.logo}" alt="${channel.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition" onerror="this.src='https://via.placeholder.com/80?text=TV'">
+                    </div>
+                    <h3 class="font-semibold text-xs text-slate-200 line-clamp-1">${channel.name}</h3>
+                    <span class="text-[10px] text-slate-500 mt-0.5">${channel.category}</span>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Play Channel
+        function playChannel(channel) {
+            const playerSection = document.getElementById('playerSection');
+            const video = document.getElementById('videoPlayer');
+            
+            document.getElementById('currentChannelName').innerText = channel.name;
+            document.getElementById('currentCategory').innerText = channel.category;
+            
+            playerSection.classList.remove('hidden');
+            playerSection.scrollIntoView({ behavior: 'smooth' });
+
+            if (Hls.isSupported() && channel.streamUrl.endsWith('.m3u8')) {
+                if (hls) hls.destroy();
+                hls = new Hls();
+                hls.loadSource(channel.streamUrl);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else {
+                video.src = channel.streamUrl;
+                video.play();
+            }
+        }
+
+        // Close Player
+        function closePlayer() {
+            const playerSection = document.getElementById('playerSection');
+            const video = document.getElementById('videoPlayer');
+            video.pause();
+            if (hls) hls.destroy();
+            playerSection.classList.add('hidden');
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allChannels.filter(c => 
+                (currentCategory === 'All' || c.category === currentCategory) &&
+                c.name.toLowerCase().includes(query)
+            );
+            renderChannels(filtered);
+        });
+
+        // Category Filter
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('সব'))) {
+                    btn.className = 'category-btn active px-3.5 py-1.5 rounded-full text-xs font-medium bg-red-600 text-white whitespace-nowrap';
+                } else {
+                    btn.className = 'category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap';
+                }
+            });
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allChannels.filter(c => 
+                (cat === 'All' || c.category === cat) &&
+                c.name.toLowerCase().includes(query)
+            );
+            renderChannels(filtered);
+        }
+
+        // Init
+        window.onload = loadChannels;
+    </script>
 </body>
-
 </html>
