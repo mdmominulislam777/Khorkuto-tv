@@ -26,21 +26,24 @@
         <div class="loader"></div>
     </div>
 
-    <!-- Top Header -->
+    <    <!-- Top Header -->
     <header class="top-header">
         <div class="header-left">
             <img src="logo.png" alt="Logo" class="logo" onerror="this.src='https://via.placeholder.com/55?text=TV'">
             <div>
                 <h2>Khorkuto TV</h2>
-                <p>Live TV Network</p>
+                <p id="appSubTitle">Live TV Network</p>
             </div>
         </div>
         <div class="header-right">
+            <!-- ভাষা পরিবর্তনের বাটন -->
+            <button id="langBtn" title="Change Language" style="font-weight: bold; font-size: 11px; width: auto; padding: 0 8px;">EN</button>
             <button id="refreshBtn" title="রিফ্রেশ"><i class="fa-solid fa-rotate-right"></i></button>
             <button id="searchBtn" title="সার্চ"><i class="fa-solid fa-magnifying-glass"></i></button>
             <button id="settingsBtn" title="সেটিংস"><i class="fa-solid fa-gear"></i></button>
         </div>
     </header>
+
 
     <!-- Floating / Pop-up Video Player Modal -->
     <div id="playerModal" class="player-modal">
