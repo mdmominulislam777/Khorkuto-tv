@@ -1,5 +1,5 @@
 // আপনার গিটহাব Raw লিঙ্কটি এখানে বসাবেন
-const GITHUB_JSON_URL = "https://raw.githubusercontent.com/your-username/your-repo/main/data.json";
+const GITHUB_JSON_URL = "https://raw.githubusercontent.com/mdmominulislam777/Khorkuto-tv/refs/heads/main/data.json";
 
 let appData = [];
 
