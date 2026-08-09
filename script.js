@@ -167,49 +167,77 @@ function renderChannels(list = channels) {
     });
 }
 
-// ------------------------------------------
-// 4. Player & Local Storage
-// ------------------------------------------
-function playChannel(channel, autoPlay = true) {
-    if (!video || !channel.url) return;
+// =========================
+// KHORKUTO TV - FULL SCREEN PLAYER
+// =========================
 
+function playChannel(channel) {
+
+    if (!channel || !channel.url) {
+        alert("এই চ্যানেলের Stream পাওয়া যায়নি।");
+        return;
+    }
+
+    // Open Player
+    tvPlayer.classList.add("show");
+
+    // Channel Name
+    playerTitle.textContent =
+        channel.name || "Khorkuto TV";
+
+    // Stop Previous Player
     if (hls) {
         hls.destroy();
+        hls = null;
     }
 
-    if (typeof Hls !== "undefined" && Hls.isSupported()) {
+    // Play HLS
+    if (Hls.isSupported()) {
+
         hls = new Hls();
+
         hls.loadSource(channel.url);
+
         hls.attachMedia(video);
 
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-            if (autoPlay) {
-                video.play().catch(e => console.warn("Autoplay prevented:", e));
+        hls.on(
+            Hls.Events.MANIFEST_PARSED,
+            function () {
+                video.play().catch(() => {});
             }
-        });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // iOS / Safari Native M3U8
-        video.src = channel.url;
-        if (autoPlay) {
-            video.play().catch(e => console.warn("Autoplay prevented:", e));
-        }
+        );
+
     } else {
+
         video.src = channel.url;
+
+        video.play().catch(() => {});
+
     }
 
-    if (autoPlay) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    // Save Last Channel
+    localStorage.setItem(
+        "lastChannel",
+        JSON.stringify(channel)
+    );
 
-    localStorage.setItem("lastChannel", JSON.stringify(channel));
+    // Save History
+    let history = JSON.parse(
+        localStorage.getItem("history") || "[]"
+    );
 
-    if (autoPlay) {
-        let history = JSON.parse(localStorage.getItem("history") || "[]");
-        history = history.filter(item => item.url !== channel.url);
-        history.unshift(channel);
-        history = history.slice(0, 20);
-        localStorage.setItem("history", JSON.stringify(history));
-    }
+    history = history.filter(
+        item => item.url !== channel.url
+    );
+
+    history.unshift(channel);
+
+    history = history.slice(0, 20);
+
+    localStorage.setItem(
+        "history",
+        JSON.stringify(history)
+    );
 }
 
 function toggleFavorite(channelName) {
