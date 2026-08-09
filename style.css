@@ -1,195 +1,350 @@
-// ==========================================
-// Cricfy Engine - Complete UI Logic
-// ==========================================
-
-let allSportsData = [];
-let selectedSport = "all";   // 'all', 'cricket', 'soccer', 'tennis', etc.
-let selectedStatus = "all";  // 'all', 'live', 'recent', 'upcoming'
-
-// স্পোর্টস আইকন ম্যাপিং
-const sportIcons = {
-    all: "🔥",
-    cricket: "🏏",
-    soccer: "⚽",
-    tennis: "🎾",
-    baseball: "⚾",
-    racing: "🏎️",
-    mma: "🥊"
-};
-
-async function initCricfyUI() {
-    await fetchAllSportsData();
-    renderCategoryIcons();
-    renderStatusPills();
-    renderMatchCards();
+/* ==========================================
+   Cricfy TV Exact UI & Color Styling
+   ========================================== */
+:root {
+    --bg-dark: #0e141d;
+    --card-bg: #16202c;
+    --border-color: #223143;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --cricfy-green: #00b87c;
+    --cricfy-red: #e50914;
+    --accent-pink: #e11d48;
 }
 
-// ১. ESPN থেকে সকল স্পোর্টস ফেচ করা
-async function fetchAllSportsData() {
-    const endpoints = {
-        cricket: "https://site.api.espn.com/apis/site/v2/sports/cricket/8880/scoreboard",
-        soccer: "https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard",
-        tennis: "https://site.api.espn.com/apis/site/v2/sports/tennis/all/scoreboard",
-        baseball: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard",
-        racing: "https://site.api.espn.com/apis/site/v2/sports/racing/f1/scoreboard",
-        mma: "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard"
-    };
-
-    allSportsData = [];
-
-    const requests = Object.entries(endpoints).map(async ([type, url]) => {
-        try {
-            const res = await fetch(url);
-            if (!res.ok) return [];
-            const data = await res.json();
-            return (data.events || []).map(e => ({ ...e, sportType: type }));
-        } catch { return []; }
-    });
-
-    const results = await Promise.all(requests);
-    allSportsData = results.flat();
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    user-select: none;
 }
 
-// ২. Cricfy Style Top Category Icons
-function renderCategoryIcons() {
-    const bar = document.getElementById("sportsCatBar");
-    if (!bar) return;
-
-    const counts = { all: allSportsData.length };
-    allSportsData.forEach(e => {
-        counts[e.sportType] = (counts[e.sportType] || 0) + 1;
-    });
-
-    let html = `<div class="cat-icon-btn ${selectedSport === 'all' ? 'active' : ''}" onclick="filterBySport('all')">
-                    ${sportIcons.all} <span class="cat-badge">${counts.all || 0}</span>
-                </div>`;
-
-    Object.keys(sportIcons).forEach(sport => {
-        if (sport === 'all') return;
-        const count = counts[sport] || 0;
-        html += `
-            <div class="cat-icon-btn ${selectedSport === sport ? 'active' : ''}" onclick="filterBySport('${sport}')">
-                ${sportIcons[sport]}
-                ${count > 0 ? `<span class="cat-badge">${count}</span>` : ''}
-            </div>`;
-    });
-
-    bar.innerHTML = html;
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    padding-bottom: 70px;
+    overflow-x: hidden;
 }
 
-// ৩. Status Pills (All, Live, Recent, Upcoming)
-function renderStatusPills() {
-    const bar = document.getElementById("statusPillsBar");
-    if (!bar) return;
-
-    const filteredBySport = selectedSport === "all" ? allSportsData : allSportsData.filter(e => e.sportType === selectedSport);
-
-    const liveCount = filteredBySport.filter(e => e.status?.type?.state === "in").length;
-    const recentCount = filteredBySport.filter(e => e.status?.type?.state === "post").length;
-    const upcomingCount = filteredBySport.filter(e => e.status?.type?.state === "pre").length;
-    const totalCount = filteredBySport.length;
-
-    bar.innerHTML = `
-        <button class="status-pill ${selectedStatus === 'all' ? 'active' : ''}" onclick="filterByStatus('all')">✔ All (${totalCount})</button>
-        <button class="status-pill ${selectedStatus === 'live' ? 'active' : ''}" onclick="filterByStatus('live')">🔴 Live (${liveCount})</button>
-        <button class="status-pill ${selectedStatus === 'recent' ? 'active' : ''}" onclick="filterByStatus('recent')">Recent (${recentCount})</button>
-        <button class="status-pill ${selectedStatus === 'upcoming' ? 'active' : ''}" onclick="filterByStatus('upcoming')">Upcoming (${upcomingCount})</button>
-    `;
+/* Notice Marquee Bar */
+.notice-marquee {
+    background: #0a1b18;
+    color: #00ffaa;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(0,255,170,0.2);
 }
 
-// ৪. Cricfy Style Match Cards Rendering
-function renderMatchCards() {
-    const container = document.getElementById("cricfyMatchesList");
-    if (!container) return;
-
-    let matches = allSportsData;
-
-    // Filter by Sport
-    if (selectedSport !== "all") {
-        matches = matches.filter(e => e.sportType === selectedSport);
-    }
-
-    // Filter by Status State
-    if (selectedStatus === "live") matches = matches.filter(e => e.status?.type?.state === "in");
-    else if (selectedStatus === "recent") matches = matches.filter(e => e.status?.type?.state === "post");
-    else if (selectedStatus === "upcoming") matches = matches.filter(e => e.status?.type?.state === "pre");
-
-    if (matches.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--cricfy-text-sub);">😃 কোনো ম্যাচ পাওয়া যায়নি</div>`;
-        return;
-    }
-
-    let html = "";
-    matches.forEach(evt => {
-        const state = evt.status?.type?.state;
-        const statusDetail = evt.status?.type?.shortDetail || evt.status?.type?.detail || "";
-        const competitors = evt.competitions?.[0]?.competitors || [];
-
-        const team1 = competitors[0] || {};
-        const team2 = competitors[1] || {};
-
-        const team1Name = team1.team?.shortDisplayName || team1.team?.displayName || "TBA";
-        const team2Name = team2.team?.shortDisplayName || team2.team?.displayName || "TBA";
-        const team1Logo = team1.team?.logo || "logo.png";
-        const team2Logo = team2.team?.logo || "logo.png";
-
-        const leagueName = evt.season?.slug || evt.league?.name || evt.sportType;
-        const icon = sportIcons[evt.sportType] || "🏟️";
-
-        // Status Badge Logic
-        let statusHTML = "";
-        if (state === "in") {
-            statusHTML = `<span class="live-pill">🔴 LIVE</span><div class="match-time">${statusDetail}</div>`;
-        } else if (state === "pre") {
-            statusHTML = `<div class="match-time">Starts in</div><div style="font-size:10px; color:#aaa;">${statusDetail}</div>`;
-        } else {
-            statusHTML = `<div style="font-size:11px; color:#888; font-weight:bold;">FINISHED</div>`;
-        }
-
-        html += `
-            <div class="cricfy-card" onclick="onCardClick()">
-                <div class="card-header">
-                    <span>${icon} ${evt.sportType.toUpperCase()} || ${leagueName}</span>
-                </div>
-                <div class="card-body">
-                    <div class="team-box">
-                        <img src="${team1Logo}" class="team-flag" onerror="this.src='logo.png'">
-                        <span class="team-name">${team1Name}</span>
-                    </div>
-
-                    <div class="match-status-box">
-                        ${statusHTML}
-                    </div>
-
-                    <div class="team-box right">
-                        <span class="team-name">${team2Name}</span>
-                        <img src="${team2Logo}" class="team-flag" onerror="this.src='logo.png'">
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
+/* App Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #111823;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-// Filter Event Handlers
-function filterBySport(sport) {
-    selectedSport = sport;
-    renderCategoryIcons();
-    renderStatusPills();
-    renderMatchCards();
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
 }
 
-function filterByStatus(status) {
-    selectedStatus = status;
-    renderStatusPills();
-    renderMatchCards();
+.menu-icon {
+    font-size: 18px;
+    color: #fff;
 }
 
-function onCardClick() {
-    alert("খেলার চ্যানেল প্লে করার জন্য স্পোর্টস চ্যানেল নির্বাচন করুন।");
+.app-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
 }
 
-// পেজ লোড হলে রান হবে
-document.addEventListener("DOMContentLoaded", initCricfyUI);
+.app-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.header-right {
+    display: flex;
+    gap: 14px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Side Drawer Menu */
+.drawer-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    z-index: 200;
+}
+
+.side-drawer {
+    position: fixed;
+    top: 0; left: -280px;
+    width: 270px; height: 100%;
+    background: #121924;
+    z-index: 201;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-color);
+}
+
+.side-drawer.open { left: 0; }
+.drawer-overlay.open { display: block; }
+
+.drawer-header {
+    padding: 20px 16px;
+    background: #0d121b;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.drawer-logo { width: 40px; height: 40px; border-radius: 50%; }
+
+.drawer-menu { padding: 10px 0; }
+.drawer-menu a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.drawer-menu a:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+.menu-divider {
+    padding: 12px 20px 6px 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Tab Views */
+.tab-view { display: none; padding: 10px; }
+.tab-view.active { display: block; }
+
+/* 1. Sports Category Icons Bar (With Badge Counters) */
+.sports-cat-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 6px 2px 14px 2px;
+    scrollbar-width: none;
+}
+.sports-cat-scroll::-webkit-scrollbar { display: none; }
+
+.cat-circle-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.cat-circle-btn.active {
+    border-color: var(--cricfy-green);
+    box-shadow: 0 0 8px rgba(0, 184, 124, 0.4);
+}
+
+.cat-badge-counter {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--cricfy-red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 10px;
+    border: 1px solid var(--bg-dark);
+}
+
+/* 2. Status Filter Pills */
+.status-pills-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scrollbar-width: none;
+}
+.status-pills-scroll::-webkit-scrollbar { display: none; }
+
+.status-pill-btn {
+    background: var(--card-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-pill-btn.active {
+    background: var(--cricfy-green);
+    color: #ffffff;
+    border-color: var(--cricfy-green);
+}
+
+/* 3. Cricfy Match Card Design */
+.cricfy-match-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.card-top-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #f43f5e;
+    text-transform: uppercase;
+    border-bottom: 1px dashed rgba(255,255,255,0.08);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+}
+
+.card-teams-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.team-info.right {
+    justify-content: flex-end;
+}
+
+.team-flag-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #000;
+    border: 1px solid var(--border-color);
+}
+
+.team-code-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Middle Status */
+.match-status-center {
+    text-align: center;
+    padding: 0 8px;
+}
+
+.live-badge-text {
+    color: var(--cricfy-red);
+    font-size: 10px;
+    font-weight: 800;
+    display: block;
+    animation: blink 1.2s infinite;
+}
+
+.timer-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-top: 2px;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Empty Recent State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+.empty-state i {
+    font-size: 60px;
+    margin-bottom: 10px;
+    color: #64748b;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    background: #111823;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    z-index: 100;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+}
+
+.nav-item i { font-size: 16px; }
+
+.nav-item.active {
+    color: var(--cricfy-green);
+}
