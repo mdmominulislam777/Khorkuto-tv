@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Khorkuto TV - Live Streaming</title>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- HLS.js Library for M3U8 Streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Splash / Loading Screen -->
+    <div id="splash">
+        <img src="logo.png" alt="Khorkuto TV" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=TV'">
+        <h2 style="margin-top: 15px; font-size: 20px; font-weight: bold;">Khorkuto TV</h2>
+        <div class="loader"></div>
+    </div>
+
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-left">
+            <img src="logo.png" alt="Logo" class="logo" onerror="this.src='https://via.placeholder.com/55?text=TV'">
+            <div>
+                <h2>Khorkuto TV</h2>
+                <p>Live TV Network</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="refreshBtn" title="রিফ্রেশ"><i class="fa-solid fa-rotate-right"></i></button>
+            <button id="searchBtn" title="সার্চ"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button id="settingsBtn" title="সেটিংস"><i class="fa-solid fa-gear"></i></button>
+        </div>
+    </header>
+
+    <!-- Search Input Area -->
+    <div class="search-area">
+        <input type="text" id="search" placeholder="চ্যানেল নাম দিয়ে খুঁজুন...">
+    </div>
+
+    <!-- Category Slider -->
+    <div class="category-slider">
+        <div class="cat active" data-category="All">
+            <i class="fa-solid fa-border-all"></i>
+            <span>সব চ্যানেল</span>
+        </div>
+        <div class="cat" data-category="News">
+            <i class="fa-solid fa-newspaper"></i>
+            <span>সংবাদ</span>
+        </div>
+        <div class="cat" data-category="Sports">
+            <i class="fa-solid fa-trophy"></i>
+            <span>খেলাধুলা</span>
+        </div>
+        <div class="cat" data-category="Entertainment">
+            <i class="fa-solid fa-film"></i>
+            <span>বিনোদন</span>
+        </div>
+        <div class="cat" data-category="Music">
+            <i class="fa-solid fa-music"></i>
+            <span>গান</span>
+        </div>
+    </div>
+
+    <!-- Banner / Featured Slider -->
+    <div class="featured-slider">
+        <div class="banner">
+            <img src="banner1.jpg" alt="Banner" onerror="this.src='https://via.placeholder.com/600x220?text=Khorkuto+TV'">
+            <div class="banner-info">
+                <h2>Khorkuto TV</h2>
+                <p>সব পছন্দের টিভি চ্যানেল এক জায়গায়</p>
+                <button class="watch-btn"><i class="fa-solid fa-play"></i> এখন দেখুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Section -->
+    <div class="player-box">
+        <video id="video" controls playsinline></video>
+        <div class="player-controls">
+            <button id="fullscreenBtn"><i class="fa-solid fa-expand"></i> ফুলস্ক্রিন করুন</button>
+        </div>
+    </div>
+
+    <!-- Featured Section (Auto hides if no featured channels) -->
+    <div id="featuredSection">
+        <div class="section-title">⭐ জনপ্রিয় চ্যানেলসমূহ</div>
+        <div id="featuredList" class="featured-list">
+            <!-- Dynamic Featured Channels -->
+        </div>
+    </div>
+
+    <!-- Main Channel List -->
+    <div class="section-title">📺 সমস্ত চ্যানেল</div>
+    <div id="channelList" class="channel-list">
+        <!-- Dynamic Main Channels -->
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="homeNav">
+            <i class="fa-solid fa-house"></i>
+            <small>হোম</small>
+        </div>
+        <div class="nav-item" id="sportsNav">
+            <i class="fa-solid fa-futbol"></i>
+            <small>স্পোর্টস</small>
+        </div>
+        <div class="nav-item" id="favoriteNav">
+            <i class="fa-solid fa-heart"></i>
+            <small>ফেভারিট</small>
+        </div>
+        <div class="nav-item" id="historyNav">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <small>হিস্ট্রি</small>
+        </div>
+        <div class="nav-item" id="searchNav">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <small>সার্চ</small>
+        </div>
+    </nav>
+
+    <!-- Settings Sheet Overlay Backdrop -->
+    <div id="settingsOverlay" class="settings-overlay"></div>
+
+    <!-- Settings Bottom Sheet -->
+    <div id="settingsSheet" class="settings-sheet">
+        <div class="sheet-content">
+            <div class="sheet-header">
+                <h3>সেটিংস</h3>
+                <button id="closeSettings"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="setting-item" id="clearFavBtn">
+                <i class="fa-solid fa-heart-crack"></i> ফেভারিট ক্লিয়ার করুন
+            </div>
+            <div class="setting-item" id="clearHistoryBtn">
+                <i class="fa-solid fa-trash"></i> হিস্ট্রি ক্লিয়ার করুন
+            </div>
+            <div class="setting-item" id="shareApp">
+                <i class="fa-solid fa-share-nodes"></i> অ্যাপ শেয়ার করুন
+            </div>
+            <div class="setting-item" id="aboutBtn">
+                <i class="fa-solid fa-circle-info"></i> আমাদের সম্পর্কে (About)
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic Script -->
+    <script src="script.js"></script>
+</body>
+</html>
