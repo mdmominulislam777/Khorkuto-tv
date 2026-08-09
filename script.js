@@ -1,15 +1,24 @@
 // ==========================================
-// Khorkuto TV - YuppTV Style Consolidated Script
+// Khorkuto TV - Final Consolidated Script (v10.2)
 // ==========================================
 
 let channels = [];
 let currentCategory = "All";
 let hls = null;
 
-let categorizedContainer, video, search, playerModal, playingChannelTitle;
+let categorizedContainer, video, search, playerModal, playingChannelTitle, sportsMatchesList;
+
+// নমুনা লাইভ ম্যাচ আপডেট ডাটা
+const sampleSportsMatches = [
+    { title: "🏏 T Sports Live", match: "বাংলাদেশ বনাম ভারত", status: "🔴 LIVE", channelName: "T Sports" },
+    { title: "⚽ Gazi TV Live", match: "রিয়াল মাদ্রিদ বনাম বার্সেলোনা", status: "🔴 LIVE", channelName: "Gazi TV" },
+    { title: "🏏 A Sports HD", match: "পাকিস্তান বনাম অস্ট্রেলিয়া", status: "⏰ আজকের ম্যাচ", channelName: "A Sports HD" },
+    { title: "⚽ Pk Sports Live", match: "ম্যানচেস্টার সিটি বনাম চেলসি", status: "🔴 LIVE", channelName: "Pk Sports HD" }
+];
 
 document.addEventListener("DOMContentLoaded", () => {
     categorizedContainer = document.getElementById("categorizedChannels");
+    sportsMatchesList = document.getElementById("sportsMatchesList");
     video = document.getElementById("video");
     search = document.getElementById("search");
     playerModal = document.getElementById("playerModal");
@@ -21,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function initApp() {
     setupEventListeners();
     loadChannels();
+    renderSportsMatches();
     setupTelegram();
     hideSplash();
 }
@@ -35,6 +45,38 @@ function hideSplash() {
     }
 }
 
+// ------------------------------------------
+// Live Sports Banner Updates
+// ------------------------------------------
+function renderSportsMatches() {
+    if (!sportsMatchesList) return;
+    sportsMatchesList.innerHTML = "";
+
+    sampleSportsMatches.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "match-card";
+        card.innerHTML = `
+            <span class="match-status">${item.status}</span>
+            <div class="match-title">${item.title}</div>
+            <div class="match-sub">${item.match}</div>
+        `;
+
+        card.onclick = () => {
+            const targetChannel = channels.find(c => c.name.toLowerCase().includes(item.channelName.toLowerCase()));
+            if (targetChannel) {
+                playChannel(targetChannel);
+            } else {
+                alert("চ্যানেলটি লোড হচ্ছে, অনুগ্রহ করে একটু পর চেষ্টা করুন!");
+            }
+        };
+
+        sportsMatchesList.appendChild(card);
+    });
+}
+
+// ------------------------------------------
+// Load Channels & Render Layout
+// ------------------------------------------
 async function loadChannels() {
     if (!categorizedContainer) return;
 
@@ -61,16 +103,12 @@ async function loadChannels() {
     }
 }
 
-// ------------------------------------------
-// YuppTV Style Category-Wise Rendering
-// ------------------------------------------
 function renderCategorizedChannels() {
     if (!categorizedContainer) return;
 
     categorizedContainer.innerHTML = "";
     const keyword = search ? search.value.toLowerCase().trim() : "";
 
-    // ফিল্টারকৃত চ্যানেল
     const filtered = channels.filter(c => 
         (c.name || "").toLowerCase().includes(keyword)
     );
@@ -80,7 +118,6 @@ function renderCategorizedChannels() {
         return;
     }
 
-    // ইউনিক ক্যাটাগরি তৈরি
     let categories = [];
     if (currentCategory === "All") {
         categories = [...new Set(filtered.map(c => c.category || "General"))];
@@ -92,65 +129,71 @@ function renderCategorizedChannels() {
         const catChannels = filtered.filter(c => (c.category || "General").toLowerCase().includes(catName.toLowerCase()));
 
         if (catChannels.length > 0) {
-            const rowBlock = document.createElement("div");
-            rowBlock.className = "category-row-block";
-
-            rowBlock.innerHTML = `
-                <div class="category-title">
-                    📍 ${catName}
-                    <span>${catChannels.length} টি চ্যানেল</span>
-                </div>
-                <div class="horizontal-channel-slider"></div>
-            `;
-
-            const slider = rowBlock.querySelector(".horizontal-channel-slider");
-
-            catChannels.forEach(channel => {
-                const isFav = localStorage.getItem("fav_" + channel.name) === "true";
-                const card = document.createElement("div");
-                card.className = "ott-card";
-
-                card.innerHTML = `
-                    <span class="fav-icon">${isFav ? "❤️" : "🤍"}</span>
-                    <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=TV';">
-                    <h4>${channel.name || 'Unknown'}</h4>
-                `;
-
-                // ফেভারিট আইকনে ক্লিক
-                const favBtn = card.querySelector(".fav-icon");
-                favBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    toggleFavorite(channel, favBtn);
-                };
-
-                // চ্যানেলে ক্লিক করলে সাথে সাথে চালু হবে
-                card.onclick = () => playChannel(channel);
-
-                slider.appendChild(card);
-            });
-
-            categorizedContainer.appendChild(rowBlock);
+            renderCustomList("📍 " + catName, catChannels);
         }
     });
 }
 
+function renderCustomList(title, list) {
+    if (!categorizedContainer) return;
+
+    if (list.length === 0) {
+        categorizedContainer.innerHTML = `<p style='text-align:center; padding:30px; color:var(--text-muted);'>কোনো চ্যানেল পাওয়া যায়নি</p>`;
+        return;
+    }
+
+    const rowBlock = document.createElement("div");
+    rowBlock.className = "category-row-block";
+
+    rowBlock.innerHTML = `
+        <div class="category-title">
+            ${title}
+            <span>${list.length} টি চ্যানেল</span>
+        </div>
+        <div class="horizontal-channel-slider"></div>
+    `;
+
+    const slider = rowBlock.querySelector(".horizontal-channel-slider");
+
+    list.forEach(channel => {
+        const isFav = localStorage.getItem("fav_" + channel.name) === "true";
+        const card = document.createElement("div");
+        card.className = "ott-card";
+
+        card.innerHTML = `
+            <span class="fav-icon">${isFav ? "❤️" : "🤍"}</span>
+            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=TV';">
+            <h4>${channel.name || 'Unknown'}</h4>
+        `;
+
+        const favBtn = card.querySelector(".fav-icon");
+        favBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleFavorite(channel, favBtn);
+        };
+
+        card.onclick = () => playChannel(channel);
+
+        slider.appendChild(card);
+    });
+
+    categorizedContainer.appendChild(rowBlock);
+}
+
 // ------------------------------------------
-// Play Channel in Pop-up Modal
+// Video Streaming Player
 // ------------------------------------------
 function playChannel(channel) {
     if (!video || !channel.url) return;
 
-    // শিরোনাম আপডেট
     if (playingChannelTitle) {
         playingChannelTitle.innerText = "🔴 " + (channel.name || "Live TV");
     }
 
-    // পপআপ প্লেয়ার প্রদর্শন
     if (playerModal) {
         playerModal.classList.add("active");
     }
 
-    localStorage.setItem("lastChannel", JSON.stringify(channel));
     addToHistory(channel);
 
     if (hls) {
@@ -200,6 +243,13 @@ function toggleFavorite(channel, btnElement) {
     }
 }
 
+function renderFavorites() {
+    if (!categorizedContainer) return;
+    categorizedContainer.innerHTML = "";
+    const favChannels = channels.filter(c => localStorage.getItem("fav_" + c.name) === "true");
+    renderCustomList("❤️ ফেভারিট চ্যানেলসমূহ", favChannels);
+}
+
 function addToHistory(channel) {
     let history = JSON.parse(localStorage.getItem("watch_history") || "[]");
     history = history.filter(item => item.name !== channel.name);
@@ -208,8 +258,15 @@ function addToHistory(channel) {
     localStorage.setItem("watch_history", JSON.stringify(history));
 }
 
+function renderHistory() {
+    if (!categorizedContainer) return;
+    categorizedContainer.innerHTML = "";
+    const historyChannels = JSON.parse(localStorage.getItem("watch_history") || "[]");
+    renderCustomList("🕒 সাম্প্রতিক দেখা চ্যানেল", historyChannels);
+}
+
 // ------------------------------------------
-// Event Listeners
+// Event Listeners & Controls
 // ------------------------------------------
 function setupEventListeners() {
     if (search) {
@@ -226,8 +283,41 @@ function setupEventListeners() {
         });
     });
 
-    document.getElementById("closePlayerBtn")?.addEventListener("click", closePlayer);
+    // Bottom Navigation Logic
+    const setActiveNav = (id) => {
+        document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+        document.getElementById(id)?.classList.add("active");
+    };
 
+    document.getElementById("homeNav")?.addEventListener("click", () => {
+        setActiveNav("homeNav");
+        currentCategory = "All";
+        renderCategorizedChannels();
+    });
+
+    document.getElementById("sportsNav")?.addEventListener("click", () => {
+        setActiveNav("sportsNav");
+        currentCategory = "Sports";
+        renderCategorizedChannels();
+    });
+
+    document.getElementById("favoriteNav")?.addEventListener("click", () => {
+        setActiveNav("favoriteNav");
+        renderFavorites();
+    });
+
+    document.getElementById("historyNav")?.addEventListener("click", () => {
+        setActiveNav("historyNav");
+        renderHistory();
+    });
+
+    document.getElementById("searchNav")?.addEventListener("click", () => {
+        setActiveNav("searchNav");
+        search?.scrollIntoView({ behavior: "smooth" });
+        search?.focus();
+    });
+
+    document.getElementById("closePlayerBtn")?.addEventListener("click", closePlayer);
     document.getElementById("refreshBtn")?.addEventListener("click", () => location.reload());
 
     document.getElementById("fullscreenBtn")?.addEventListener("click", () => {
@@ -248,6 +338,22 @@ function setupEventListeners() {
     document.getElementById("closeSettings")?.addEventListener("click", () => {
         settingsOverlay?.classList.remove("show");
         settingsSheet?.classList.remove("show");
+    });
+
+    document.getElementById("clearFavBtn")?.addEventListener("click", () => {
+        channels.forEach(c => localStorage.removeItem("fav_" + c.name));
+        alert("সব ফেভারিট চ্যানেল মুছে ফেলা হয়েছে!");
+        settingsOverlay?.classList.remove("show");
+        settingsSheet?.classList.remove("show");
+        renderCategorizedChannels();
+    });
+
+    document.getElementById("clearHistoryBtn")?.addEventListener("click", () => {
+        localStorage.removeItem("watch_history");
+        alert("হিস্ট্রি ক্লিয়ার করা হয়েছে!");
+        settingsOverlay?.classList.remove("show");
+        settingsSheet?.classList.remove("show");
+        renderCategorizedChannels();
     });
 }
 
