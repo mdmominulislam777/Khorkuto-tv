@@ -190,22 +190,46 @@ function applyLanguageUI() {
 }
 
 // ------------------------------------------
-// Sports API Fetch
+// Fixed & Smart Live Sports API Fetch
 // ------------------------------------------
 async function fetchLiveSportsMatches() {
     if (!sportsMatchesList) return;
     const t = i18n[currentLang];
 
+    sportsMatchesList.innerHTML = `
+        <div style="font-size:12px; color:var(--text-muted); padding:10px;">
+            ${t.fetchingMatches}
+        </div>`;
+
     try {
-        const response = await fetch("https://site.api.espn.com/apis/site/v2/sports/cricket/13876/scoreboard");
-        if (!response.ok) throw new Error("Sports API offline");
-        
-        const data = await response.json();
-        const events = data.events || [];
+        // ১. আন্তর্জাতিক ক্রিকেট এবং ফুটবল লাইভ স্কোরের ডাটা ফেচ করা
+        const [cricketRes, soccerRes] = await Promise.allSettled([
+            fetch("https://site.api.espn.com/apis/site/v2/sports/cricket/8880/scoreboard"),
+            fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard")
+        ]);
+
+        let allEvents = [];
+
+        if (cricketRes.status === "fulfilled" && cricketRes.value.ok) {
+            const cData = await cricketRes.value.json();
+            if (cData.events) allEvents.push(...cData.events);
+        }
+
+        if (soccerRes.status === "fulfilled" && soccerRes.value.ok) {
+            const sData = await soccerRes.value.json();
+            if (sData.events) allEvents.push(...sData.events);
+        }
+
+        // ২. ফিল্টার: শুধুমাত্র এখন LIVE চলছে এমন ম্যাচ (state === 'in')
+        const liveEvents = allEvents.filter(event => {
+            const state = event.status?.type?.state;
+            return state === "in"; // 'in' মানে বর্তমানে লাইভ ম্যাচ চলছে
+        });
 
         sportsMatchesList.innerHTML = "";
 
-        if (events.length === 0) {
+        // ৩. যদি এই মুহূর্তে কোনো লাইভ ম্যাচ না থাকে
+        if (liveEvents.length === 0) {
             sportsMatchesList.innerHTML = `
                 <div class="match-card">
                     <span class="match-status" style="background:#64748b;">ℹ️ INFO</span>
@@ -215,17 +239,22 @@ async function fetchLiveSportsMatches() {
             return;
         }
 
-        events.forEach(event => {
+        // ৪. শুধুমাত্র লাইভ ম্যাচগুলো লাইভ স্কোরসহ কার্ড আকারে দেখানো
+        liveEvents.forEach(event => {
             const matchTitle = event.name || "Live Match";
-            const statusDetail = event.status?.type?.detail || "🔴 LIVE";
-            const competitionName = event.season?.slug || "Cricket Match";
+            const competitionName = event.season?.slug || event.league?.name || "Live Sports";
+            
+            // লাইভ স্কোর আপডেট (যদি পাওয়া যায়)
+            const scoreText = event.competitions?.[0]?.competitors
+                ?.map(c => `${c.team?.shortDisplayName || c.team?.displayName}: ${c.score || '0'}`)
+                .join(" vs ") || "";
 
             const card = document.createElement("div");
             card.className = "match-card";
             card.innerHTML = `
-                <span class="match-status">${statusDetail.includes("Final") ? "🏁 FINISHED" : "🔴 LIVE"}</span>
+                <span class="match-status">🔴 LIVE</span>
                 <div class="match-title">${matchTitle}</div>
-                <div class="match-sub">${competitionName}</div>
+                <div class="match-sub">${scoreText ? scoreText : competitionName}</div>
             `;
 
             card.onclick = () => {
@@ -245,6 +274,7 @@ async function fetchLiveSportsMatches() {
         });
 
     } catch (error) {
+        console.warn("Sports API fallback:", error);
         sportsMatchesList.innerHTML = `
             <div class="match-card">
                 <span class="match-status">🔴 LIVE</span>
@@ -253,6 +283,7 @@ async function fetchLiveSportsMatches() {
             </div>`;
     }
 }
+
 
 // ------------------------------------------
 // Load Channels & Render UI
