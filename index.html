@@ -2,231 +2,159 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Khorkuto TV - Live Streaming</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- HLS.js for Streaming -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        body { 
-            background-color: #0b0f19; 
-            color: #f8fafc; 
-            font-family: system-ui, -apple-system, sans-serif; 
-        }
-        /* Loader Animation */
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 5px solid #1e293b;
-            border-bottom-color: #ef4444;
-            border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
-        }
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <!-- HLS.js Library for M3U8 Streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen flex flex-col relative">
+<body>
 
     <!-- Splash / Loading Screen -->
-    <div id="splashScreen" class="fixed inset-0 z-50 bg-[#0b0f19] flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="text-center p-4">
-            <img src="logo.png" alt="Khorkuto TV" class="w-28 h-28 object-contain mx-auto mb-4 rounded-2xl shadow-lg border border-slate-800" onerror="this.src='https://via.placeholder.com/120?text=Khorkuto+TV'">
-            <h1 class="text-2xl font-bold text-white mb-6">Khorkuto TV</h1>
-            <div class="spinner"></div>
-        </div>
+    <div id="splash">
+        <img src="logo.png" alt="Khorkuto TV" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=TV'">
+        <h2 style="margin-top: 15px; font-size: 20px; font-weight: bold;">Khorkuto TV</h2>
+        <div class="loader"></div>
     </div>
 
-    <!-- Header / Navbar -->
-    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
-            <div class="flex items-center space-x-3">
-                <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain rounded" onerror="this.src='https://via.placeholder.com/100x40?text=TV'">
-                <span class="text-lg font-bold bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">Khorkuto TV</span>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-left">
+            <img src="logo.png" alt="Logo" class="logo" onerror="this.src='https://via.placeholder.com/55?text=TV'">
+            <div>
+                <h2>Khorkuto TV</h2>
+                <p>Live TV Network</p>
             </div>
-            
-            <!-- Search Bar -->
-            <div class="relative flex-1 max-w-xs">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="searchInput" placeholder="খুঁজুন..." class="w-full pl-8 pr-3 py-1.5 bg-slate-800 border border-slate-700 rounded-full text-xs text-slate-200 focus:outline-none focus:border-red-500 transition">
-            </div>
+        </div>
+        <div class="header-right">
+            <button id="refreshBtn" title="রিফ্রেশ"><i class="fa-solid fa-rotate-right"></i></button>
+            <button id="searchBtn" title="সার্চ"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button id="settingsBtn" title="সেটিংস"><i class="fa-solid fa-gear"></i></button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 space-y-6">
-        
-        <!-- Video Player Section (Hidden by Default) -->
-        <section id="playerSection" class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl hidden">
-            <div class="aspect-video w-full bg-black relative">
-                <video id="videoPlayer" class="w-full h-full" controls autoplay></video>
-            </div>
-            <div class="p-3 flex justify-between items-center bg-slate-900">
-                <div>
-                    <h2 id="currentChannelName" class="text-base font-bold text-white">চ্যানেলের নাম</h2>
-                    <p id="currentCategory" class="text-xs text-slate-400">ক্যাটাগরি</p>
-                </div>
-                <button onclick="closePlayer()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition">
-                    <i class="fa-solid fa-xmark mr-1"></i> বন্ধ করুন
-                </button>
-            </div>
-        </section>
+    <!-- Search Input Area -->
+    <div class="search-area">
+        <input type="text" id="search" placeholder="চ্যানেল নাম দিয়ে খুঁজুন...">
+    </div>
 
-        <!-- Categories -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="categoryContainer">
-            <button class="category-btn active px-3.5 py-1.5 rounded-full text-xs font-medium bg-red-600 text-white whitespace-nowrap" onclick="filterCategory('All')">সব চ্যানেল</button>
-            <button class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap" onclick="filterCategory('News')">সংবাদ</button>
-            <button class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap" onclick="filterCategory('Sports')">খেলাধুলা</button>
-            <button class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap" onclick="filterCategory('Entertainment')">বিনোদন</button>
+    <!-- Category Slider -->
+    <div class="category-slider">
+        <div class="cat active" data-category="All">
+            <i class="fa-solid fa-border-all"></i>
+            <span>সব চ্যানেল</span>
         </div>
-
-        <!-- Channels Grid -->
-        <div id="channelsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            <!-- Channels render here -->
+        <div class="cat" data-category="News">
+            <i class="fa-solid fa-newspaper"></i>
+            <span>সংবাদ</span>
         </div>
+        <div class="cat" data-category="Sports">
+            <i class="fa-solid fa-trophy"></i>
+            <span>খেলাধুলা</span>
+        </div>
+        <div class="cat" data-category="Entertainment">
+            <i class="fa-solid fa-film"></i>
+            <span>বিনোদন</span>
+        </div>
+        <div class="cat" data-category="Music">
+            <i class="fa-solid fa-music"></i>
+            <span>গান</span>
+        </div>
+    </div>
 
-    </main>
+    <!-- Banner / Featured Slider -->
+    <div class="featured-slider">
+        <div class="banner">
+            <img src="banner1.jpg" alt="Banner" onerror="this.src='https://via.placeholder.com/600x220?text=Khorkuto+TV'">
+            <div class="banner-info">
+                <h2>Khorkuto TV</h2>
+                <p>সব পছন্দের টিভি চ্যানেল এক জায়গায়</p>
+                <button class="watch-btn"><i class="fa-solid fa-play"></i> এখন দেখুন</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Footer -->
-    <footer class="bg-slate-900 border-t border-slate-800 py-3 text-center text-xs text-slate-500">
-        <p>&copy; 2026 Khorkuto TV. All rights reserved.</p>
-    </footer>
+    <!-- Video Player Section -->
+    <div class="player-box">
+        <video id="video" controls playsinline></video>
+        <div class="player-controls">
+            <button id="fullscreenBtn"><i class="fa-solid fa-expand"></i> ফুলস্ক্রিন করুন</button>
+        </div>
+    </div>
+
+    <!-- Featured Section (Auto hides if no featured channels) -->
+    <div id="featuredSection">
+        <div class="section-title">⭐ জনপ্রিয় চ্যানেলসমূহ</div>
+        <div id="featuredList" class="featured-list">
+            <!-- Dynamic Featured Channels -->
+        </div>
+    </div>
+
+    <!-- Main Channel List -->
+    <div class="section-title">📺 সমস্ত চ্যানেল</div>
+    <div id="channelList" class="channel-list">
+        <!-- Dynamic Main Channels -->
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="homeNav">
+            <i class="fa-solid fa-house"></i>
+            <small>হোম</small>
+        </div>
+        <div class="nav-item" id="sportsNav">
+            <i class="fa-solid fa-futbol"></i>
+            <small>স্পোর্টস</small>
+        </div>
+        <div class="nav-item" id="favoriteNav">
+            <i class="fa-solid fa-heart"></i>
+            <small>ফেভারিট</small>
+        </div>
+        <div class="nav-item" id="historyNav">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <small>হিস্ট্রি</small>
+        </div>
+        <div class="nav-item" id="searchNav">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <small>সার্চ</small>
+        </div>
+    </nav>
+
+    <!-- Settings Sheet Overlay Backdrop -->
+    <div id="settingsOverlay" class="settings-overlay"></div>
+
+    <!-- Settings Bottom Sheet -->
+    <div id="settingsSheet" class="settings-sheet">
+        <div class="sheet-content">
+            <div class="sheet-header">
+                <h3>সেটিংস</h3>
+                <button id="closeSettings"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="setting-item" id="clearFavBtn">
+                <i class="fa-solid fa-heart-crack"></i> ফেভারিট ক্লিয়ার করুন
+            </div>
+            <div class="setting-item" id="clearHistoryBtn">
+                <i class="fa-solid fa-trash"></i> হিস্ট্রি ক্লিয়ার করুন
+            </div>
+            <div class="setting-item" id="shareApp">
+                <i class="fa-solid fa-share-nodes"></i> অ্যাপ শেয়ার করুন
+            </div>
+            <div class="setting-item" id="aboutBtn">
+                <i class="fa-solid fa-circle-info"></i> আমাদের সম্পর্কে (About)
+            </div>
+        </div>
+    </div>
 
     <!-- Logic Script -->
-    <script>
-        let allChannels = [];
-        let currentCategory = 'All';
-        let hls = null;
-
-        // Force Hide Splash Screen Function
-        function hideSplash() {
-            const splash = document.getElementById('splashScreen');
-            if (splash && splash.style.display !== 'none') {
-                splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                }, 500);
-            }
-        }
-
-        // Safety fallback: 3 সেকেন্ড পর জোরপূর্বক স্প্ল্যাশ স্ক্রিন বন্ধ হবে
-        setTimeout(hideSplash, 3000);
-
-        // Fetch Channels
-        async function loadChannels() {
-            try {
-                const response = await fetch('./channels.json');
-                if (!response.ok) throw new Error('File load failed');
-                allChannels = await response.json();
-                renderChannels(allChannels);
-            } catch (error) {
-                console.error("Error loading channels:", error);
-                document.getElementById('channelsGrid').innerHTML = `
-                    <div class="col-span-full text-center py-10 text-slate-400">
-                        <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-500 mb-2"></i>
-                        <p class="text-sm">channels.json ফাইলটি পাওয়া যায়নি বা ফরম্যাটে ভুল আছে!</p>
-                    </div>`;
-            } finally {
-                hideSplash(); // সফল বা ব্যর্থ যাই হোক, স্প্ল্যাশ সরবে
-            }
-        }
-
-        // Render Channels
-        function renderChannels(channels) {
-            const grid = document.getElementById('channelsGrid');
-            grid.innerHTML = '';
-
-            if (channels.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-sm">কোনো চ্যানেল পাওয়া যায়নি</div>`;
-                return;
-            }
-
-            channels.forEach(channel => {
-                const card = document.createElement('div');
-                card.className = 'bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col items-center text-center cursor-pointer hover:border-red-500/50 transition group';
-                card.onclick = () => playChannel(channel);
-
-                card.innerHTML = `
-                    <div class="w-full h-20 bg-slate-950 rounded-lg p-2 mb-2 flex items-center justify-center overflow-hidden">
-                        <img src="${channel.logo}" alt="${channel.name}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition" onerror="this.src='https://via.placeholder.com/80?text=TV'">
-                    </div>
-                    <h3 class="font-semibold text-xs text-slate-200 line-clamp-1">${channel.name}</h3>
-                    <span class="text-[10px] text-slate-500 mt-0.5">${channel.category}</span>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // Play Channel
-        function playChannel(channel) {
-            const playerSection = document.getElementById('playerSection');
-            const video = document.getElementById('videoPlayer');
-            
-            document.getElementById('currentChannelName').innerText = channel.name;
-            document.getElementById('currentCategory').innerText = channel.category;
-            
-            playerSection.classList.remove('hidden');
-            playerSection.scrollIntoView({ behavior: 'smooth' });
-
-            if (Hls.isSupported() && channel.streamUrl.endsWith('.m3u8')) {
-                if (hls) hls.destroy();
-                hls = new Hls();
-                hls.loadSource(channel.streamUrl);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else {
-                video.src = channel.streamUrl;
-                video.play();
-            }
-        }
-
-        // Close Player
-        function closePlayer() {
-            const playerSection = document.getElementById('playerSection');
-            const video = document.getElementById('videoPlayer');
-            video.pause();
-            if (hls) hls.destroy();
-            playerSection.classList.add('hidden');
-        }
-
-        // Search
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = allChannels.filter(c => 
-                (currentCategory === 'All' || c.category === currentCategory) &&
-                c.name.toLowerCase().includes(query)
-            );
-            renderChannels(filtered);
-        });
-
-        // Category Filter
-        function filterCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('সব'))) {
-                    btn.className = 'category-btn active px-3.5 py-1.5 rounded-full text-xs font-medium bg-red-600 text-white whitespace-nowrap';
-                } else {
-                    btn.className = 'category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap';
-                }
-            });
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allChannels.filter(c => 
-                (cat === 'All' || c.category === cat) &&
-                c.name.toLowerCase().includes(query)
-            );
-            renderChannels(filtered);
-        }
-
-        // Init
-        window.onload = loadChannels;
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
