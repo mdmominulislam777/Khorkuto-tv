@@ -1,12 +1,79 @@
 // ==========================================
-// Khorkuto TV - Final Script (v10.3)
+// Khorkuto TV - Final Script with Multi-Language (v10.4)
 // ==========================================
 
 let channels = [];
 let currentCategory = "All";
+let currentLang = localStorage.getItem("app_lang") || "bn"; // ডিফল্ট ভাষা বাংলা
 let hls = null;
 
 let categorizedContainer, video, search, playerModal, playingChannelTitle, sportsMatchesList;
+
+// ------------------------------------------
+// Multi-Language Translation Data
+// ------------------------------------------
+const i18n = {
+    bn: {
+        langBtn: "EN",
+        subTitle: "লাইভ টিভি নেটওয়ার্ক",
+        searchPlaceholder: "চ্যানেল নাম দিয়ে খুঁজুন...",
+        all: "সব চ্যানেল",
+        news: "সংবাদ",
+        sports: "খেলাধুলা",
+        entertainment: "বিনোদন",
+        music: "গান",
+        sportsTitle: "🔥 লাইভ ম্যাচ ও খেলাধুলার আপডেট",
+        noMatches: "বর্তমানে কোনো লাইভ ম্যাচ নেই",
+        fetchingMatches: "⏳ লাইভ ম্যাচের তথ্য আপডেট হচ্ছে...",
+        matchSubDefault: "পরবর্তী আপডেট শীঘ্রই আসবে",
+        navHome: "হোম",
+        navSports: "স্পোর্টস",
+        navFav: "ফেভারিট",
+        navHistory: "হিস্ট্রি",
+        navSearch: "সার্চ",
+        closePlayer: "বন্ধ করুন",
+        fullscreen: "ফুলস্ক্রিন করুন",
+        settingsTitle: "সেটিংস",
+        clearFav: "ফেভারিট ক্লিয়ার করুন",
+        clearHistory: "হিস্ট্রি ক্লিয়ার করুন",
+        shareApp: "অ্যাপ শেয়ার করুন",
+        about: "আমাদের সম্পর্কে (About)",
+        favHeader: "❤️ ফেভারিট চ্যানেলসমূহ",
+        historyHeader: "🕒 সাম্প্রতিক দেখা চ্যানেল",
+        noChannels: "কোনো চ্যানেল পাওয়া যায়নি",
+        channelsCount: "টি চ্যানেল"
+    },
+    en: {
+        langBtn: "BN",
+        subTitle: "Live TV Network",
+        searchPlaceholder: "Search channel by name...",
+        all: "All",
+        news: "News",
+        sports: "Sports",
+        entertainment: "Entertainment",
+        music: "Music",
+        sportsTitle: "🔥 Live Matches & Sports Updates",
+        noMatches: "No live matches available right now",
+        fetchingMatches: "⏳ Fetching live matches...",
+        matchSubDefault: "Next match update coming soon",
+        navHome: "Home",
+        navSports: "Sports",
+        navFav: "Favorites",
+        navHistory: "History",
+        navSearch: "Search",
+        closePlayer: "Close",
+        fullscreen: "Fullscreen",
+        settingsTitle: "Settings",
+        clearFav: "Clear Favorites",
+        clearHistory: "Clear History",
+        shareApp: "Share App",
+        about: "About Us",
+        favHeader: "❤️ Favorite Channels",
+        historyHeader: "🕒 Recently Watched",
+        noChannels: "No channels found",
+        channelsCount: "Channels"
+    }
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     categorizedContainer = document.getElementById("categorizedChannels");
@@ -21,10 +88,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initApp() {
     setupEventListeners();
+    applyLanguageUI();
     loadChannels();
     fetchLiveSportsMatches();
     
-    // প্রতি ২ মিনিট পর পর অটোমেটিক লাইভ স্কোরের তথ্য রিফ্রেশ হবে
+    // প্রতি ২ মিনিট পর পর লাইভ ম্যাচ রিফ্রেশ
     setInterval(fetchLiveSportsMatches, 120000);
 
     setupTelegram();
@@ -42,14 +110,94 @@ function hideSplash() {
 }
 
 // ------------------------------------------
-// Automated Live Sports API Fetch
+// Language Switcher Function
+// ------------------------------------------
+function toggleLanguage() {
+    currentLang = currentLang === "bn" ? "en" : "bn";
+    localStorage.setItem("app_lang", currentLang);
+    applyLanguageUI();
+    renderCategorizedChannels();
+    fetchLiveSportsMatches();
+}
+
+function applyLanguageUI() {
+    const t = i18n[currentLang];
+
+    // Header & Search
+    const langBtn = document.getElementById("langBtn");
+    if (langBtn) langBtn.innerText = t.langBtn;
+
+    const appSubTitle = document.getElementById("appSubTitle");
+    if (appSubTitle) appSubTitle.innerText = t.subTitle;
+
+    if (search) search.placeholder = t.searchPlaceholder;
+
+    // Categories Text
+    document.querySelectorAll(".cat").forEach(cat => {
+        const catKey = cat.dataset.category;
+        const span = cat.querySelector("span");
+        if (span) {
+            if (catKey === "All") span.innerText = t.all;
+            else if (catKey === "News") span.innerText = t.news;
+            else if (catKey === "Sports") span.innerText = t.sports;
+            else if (catKey === "Entertainment") span.innerText = t.entertainment;
+            else if (catKey === "Music") span.innerText = t.music;
+        }
+    });
+
+    // Sports Section Title
+    const sportsTitle = document.querySelector(".sports-section-title span");
+    if (sportsTitle) sportsTitle.innerText = t.sportsTitle;
+
+    // Bottom Nav Text
+    const homeNav = document.querySelector("#homeNav small");
+    if (homeNav) homeNav.innerText = t.navHome;
+
+    const sportsNav = document.querySelector("#sportsNav small");
+    if (sportsNav) sportsNav.innerText = t.navSports;
+
+    const favoriteNav = document.querySelector("#favoriteNav small");
+    if (favoriteNav) favoriteNav.innerText = t.navFav;
+
+    const historyNav = document.querySelector("#historyNav small");
+    if (historyNav) historyNav.innerText = t.navHistory;
+
+    const searchNav = document.querySelector("#searchNav small");
+    if (searchNav) searchNav.innerText = t.navSearch;
+
+    // Modal & Controls
+    const closeBtn = document.getElementById("closePlayerBtn");
+    if (closeBtn) closeBtn.innerHTML = `<i class="fa-solid fa-xmark"></i> ${t.closePlayer}`;
+
+    const fullBtn = document.getElementById("fullscreenBtn");
+    if (fullBtn) fullBtn.innerHTML = `<i class="fa-solid fa-expand"></i> ${t.fullscreen}`;
+
+    // Settings Text
+    const settingsHeader = document.querySelector(".sheet-header h3");
+    if (settingsHeader) settingsHeader.innerText = t.settingsTitle;
+
+    const clearFavBtn = document.getElementById("clearFavBtn");
+    if (clearFavBtn) clearFavBtn.innerHTML = `<i class="fa-solid fa-heart-crack"></i> ${t.clearFav}`;
+
+    const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+    if (clearHistoryBtn) clearHistoryBtn.innerHTML = `<i class="fa-solid fa-trash"></i> ${t.clearHistory}`;
+
+    const shareApp = document.getElementById("shareApp");
+    if (shareApp) shareApp.innerHTML = `<i class="fa-solid fa-share-nodes"></i> ${t.shareApp}`;
+
+    const aboutBtn = document.getElementById("aboutBtn");
+    if (aboutBtn) aboutBtn.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${t.about}`;
+}
+
+// ------------------------------------------
+// Sports API Fetch
 // ------------------------------------------
 async function fetchLiveSportsMatches() {
     if (!sportsMatchesList) return;
+    const t = i18n[currentLang];
 
     try {
         const response = await fetch("https://site.api.espn.com/apis/site/v2/sports/cricket/13876/scoreboard");
-        
         if (!response.ok) throw new Error("Sports API offline");
         
         const data = await response.json();
@@ -61,8 +209,8 @@ async function fetchLiveSportsMatches() {
             sportsMatchesList.innerHTML = `
                 <div class="match-card">
                     <span class="match-status" style="background:#64748b;">ℹ️ INFO</span>
-                    <div class="match-title">বর্তমানে কোনো লাইভ ম্যাচ নেই</div>
-                    <div class="match-sub">পরবর্তী ম্যাচ আপডেট শীঘ্রই আসছে</div>
+                    <div class="match-title">${t.noMatches}</div>
+                    <div class="match-sub">${t.matchSubDefault}</div>
                 </div>`;
             return;
         }
@@ -89,7 +237,7 @@ async function fetchLiveSportsMatches() {
                 if (sportsChannel) {
                     playChannel(sportsChannel);
                 } else {
-                    alert("স্ট্রিমিং দেখতে স্পোর্টস ক্যাটাগরি থেকে চ্যানেল বাছাই করুন।");
+                    alert(currentLang === "bn" ? "স্ট্রিমিং দেখতে স্পোর্টস চ্যানেলটি বেছে নিন।" : "Select a sports channel to watch streaming.");
                 }
             };
 
@@ -97,26 +245,20 @@ async function fetchLiveSportsMatches() {
         });
 
     } catch (error) {
-        console.warn("Sports API fallback executed:", error);
         sportsMatchesList.innerHTML = `
             <div class="match-card">
                 <span class="match-status">🔴 LIVE</span>
-                <div class="match-title">লাইভ স্পোর্টস টি ভি</div>
-                <div class="match-sub">খেলার সরাসরি সম্প্রচার দেখতে ক্লিক করুন</div>
+                <div class="match-title">${currentLang === "bn" ? "লাইভ স্পোর্টস টি ভি" : "Live Sports TV"}</div>
+                <div class="match-sub">${currentLang === "bn" ? "খেলার লাইভ সম্প্রচার দেখতে ক্লিক করুন" : "Click to watch live stream"}</div>
             </div>`;
     }
 }
 
 // ------------------------------------------
-// Load Channels & Layout
+// Load Channels & Render UI
 // ------------------------------------------
 async function loadChannels() {
     if (!categorizedContainer) return;
-
-    categorizedContainer.innerHTML = `
-        <div style="text-align:center; padding:40px; color:var(--text-muted);">
-            ⏳ চ্যানেল লোড হচ্ছে...
-        </div>`;
 
     try {
         const response = await fetch("channels.json?t=" + Date.now());
@@ -128,10 +270,9 @@ async function loadChannels() {
         renderCategorizedChannels();
 
     } catch (err) {
-        console.error(err);
         categorizedContainer.innerHTML = `
             <div style="text-align:center; padding:30px; color:#ef4444;">
-                ❌ channels.json ফাইল লোড করা সম্ভব হয়নি।
+                ❌ channels.json error!
             </div>`;
     }
 }
@@ -141,13 +282,14 @@ function renderCategorizedChannels() {
 
     categorizedContainer.innerHTML = "";
     const keyword = search ? search.value.toLowerCase().trim() : "";
+    const t = i18n[currentLang];
 
     const filtered = channels.filter(c => 
         (c.name || "").toLowerCase().includes(keyword)
     );
 
     if (filtered.length === 0) {
-        categorizedContainer.innerHTML = "<p style='text-align:center; padding:30px; color:var(--text-muted);'>কোনো চ্যানেল পাওয়া যায়নি</p>";
+        categorizedContainer.innerHTML = `<p style='text-align:center; padding:30px; color:var(--text-muted);'>${t.noChannels}</p>`;
         return;
     }
 
@@ -169,9 +311,10 @@ function renderCategorizedChannels() {
 
 function renderCustomList(title, list) {
     if (!categorizedContainer) return;
+    const t = i18n[currentLang];
 
     if (list.length === 0) {
-        categorizedContainer.innerHTML = `<p style='text-align:center; padding:30px; color:var(--text-muted);'>কোনো চ্যানেল পাওয়া যায়নি</p>`;
+        categorizedContainer.innerHTML = `<p style='text-align:center; padding:30px; color:var(--text-muted);'>${t.noChannels}</p>`;
         return;
     }
 
@@ -181,7 +324,7 @@ function renderCustomList(title, list) {
     rowBlock.innerHTML = `
         <div class="category-title">
             ${title}
-            <span>${list.length} টি চ্যানেল</span>
+            <span>${list.length} ${t.channelsCount}</span>
         </div>
         <div class="horizontal-channel-slider"></div>
     `;
@@ -214,7 +357,7 @@ function renderCustomList(title, list) {
 }
 
 // ------------------------------------------
-// Streaming Player Functionality
+// Stream Player
 // ------------------------------------------
 function playChannel(channel) {
     if (!video || !channel.url) return;
@@ -248,12 +391,8 @@ function playChannel(channel) {
 }
 
 function closePlayer() {
-    if (playerModal) {
-        playerModal.classList.remove("active");
-    }
-    if (video) {
-        video.pause();
-    }
+    if (playerModal) playerModal.classList.remove("active");
+    if (video) video.pause();
     if (hls) {
         hls.destroy();
         hls = null;
@@ -261,7 +400,7 @@ function closePlayer() {
 }
 
 // ------------------------------------------
-// Favorites & History Management
+// Favorites & History
 // ------------------------------------------
 function toggleFavorite(channel, btnElement) {
     const key = "fav_" + channel.name;
@@ -280,7 +419,7 @@ function renderFavorites() {
     if (!categorizedContainer) return;
     categorizedContainer.innerHTML = "";
     const favChannels = channels.filter(c => localStorage.getItem("fav_" + c.name) === "true");
-    renderCustomList("❤️ ফেভারিট চ্যানেলসমূহ", favChannels);
+    renderCustomList(i18n[currentLang].favHeader, favChannels);
 }
 
 function addToHistory(channel) {
@@ -295,13 +434,15 @@ function renderHistory() {
     if (!categorizedContainer) return;
     categorizedContainer.innerHTML = "";
     const historyChannels = JSON.parse(localStorage.getItem("watch_history") || "[]");
-    renderCustomList("🕒 সাম্প্রতিক দেখা চ্যানেল", historyChannels);
+    renderCustomList(i18n[currentLang].historyHeader, historyChannels);
 }
 
 // ------------------------------------------
 // Event Listeners
 // ------------------------------------------
 function setupEventListeners() {
+    document.getElementById("langBtn")?.addEventListener("click", toggleLanguage);
+
     if (search) {
         search.addEventListener("input", () => renderCategorizedChannels());
     }
@@ -374,7 +515,7 @@ function setupEventListeners() {
 
     document.getElementById("clearFavBtn")?.addEventListener("click", () => {
         channels.forEach(c => localStorage.removeItem("fav_" + c.name));
-        alert("সব ফেভারিট চ্যানেল মুছে ফেলা হয়েছে!");
+        alert(currentLang === "bn" ? "সব ফেভারিট চ্যানেল মুছে ফেলা হয়েছে!" : "All favorites cleared!");
         settingsOverlay?.classList.remove("show");
         settingsSheet?.classList.remove("show");
         renderCategorizedChannels();
@@ -382,7 +523,7 @@ function setupEventListeners() {
 
     document.getElementById("clearHistoryBtn")?.addEventListener("click", () => {
         localStorage.removeItem("watch_history");
-        alert("হিস্ট্রি ক্লিয়ার করা হয়েছে!");
+        alert(currentLang === "bn" ? "হিস্ট্রি ক্লিয়ার করা হয়েছে!" : "History cleared!");
         settingsOverlay?.classList.remove("show");
         settingsSheet?.classList.remove("show");
         renderCategorizedChannels();
