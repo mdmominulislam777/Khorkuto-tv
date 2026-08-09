@@ -476,3 +476,28 @@ body {
     font-size: 13px;
     cursor: pointer;
 }
+/* Cricfy Style Tab Filters */
+.status-tab {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.status-tab.active {
+    background: #10b981; /* Cricfy Green color */
+    color: #ffffff;
+    border-color: #10b981;
+}
+
+.cricfy-match-card:hover {
+    border-color: #10b981 !important;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
