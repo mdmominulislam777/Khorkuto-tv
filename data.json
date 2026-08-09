@@ -1,0 +1,60 @@
+{
+  "categories": [
+    {
+      "id": "sports",
+      "name": "Sports Channels",
+      "icon": "fa-solid fa-trophy",
+      "channels": [
+        {
+          "name": "T Sports HD",
+          "logo": "https://via.placeholder.com/80/1e293b/00b87c?text=T+Sports",
+          "stream_url": "https://example.com/live/tsports.m3u8"
+        },
+        {
+          "name": "Star Sports 1",
+          "logo": "https://via.placeholder.com/80/1e293b/00b87c?text=Star+Sports",
+          "stream_url": "https://example.com/live/starsports.m3u8"
+        },
+        {
+          "name": "Sony Ten 1",
+          "logo": "https://via.placeholder.com/80/1e293b/00b87c?text=Sony+Ten",
+          "stream_url": "https://example.com/live/sonyten.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "name": "Entertainment",
+      "icon": "fa-solid fa-tv",
+      "channels": [
+        {
+          "name": "Gazi TV (GTV)",
+          "logo": "https://via.placeholder.com/80/1e293b/38bdf8?text=GTV",
+          "stream_url": "https://example.com/live/gtv.m3u8"
+        },
+        {
+          "name": "Zee Bangla",
+          "logo": "https://via.placeholder.com/80/1e293b/38bdf8?text=Zee+Bangla",
+          "stream_url": "https://example.com/live/zeebangla.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "news",
+      "name": "News Channels",
+      "icon": "fa-solid fa-newspaper",
+      "channels": [
+        {
+          "name": "Somoy TV",
+          "logo": "https://via.placeholder.com/80/1e293b/ef4444?text=Somoy",
+          "stream_url": "https://example.com/live/somoy.m3u8"
+        },
+        {
+          "name": "Jamuna TV",
+          "logo": "https://via.placeholder.com/80/1e293b/ef4444?text=Jamuna",
+          "stream_url": "https://example.com/live/jamuna.m3u8"
+        }
+      ]
+    }
+  ]
+}
