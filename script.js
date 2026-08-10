@@ -1,9 +1,9 @@
 // ==========================================
-// Khorkuto TV - Consolidated Script (English & Favorites)
+// Khorkuto TV - Consolidated Script
 // ==========================================
 
 let channels = [];
-let currentCategory = "Sports"; // Default category is now Sports
+let currentCategory = "Sports"; // Default category
 let favorites = JSON.parse(localStorage.getItem("favChannels")) || [];
 let hls = null;
 
@@ -43,6 +43,14 @@ function setupEventListeners() {
         if (searchArea.classList.contains("active")) search.focus();
     });
 
+    // Favorites Header Button click
+    document.getElementById("favHeaderBtn").addEventListener("click", () => {
+        document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
+        currentCategory = "Favorites";
+        mainSectionTitle.textContent = "❤️ Favorite Channels";
+        renderChannels();
+    });
+
     // Refresh
     document.getElementById("refreshBtn").addEventListener("click", () => {
         loadChannels();
@@ -61,10 +69,7 @@ function setupEventListeners() {
             target.classList.add("active");
             currentCategory = target.getAttribute("data-category");
 
-            // Update main section title dynamically
             if (currentCategory === "Sports") mainSectionTitle.textContent = "⚽ Sports Channels";
-            else if (currentCategory === "Favorites") mainSectionTitle.textContent = "❤️ Favorite Channels";
-            else if (currentCategory === "All") mainSectionTitle.textContent = "📺 All Channels";
             else mainSectionTitle.textContent = `📺 ${currentCategory} Channels`;
 
             renderChannels();
@@ -175,9 +180,7 @@ function renderChannels() {
         const nameMatch = (channel.name || "").toLowerCase().includes(keyword);
 
         let categoryMatch = false;
-        if (currentCategory === "All") {
-            categoryMatch = true;
-        } else if (currentCategory === "Favorites") {
+        if (currentCategory === "Favorites") {
             categoryMatch = favorites.includes(channel.id);
         } else if (channel.category) {
             categoryMatch = channel.category.toLowerCase().includes(currentCategory.toLowerCase());
