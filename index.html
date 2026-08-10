@@ -10,7 +10,7 @@
     
     <!-- HLS.js Library for M3U8 Streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
+
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -21,9 +21,18 @@
 
     <!-- Splash / Loading Screen -->
     <div id="splash">
-        <img src="logo.png" alt="Khorkuto TV" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=TV'">
-        <h2 style="margin-top: 15px; font-size: 20px; font-weight: bold;">Khorkuto TV</h2>
+        <img src="logo.png" alt="Khorkuto TV" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=Khorkuto+TV'">
+        <h2>Khorkuto TV</h2>
         <div class="loader"></div>
+    </div>
+
+    <!-- Video Player Container / Modal -->
+    <div id="playerContainer" class="player-container hidden">
+        <div class="player-header">
+            <span id="currentChannelName">চ্যানেল নাম</span>
+            <button id="closePlayerBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <video id="video" controls autoplay playsinline></video>
     </div>
 
     <!-- Top Header -->
@@ -38,12 +47,11 @@
         <div class="header-right">
             <button id="refreshBtn" title="রিফ্রেশ"><i class="fa-solid fa-rotate-right"></i></button>
             <button id="searchBtn" title="সার্চ"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button id="settingsBtn" title="সেটিংস"><i class="fa-solid fa-gear"></i></button>
         </div>
     </header>
 
     <!-- Search Input Area -->
-    <div class="search-area">
+    <div class="search-area" id="searchArea">
         <input type="text" id="search" placeholder="চ্যানেল নাম দিয়ে খুঁজুন...">
     </div>
 
@@ -53,10 +61,6 @@
             <i class="fa-solid fa-border-all"></i>
             <span>সব চ্যানেল</span>
         </div>
-        <div class="cat" data-category="News">
-            <i class="fa-solid fa-newspaper"></i>
-            <span>সংবাদ</span>
-        </div>
         <div class="cat" data-category="Sports">
             <i class="fa-solid fa-trophy"></i>
             <span>খেলাধুলা</span>
@@ -65,11 +69,41 @@
             <i class="fa-solid fa-film"></i>
             <span>বিনোদন</span>
         </div>
+        <div class="cat" data-category="News">
+            <i class="fa-solid fa-newspaper"></i>
+            <span>সংবাদ</span>
+        </div>
+        <div class="cat" data-category="Movies">
+            <i class="fa-solid fa-clapperboard"></i>
+            <span>মুভি</span>
+        </div>
+        <div class="cat" data-category="Islamic">
+            <i class="fa-solid fa-kaaba"></i>
+            <span>ইসলামিক</span>
+        </div>
+        <div class="cat" data-category="Kids">
+            <i class="fa-solid fa-child"></i>
+            <span>কার্টুন</span>
+        </div>
         <div class="cat" data-category="Music">
             <i class="fa-solid fa-music"></i>
             <span>গান</span>
         </div>
     </div>
 
-    <!-- Banner / Featured Slider -->
-   
+    <!-- Featured Section -->
+    <section id="featuredSection" class="featured-section">
+        <h3 class="section-title">🔥 পপুলার চ্যানেল</h3>
+        <div id="featuredList" class="featured-slider"></div>
+    </section>
+
+    <!-- Main Channel List Grid -->
+    <main class="main-content">
+        <h3 class="section-title">📺 লাইভ চ্যানেলসমূহ</h3>
+        <div id="channelList" class="channel-grid"></div>
+    </main>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
