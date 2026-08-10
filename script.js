@@ -1,27 +1,24 @@
 // ==================== LIVE API CONFIGURATION ====================
-// ১. আপনার রিপোজিটরির matches.json ও data.json ফাইলের সঠিক Relative Path
 const LIVE_MATCHES_API_URL = "./matches.json";
 const CATEGORIES_API_URL    = "./data.json";
 
-// অটো আপডেট টাইম ইনটারভাল (৩০ সেকেন্ড পর পর ডাটা অটো আপডেট হবে)
 const AUTO_REFRESH_INTERVAL = 30000; 
 
 let globalMatches = [];
 let globalCategories = [];
 let hlsPlayer = null;
-let currentSportFilter = 'all';
-let currentStatusFilter = 'live';
-let authMode = 'login';
 
-// অ্যাপ লোড হলেই প্রথমবার ডাটা ফেচ হবে এবং অটো-পোকার (Auto-Polling) শুরু হবে
+// শুরুতে 'all' রাখা হয়েছে যাতে পেজ খুললেই সব ম্যাচ দেখা যায়
+let currentSportFilter = 'all';
+let currentStatusFilter = 'all'; 
+
 document.addEventListener("DOMContentLoaded", () => {
     initLiveApp();
     checkAuthStatus();
     
-    // প্রতি ৩০ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে ডাটা আপডেট হবে
+    // প্রতি ৩০ সেকেন্ড পর পর লাইভ আপডেট
     setInterval(() => {
-        console.log("Auto refreshing live sports data...");
-        fetchLiveMatches(true); // silent background update
+        fetchLiveMatches(true);
     }, AUTO_REFRESH_INTERVAL);
 });
 
@@ -33,17 +30,16 @@ async function initLiveApp() {
 
 // ==================== REALTIME API FETCH LOGIC ====================
 
-// ১. লাইভ ম্যাচ অটো ফেচিং
 async function fetchLiveMatches(isBackgroundRefresh = false) {
     try {
-        // Cache buster যোগ করা হয়েছে যাতে ব্রাউজার পুরাতন ডাটা ক্যাশ না করে
         const response = await fetch(`${LIVE_MATCHES_API_URL}?t=${new Date().getTime()}`);
         if (!response.ok) throw new Error("API Connection Failed");
         
         const data = await response.json();
-        globalMatches = data.matches || [];
         
-        // স্ক্রিন অটো রি-রেন্ডার
+        // JSON ডাটা অবজেক্ট বা সরাসরি অ্যারে হলেও হ্যান্ডেল করবে
+        globalMatches = Array.isArray(data) ? data : (data.matches || []);
+        
         renderMatches();
         
     } catch (error) {
@@ -54,14 +50,13 @@ async function fetchLiveMatches(isBackgroundRefresh = false) {
                 container.innerHTML = `
                     <div style="text-align:center; padding:30px; color:#ef4444;">
                         <i class="fa-solid fa-triangle-exclamation" style="font-size:30px; margin-bottom:10px;"></i>
-                        <p>লাইভ সার্ভারের সাথে সংযোগ করা যাচ্ছে না। matches.json ফাইলটি চেক করুন।</p>
+                        <p>matches.json ফাইল থেকে ডাটা লোড করা যাচ্ছে না। GitHub-এ ফাইলটি সঠিক আছে কিনা চেক করুন।</p>
                     </div>`;
             }
         }
     }
 }
 
-// ২. ক্যাটাগরি ও চ্যানেল অটো ফেচিং
 async function fetchCategories() {
     try {
         const response = await fetch(`${CATEGORIES_API_URL}?t=${new Date().getTime()}`);
@@ -75,7 +70,6 @@ async function fetchCategories() {
     }
 }
 
-// UI Loader
 function showLoader(show) {
     const container = document.getElementById("matchesList");
     if (show && container) {
@@ -94,14 +88,14 @@ function renderMatches() {
     if (!container) return;
     container.innerHTML = "";
 
-    // Case-insensitive & Trim Filter Logic (যাতে বড়/ছোট হাতের অক্ষরের জন্য ম্যাচ মিস না হয়)
+    // কেস-ইনসেনসিটিভ ফিল্টারিং লজিক
     const filtered = globalMatches.filter(m => {
-        const matchSport = currentSportFilter === 'all' || 
-            (m.sport && m.sport.toLowerCase().trim() === currentSportFilter.toLowerCase().trim());
-            
-        const matchStatus = currentStatusFilter === 'all' || 
-            (m.status && m.status.toLowerCase().trim() === currentStatusFilter.toLowerCase().trim());
-            
+        const mSport = (m.sport || '').toLowerCase().trim();
+        const mStatus = (m.status || '').toLowerCase().trim();
+
+        const matchSport = currentSportFilter === 'all' || mSport === currentSportFilter.toLowerCase().trim();
+        const matchStatus = currentStatusFilter === 'all' || mStatus === currentStatusFilter.toLowerCase().trim();
+
         return matchSport && matchStatus;
     });
 
@@ -113,15 +107,13 @@ function renderMatches() {
     filtered.forEach(m => {
         const card = document.createElement("div");
         card.className = "match-card";
-        
-        // ক্লিকে সরাসরি লাইভ স্ট্রিম চালু হবে
         card.onclick = () => playMatchStream(m.title || m.tournament, m.stream_url);
 
-        const isLive = m.status && m.status.toLowerCase().trim() === 'live';
+        const isLive = (m.status || '').toLowerCase().trim() === 'live';
 
         card.innerHTML = `
             <div class="match-header">
-                <span class="tournament-name"><i class="fa-solid fa-trophy"></i> ${m.tournament || 'Live Tournament'}</span>
+                <span class="tournament-name"><i class="fa-solid fa-trophy"></i> ${m.tournament || 'Sports Tournament'}</span>
                 <span class="${isLive ? 'live-badge' : ''}">${isLive ? '🔴 LIVE' : (m.time || '')}</span>
             </div>
             <div class="teams-container">
@@ -147,11 +139,6 @@ function renderCategories() {
     const grid = document.getElementById("categoryGrid");
     if (!grid) return;
     grid.innerHTML = "";
-
-    if (globalCategories.length === 0) {
-        grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; padding:20px; color:#64748b;">কোনো ক্যাটাগরি পাওয়া যায়নি।</p>`;
-        return;
-    }
 
     globalCategories.forEach(cat => {
         const card = document.createElement("div");
@@ -262,7 +249,7 @@ function closePlayer() {
     document.getElementById("playerModal").classList.remove("active");
 }
 
-// ==================== DRAWER FEATURES ====================
+// ==================== OTHER UTILS ====================
 
 function openNetworkStream() {
     closeSidebar();
@@ -308,20 +295,6 @@ function exitApp() {
     if (confirm("Are you sure you want to exit?")) window.close();
 }
 
-function toggleFavorite() {
-    const star = document.getElementById("starIcon");
-    if (star) star.style.color = star.style.color === 'gold' ? '#94a3b8' : 'gold';
-}
-
-function openSearchModal() {
-    const q = prompt("Search Matches or Channels:");
-    if (q) showNotice("Search Results", `No matches found for "${q}".`);
-}
-
-function openMoreOptions() {
-    showNotice("Sportzfy TV", "Version 2.0 - High Definition Live Sports Streaming.");
-}
-
 function showNotice(title, msg) {
     document.getElementById("dialogTitle").innerText = title;
     document.getElementById("dialogBody").innerText = msg;
@@ -330,32 +303,6 @@ function showNotice(title, msg) {
 
 function closeDialog() {
     document.getElementById("dialogModal").classList.remove("active");
-}
-
-// ==================== AUTH & PROFILE ====================
-
-function switchAuthMode(mode) {
-    authMode = mode;
-    document.getElementById("loginTabBtn").classList.toggle("active", mode === 'login');
-    document.getElementById("signupTabBtn").classList.toggle("active", mode === 'signup');
-    document.getElementById("authSubmitBtn").innerText = mode === 'login' ? 'Login' : 'Sign Up';
-}
-
-function handleAuthSubmit(e) {
-    e.preventDefault();
-    const mobile = document.getElementById("userMobile").value;
-    localStorage.setItem("user_session", JSON.stringify({ mobile: mobile, isGuest: false }));
-    checkAuthStatus();
-}
-
-function loginAsGuest() {
-    localStorage.setItem("user_session", JSON.stringify({ mobile: "Guest User", isGuest: true }));
-    checkAuthStatus();
-}
-
-function logoutUser() {
-    localStorage.removeItem("user_session");
-    checkAuthStatus();
 }
 
 function checkAuthStatus() {
