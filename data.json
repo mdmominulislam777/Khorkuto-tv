@@ -7,18 +7,60 @@
       "channels": [
         {
           "name": "T Sports HD",
-          "logo": "https://via.placeholder.com/80/1e293b/00b87c?text=T+Sports",
-          "stream_url": "https://example.com/live/tsports.m3u8"
+          "logo": "https://via.placeholder.com/150/1e293b/00b87c?text=T+Sports",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Gazi TV (GTV)",
+          "logo": "https://via.placeholder.com/150/1e293b/00b87c?text=GTV",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
         },
         {
           "name": "Star Sports 1",
-          "logo": "https://via.placeholder.com/80/1e293b/00b87c?text=Star+Sports",
-          "stream_url": "https://example.com/live/starsports.m3u8"
+          "logo": "https://via.placeholder.com/150/1e293b/00b87c?text=Star+Sports",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
         },
         {
           "name": "Sony Ten 1",
-          "logo": "https://via.placeholder.com/80/1e293b/00b87c?text=Sony+Ten",
-          "stream_url": "https://example.com/live/sonyten.m3u8"
+          "logo": "https://via.placeholder.com/150/1e293b/00b87c?text=Sony+Ten",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Sports 18",
+          "logo": "https://via.placeholder.com/150/1e293b/00b87c?text=Sports+18",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        }
+      ]
+    },
+    {
+      "id": "bd_news",
+      "name": "Bangla News",
+      "icon": "fa-solid fa-newspaper",
+      "channels": [
+        {
+          "name": "Somoy TV",
+          "logo": "https://via.placeholder.com/150/1e293b/ef4444?text=Somoy+TV",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Jamuna TV",
+          "logo": "https://via.placeholder.com/150/1e293b/ef4444?text=Jamuna+TV",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Channel 24",
+          "logo": "https://via.placeholder.com/150/1e293b/ef4444?text=Channel+24",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "DBC News",
+          "logo": "https://via.placeholder.com/150/1e293b/ef4444?text=DBC+News",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Ekattor TV",
+          "logo": "https://via.placeholder.com/150/1e293b/ef4444?text=Ekattor+TV",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
         }
       ]
     },
@@ -28,31 +70,56 @@
       "icon": "fa-solid fa-tv",
       "channels": [
         {
-          "name": "Gazi TV (GTV)",
-          "logo": "https://via.placeholder.com/80/1e293b/38bdf8?text=GTV",
-          "stream_url": "https://example.com/live/gtv.m3u8"
+          "name": "Star Jalsha",
+          "logo": "https://via.placeholder.com/150/1e293b/38bdf8?text=Star+Jalsha",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
         },
         {
           "name": "Zee Bangla",
-          "logo": "https://via.placeholder.com/80/1e293b/38bdf8?text=Zee+Bangla",
-          "stream_url": "https://example.com/live/zeebangla.m3u8"
+          "logo": "https://via.placeholder.com/150/1e293b/38bdf8?text=Zee+Bangla",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Colors Bangla",
+          "logo": "https://via.placeholder.com/150/1e293b/38bdf8?text=Colors+Bangla",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Sony Aath",
+          "logo": "https://via.placeholder.com/150/1e293b/38bdf8?text=Sony+Aath",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Deepto TV",
+          "logo": "https://via.placeholder.com/150/1e293b/38bdf8?text=Deepto+TV",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
         }
       ]
     },
     {
-      "id": "news",
-      "name": "News Channels",
-      "icon": "fa-solid fa-newspaper",
+      "id": "movies_kids",
+      "name": "Movies & Kids",
+      "icon": "fa-solid fa-film",
       "channels": [
         {
-          "name": "Somoy TV",
-          "logo": "https://via.placeholder.com/80/1e293b/ef4444?text=Somoy",
-          "stream_url": "https://example.com/live/somoy.m3u8"
+          "name": "Sony Max",
+          "logo": "https://via.placeholder.com/150/1e293b/a855f7?text=Sony+Max",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
         },
         {
-          "name": "Jamuna TV",
-          "logo": "https://via.placeholder.com/80/1e293b/ef4444?text=Jamuna",
-          "stream_url": "https://example.com/live/jamuna.m3u8"
+          "name": "Star Gold",
+          "logo": "https://via.placeholder.com/150/1e293b/a855f7?text=Star+Gold",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Nick India",
+          "logo": "https://via.placeholder.com/150/1e293b/a855f7?text=Nick",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
+        },
+        {
+          "name": "Sonic",
+          "logo": "https://via.placeholder.com/150/1e293b/a855f7?text=Sonic",
+          "stream_url": "YOUR_M3U8_LINK_HERE"
         }
       ]
     }
