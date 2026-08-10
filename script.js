@@ -3,7 +3,7 @@ const GITHUB_JSON_URL = "https://raw.githubusercontent.com/mdmominulislam777/Kho
 let appData = [];
 let hlsPlayer = null;
 
-// ১. ডাটা ফেচ করা
+// 1. Fetch App Data from GitHub JSON
 async function loadAppData() {
     const splashScreen = document.getElementById("splashScreen");
 
@@ -17,14 +17,14 @@ async function loadAppData() {
         const data = await response.json();
         appData = data.categories || [];
 
-        // ক্যাটাগরি রেন্ডার করা
+        // Render categories on main page
         renderCategories();
 
     } catch (error) {
-        console.error("ডাটা লোড সমস্যা:", error);
-        alert("ডাটা লোড করতে সমস্যা হয়েছে! দয়া করে পেজটি রিফ্রেশ দিন।");
+        console.error("Data loading error:", error);
+        alert("Failed to load data! Please check your internet connection.");
     } finally {
-        // ডাটা আসুক বা না আসুক — লোডিং পেজ অবশ্যই সরে যাবে
+        // Ensure splash screen always hides cleanly
         if (splashScreen) {
             splashScreen.style.opacity = "0";
             splashScreen.style.transition = "opacity 0.5s ease";
@@ -36,20 +36,21 @@ async function loadAppData() {
     }
 }
 
-// ২. ক্যাটাগরি দেখানো
+// 2. Render Categories in Big Cards
 function renderCategories() {
     const categoryContainer = document.getElementById("categoryList");
     if (!categoryContainer) return;
 
     if (appData.length === 0) {
-        categoryContainer.innerHTML = `<p style="text-align:center; padding:20px; color:#94a3b8;">কোনো ক্যাটাগরি পাওয়া যায়নি!</p>`;
+        categoryContainer.innerHTML = `<p style="text-align:center; grid-column: 1/-1; padding:30px; color:#94a3b8;">No categories found!</p>`;
         return;
     }
 
     let html = "";
     appData.forEach(cat => {
+        const safeId = (cat.id || '').replace(/'/g, "\\'");
         html += `
-            <div class="category-card" onclick="openCategory('${cat.id}')">
+            <div class="category-card" onclick="openCategory('${safeId}')">
                 <i class="${cat.icon || 'fa-solid fa-folder'}"></i>
                 <h3>${cat.name}</h3>
             </div>
@@ -59,44 +60,63 @@ function renderCategories() {
     categoryContainer.innerHTML = html;
 }
 
-// ৩. ক্যাটাগরিতে ক্লিক করলে চ্যানেল দেখানো
+// 3. Open Selected Category Channels
 function openCategory(catId) {
     const selectedCategory = appData.find(c => c.id === catId);
     if (!selectedCategory) return;
 
     document.getElementById("headerTitle").innerText = selectedCategory.name;
-    document.getElementById("backBtn").style.display = "block";
+    document.getElementById("backBtn").style.display = "flex";
+    document.getElementById("menuBtn").style.display = "none";
 
     document.getElementById("categoryList").style.display = "none";
     const channelContainer = document.getElementById("channelList");
     channelContainer.style.display = "grid";
 
     let html = "";
-    selectedCategory.channels.forEach(ch => {
-        html += `
-            <div class="channel-card" onclick="playStream('${ch.name}', '${ch.stream_url}')">
-                <img src="${ch.logo}" alt="${ch.name}" onerror="this.src='https://via.placeholder.com/60'">
-                <span>${ch.name}</span>
-            </div>
-        `;
-    });
+    if (!selectedCategory.channels || selectedCategory.channels.length === 0) {
+        html = `<p style="text-align:center; grid-column: 1/-1; padding:30px; color:#94a3b8;">No channels available in this category.</p>`;
+    } else {
+        selectedCategory.channels.forEach(ch => {
+            const safeName = (ch.name || '').replace(/'/g, "\\'");
+            const safeUrl = (ch.stream_url || '').replace(/'/g, "\\'");
+            html += `
+                <div class="channel-card" onclick="playStream('${safeName}', '${safeUrl}')">
+                    <img src="${ch.logo}" alt="${ch.name}" onerror="this.src='https://via.placeholder.com/60'">
+                    <span>${ch.name}</span>
+                </div>
+            `;
+        });
+    }
 
     channelContainer.innerHTML = html;
 }
 
-// ৪. ব্যাক বাটন (ক্যাটাগরি ভিউতে ফিরে যাওয়া)
+// 4. Back to Categories View
 function showCategoriesView() {
     document.getElementById("headerTitle").innerText = "Categories";
     document.getElementById("backBtn").style.display = "none";
+    document.getElementById("menuBtn").style.display = "flex";
 
     document.getElementById("channelList").style.display = "none";
     document.getElementById("categoryList").style.display = "grid";
 }
 
-// ৫. প্লেয়ার চালু করা
+// 5. Sidebar Toggle Functions
+function openSidebar() {
+    document.getElementById("sidebar").classList.add("open");
+    document.getElementById("sidebarOverlay").classList.add("active");
+}
+
+function closeSidebar() {
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("active");
+}
+
+// 6. Play HLS Stream
 function playStream(channelName, url) {
     if (!url || url.includes("YOUR_M3U8_LINK")) {
-        alert("এই চ্যানেলের লাইভ লিংক যুক্ত করা হয়নি!");
+        alert("No live stream URL provided for this channel!");
         return;
     }
 
@@ -121,11 +141,11 @@ function playStream(channelName, url) {
             video.play();
         });
     } else {
-        alert("আপনার ব্রাউজারে HLS সাপোর্ট করে না।");
+        alert("Your browser does not support HLS streaming.");
     }
 }
 
-// ৬. প্লেয়ার বন্ধ করা
+// 7. Close Video Player
 function closePlayer() {
     const modal = document.getElementById("playerModal");
     const video = document.getElementById("videoPlayer");
@@ -139,5 +159,5 @@ function closePlayer() {
     modal.classList.remove("active");
 }
 
-// অ্যাপ স্টার্ট
+// Initialize App
 document.addEventListener("DOMContentLoaded", loadAppData);
