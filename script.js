@@ -1,15 +1,13 @@
 // ==========================================
-// Khorkuto TV - Final Consolidated Script
+// Khorkuto TV - Consolidated Script
 // ==========================================
 
-// --- Global State ---
 let channels = [];
 let currentCategory = "All";
-let isSpecialView = false;
 let hls = null;
 
-// --- DOM References ---
-let channelList, featuredList, featuredSection, video, search;
+// DOM Elements
+let channelList, featuredList, featuredSection, video, search, searchArea, playerContainer, currentChannelName;
 
 document.addEventListener("DOMContentLoaded", () => {
     channelList = document.getElementById("channelList");
@@ -17,6 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
     featuredSection = document.getElementById("featuredSection");
     video = document.getElementById("video");
     search = document.getElementById("search");
+    searchArea = document.getElementById("searchArea");
+    playerContainer = document.getElementById("playerContainer");
+    currentChannelName = document.getElementById("currentChannelName");
 
     initApp();
 });
@@ -24,26 +25,64 @@ document.addEventListener("DOMContentLoaded", () => {
 function initApp() {
     setupEventListeners();
     loadChannels();
-    setupBannerSlider();
-    setupTelegram();
-    hideSplash();
+}
+
+function hideSplash() {
+    const splash = document.getElementById("splash");
+    if (splash) {
+        setTimeout(() => splash.classList.add("hidden"), 500);
+    }
+}
+
+function setupEventListeners() {
+    // Search toggle
+    document.getElementById("searchBtn").addEventListener("click", () => {
+        searchArea.classList.toggle("active");
+        if (searchArea.classList.contains("active")) search.focus();
+    });
+
+    // Refresh
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+        loadChannels();
+    });
+
+    // Search filter input
+    search.addEventListener("input", () => {
+        renderChannels();
+    });
+
+    // Category click
+    document.querySelectorAll(".cat").forEach(cat => {
+        cat.addEventListener("click", (e) => {
+            document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
+            const target = e.currentTarget;
+            target.classList.add("active");
+            currentCategory = target.getAttribute("data-category");
+            renderChannels();
+        });
+    });
+
+    // Close Player
+    document.getElementById("closePlayerBtn").addEventListener("click", () => {
+        if (video) video.pause();
+        if (hls) hls.destroy();
+        playerContainer.classList.add("hidden");
+    });
 }
 
 // ------------------------------------------
-// 1. Load Channels & Auto Restore
+// Load Channels
 // ------------------------------------------
 async function loadChannels() {
     if (!channelList) return;
 
     channelList.innerHTML = `
-        <div style="text-align:center; padding:30px; color:var(--text-muted);">
+        <div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-muted);">
             ⏳ চ্যানেল লোড হচ্ছে...
         </div>`;
 
     try {
-        // Cache breaking timestamp query appended
         const response = await fetch("channels.json?t=" + Date.now());
-
         if (!response.ok) throw new Error("Failed to load channels");
 
         const data = await response.json();
@@ -51,35 +90,20 @@ async function loadChannels() {
 
         renderFeaturedChannels();
         renderChannels();
-
-        // Auto load last played channel
-        loadLastChannel();
+        hideSplash();
 
     } catch (err) {
         console.error(err);
         channelList.innerHTML = `
-            <div style="text-align:center; padding:30px; color:#ef4444;">
+            <div style="grid-column: 1/-1; text-align:center; padding:30px; color:#ef4444;">
                 ❌ channels.json ফাইল লোড করা সম্ভব হয়নি।
             </div>`;
-    }
-}
-
-function loadLastChannel() {
-    const lastChannelData = localStorage.getItem("lastChannel");
-    if (!lastChannelData || !video) return;
-
-    try {
-        const channel = JSON.parse(lastChannelData);
-        if (channel && channel.url) {
-            playChannel(channel, false);
-        }
-    } catch (err) {
-        console.warn("Could not load last channel:", err);
+        hideSplash();
     }
 }
 
 // ------------------------------------------
-// 2. Render Featured Channels
+// Render Featured Channels
 // ------------------------------------------
 function renderFeaturedChannels() {
     if (!featuredList || !featuredSection) return;
@@ -98,25 +122,79 @@ function renderFeaturedChannels() {
         const card = document.createElement("div");
         card.className = "featured-card";
         card.innerHTML = `
-            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png';">
+            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=TV';">
             <h4>${channel.name || 'Unknown'}</h4>
             <p>${channel.category || 'General'}</p>
         `;
-
-        card.onclick = () => playChannel(channel, true);
+        card.onclick = () => playChannel(channel);
         featuredList.appendChild(card);
     });
 }
 
 // ------------------------------------------
-// 3. Render Main Channel List
+// Render Main Channel List
 // ------------------------------------------
-function renderChannels(list = channels) {
+function renderChannels() {
     if (!channelList) return;
 
     channelList.innerHTML = "";
     const keyword = search ? search.value.toLowerCase().trim() : "";
 
-    const filtered = list.filter(channel => {
+    const filtered = channels.filter(channel => {
         const nameMatch = (channel.name || "").toLowerCase().includes(keyword);
-       
+        const categoryMatch = currentCategory === "All" || 
+                              (channel.category && channel.category.toLowerCase().includes(currentCategory.toLowerCase()));
+        return nameMatch && categoryMatch;
+    });
+
+    if (filtered.length === 0) {
+        channelList.innerHTML = `
+            <div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-muted);">
+                🔍 কোনো চ্যানেল পাওয়া যায়নি।
+            </div>`;
+        return;
+    }
+
+    filtered.forEach(channel => {
+        const card = document.createElement("div");
+        card.className = "channel-card";
+        card.innerHTML = `
+            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/50?text=TV';">
+            <h4>${channel.name}</h4>
+        `;
+        card.onclick = () => playChannel(channel);
+        channelList.appendChild(card);
+    });
+}
+
+// ------------------------------------------
+// Play Channel with HLS.js
+// ------------------------------------------
+function playChannel(channel) {
+    if (!channel || !channel.url) return;
+
+    currentChannelName.textContent = channel.name;
+    playerContainer.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (hls) {
+        hls.destroy();
+    }
+
+    if (Hls.isSupported() && channel.url.includes(".m3u8")) {
+        hls = new Hls();
+        hls.loadSource(channel.url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            video.play().catch(e => console.log("Autoplay blocked:", e));
+        });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = channel.url;
+        video.play().catch(e => console.log("Autoplay blocked:", e));
+    } else {
+        video.src = channel.url;
+        video.play().catch(e => console.log("Autoplay blocked:", e));
+    }
+
+    localStorage.setItem("lastChannel", JSON.stringify(channel));
+}
