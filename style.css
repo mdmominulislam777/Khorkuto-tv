@@ -70,7 +70,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 12px;
+    padding: 10px 12px;
     background: var(--bg-header);
     position: sticky;
     top: 0;
@@ -81,24 +81,14 @@ body {
 .header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
-.logo {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-.header-left h2 {
-    font-size: 17px;
-    font-weight: bold;
-}
-
-.header-left p {
-    font-size: 11px;
-    color: var(--text-muted);
+/* ব্র্যান্ড লোগো ইমেজ সাইজ */
+.header-brand-logo {
+    height: 36px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
 }
 
 .header-right {
@@ -121,6 +111,7 @@ body {
 .header-right button#favHeaderBtn {
     color: #ef4444;
 }
+
 
 /* Search Area */
 .search-area {
