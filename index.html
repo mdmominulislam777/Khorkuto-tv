@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -19,17 +19,17 @@
 </head>
 <body>
 
-    <!-- Splash / Loading Screen -->
+    <!-- Splash Screen -->
     <div id="splash">
         <img src="logo.png" alt="Khorkuto TV" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=Khorkuto+TV'">
         <h2>Khorkuto TV</h2>
         <div class="loader"></div>
     </div>
 
-    <!-- Video Player Container / Modal -->
+    <!-- Video Player Modal -->
     <div id="playerContainer" class="player-container hidden">
         <div class="player-header">
-            <span id="currentChannelName">চ্যানেল নাম</span>
+            <span id="currentChannelName">Channel Name</span>
             <button id="closePlayerBtn"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <video id="video" controls autoplay playsinline></video>
@@ -45,61 +45,65 @@
             </div>
         </div>
         <div class="header-right">
-            <button id="refreshBtn" title="রিফ্রেশ"><i class="fa-solid fa-rotate-right"></i></button>
-            <button id="searchBtn" title="সার্চ"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button id="refreshBtn" title="Refresh"><i class="fa-solid fa-rotate-right"></i></button>
+            <button id="searchBtn" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
     </header>
 
     <!-- Search Input Area -->
     <div class="search-area" id="searchArea">
-        <input type="text" id="search" placeholder="চ্যানেল নাম দিয়ে খুঁজুন...">
+        <input type="text" id="search" placeholder="Search channel name...">
     </div>
 
     <!-- Category Slider -->
     <div class="category-slider">
-        <div class="cat active" data-category="All">
-            <i class="fa-solid fa-border-all"></i>
-            <span>সব চ্যানেল</span>
-        </div>
-        <div class="cat" data-category="Sports">
+        <div class="cat active" data-category="Sports">
             <i class="fa-solid fa-trophy"></i>
-            <span>খেলাধুলা</span>
+            <span>Sports</span>
+        </div>
+        <div class="cat" data-category="Favorites">
+            <i class="fa-solid fa-heart"></i>
+            <span>Favorites</span>
+        </div>
+        <div class="cat" data-category="All">
+            <i class="fa-solid fa-border-all"></i>
+            <span>All Channels</span>
         </div>
         <div class="cat" data-category="Entertainment">
             <i class="fa-solid fa-film"></i>
-            <span>বিনোদন</span>
+            <span>Entertainment</span>
         </div>
         <div class="cat" data-category="News">
             <i class="fa-solid fa-newspaper"></i>
-            <span>সংবাদ</span>
+            <span>News</span>
         </div>
         <div class="cat" data-category="Movies">
             <i class="fa-solid fa-clapperboard"></i>
-            <span>মুভি</span>
+            <span>Movies</span>
         </div>
         <div class="cat" data-category="Islamic">
             <i class="fa-solid fa-kaaba"></i>
-            <span>ইসলামিক</span>
+            <span>Islamic</span>
         </div>
         <div class="cat" data-category="Kids">
             <i class="fa-solid fa-child"></i>
-            <span>কার্টুন</span>
+            <span>Kids</span>
         </div>
         <div class="cat" data-category="Music">
             <i class="fa-solid fa-music"></i>
-            <span>গান</span>
+            <span>Music</span>
         </div>
     </div>
 
     <!-- Featured Section -->
     <section id="featuredSection" class="featured-section">
-        <h3 class="section-title">🔥 পপুলার চ্যানেল</h3>
+        <h3 class="section-title">🔥 Featured Channels</h3>
         <div id="featuredList" class="featured-slider"></div>
     </section>
 
     <!-- Main Channel List Grid -->
     <main class="main-content">
-        <h3 class="section-title">📺 লাইভ চ্যানেলসমূহ</h3>
+        <h3 class="section-title" id="mainSectionTitle">⚽ Sports Channels</h3>
         <div id="channelList" class="channel-grid"></div>
     </main>
 
