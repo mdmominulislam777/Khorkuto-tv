@@ -3,80 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khorkuto TV</title>
+    <title>Sportzfy TV</title>
     <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome Icons -->
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- HLS.js for IPTV Player -->
+    <!-- HLS.js Player Support -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-    <!-- ================= Fullscreen Splash / Loading Page ================= -->
-    <div class="splash-screen" id="splashScreen">
-        <div class="splash-content">
-            <div class="app-logo-box">
-                <img src="logo.png" alt="Logo" class="splash-logo" onerror="this.style.display='none'; document.getElementById('fallbackIcon').style.display='block';">
-                <i class="fa-solid fa-tv logo-icon" id="fallbackIcon" style="display:none;"></i>
-            </div>
-            <h1 class="app-name">Khorkuto <span>TV</span></h1>
-            
-            <div class="loader-line"></div>
-            <p class="status-text" id="statusText">Connecting to server...</p>
-        </div>
-    </div>
-
-    <!-- ================= Slide Menu / Sidebar ================= -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-brand">
-                <img src="logo.png" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40'">
-                <span>Khorkuto TV</span>
-            </div>
-            <button class="close-btn" onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <ul class="sidebar-menu">
-            <li onclick="showCategoriesView(); closeSidebar();"><i class="fa-solid fa-house"></i> Home</li>
-            <li onclick="location.reload();"><i class="fa-solid fa-rotate-right"></i> Refresh Data</li>
-            <li onclick="alert('Khorkuto TV - Modern Live Streaming Web App'); closeSidebar();"><i class="fa-solid fa-circle-info"></i> About App</li>
-        </ul>
-        <div class="sidebar-footer">
-            <p>Version 2.0</p>
-        </div>
-    </aside>
-
-    <!-- ================= Header Navigation ================= -->
+    <!-- Top Navigation Header -->
     <header class="app-header">
         <div class="header-left">
-            <button class="icon-btn" id="menuBtn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
-            <button class="icon-btn" id="backBtn" onclick="showCategoriesView()" style="display:none;"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="headerTitle">Categories</h2>
+            <button class="icon-btn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <h1 class="app-logo">Sport<span>zfy</span></h1>
         </div>
         <div class="header-right">
-            <img src="logo.png" alt="Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/35'">
+            <button class="icon-btn" onclick="openSearchModal()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="icon-btn" onclick="toggleFavorite()"><i class="fa-solid fa-star" id="starIcon"></i></button>
+            <button class="icon-btn" onclick="openMoreOptions()"><i class="fa-solid fa-ellipsis-vertical"></i></button>
         </div>
     </header>
 
-    <!-- ================= Main Content Container ================= -->
-    <main class="main-container">
-        <!-- Large Category Cards Grid -->
-        <div class="category-grid" id="categoryList"></div>
+    <!-- Slide-out Drawer Sidebar (Exact as photo) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <h2>Sport<span>zfy</span></h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="openNetworkStream()"><i class="fa-solid fa-link"></i> Network Stream</li>
+            <li onclick="showNotice('Playlists', 'Your saved custom playlists will appear here.')"><i class="fa-solid fa-list-check"></i> Playlists</li>
+            <li onclick="toggleFloatingPlayer()"><i class="fa-solid fa-window-restore"></i> Floating Player</li>
+            <li onclick="openQualitySettings()"><i class="fa-solid fa-gear"></i> Video Quality Setting</li>
+            <li class="toggle-item">
+                <span class="item-left"><i class="fa-solid fa-bug"></i> Crash Log Dialog</span>
+                <label class="switch">
+                    <input type="checkbox" id="crashLogToggle" onchange="toggleCrashLog(this)">
+                    <span class="slider round"></span>
+                </label>
+            </li>
+            <li onclick="showNotice('Notice', 'Welcome to Sportzfy! Enjoy uninterrupted FHD Live Streaming.')"><i class="fa-solid fa-bell"></i> Notice</li>
+            <li onclick="window.open('https://telegram.org', '_blank')"><i class="fa-solid fa-comments"></i> Join Us</li>
+            <li onclick="showNotice('Copyright', 'All stream links are gathered from free public servers.')"><i class="fa-solid fa-copyright"></i> Copyright</li>
+            <li onclick="shareApp()"><i class="fa-solid fa-share-nodes"></i> Share Our App</li>
+            <li onclick="location.href='mailto:support@sportzfy.com'"><i class="fa-solid fa-envelope"></i> Email</li>
+            <li onclick="checkAppUpdate()"><i class="fa-solid fa-rotate"></i> Update App</li>
+            <li onclick="exitApp()"><i class="fa-solid fa-right-from-bracket"></i> Exit</li>
+        </ul>
+    </aside>
 
-        <!-- Channel List Grid -->
-        <div class="channel-grid" id="channelList" style="display:none;"></div>
+    <!-- Main Container -->
+    <main class="main-content">
+
+        <!-- ================= PAGE 1: HOME ================= -->
+        <section id="homeTab" class="tab-content active">
+            <!-- Sports Category Filter Pills -->
+            <div class="sports-pills-container">
+                <button class="pill active" onclick="filterSport('all', this)">
+                    <div class="pill-icon"><i class="fa-solid fa-rotate"></i><span class="badge">20</span></div>
+                    <span>All</span>
+                </button>
+                <button class="pill" onclick="filterSport('cricket', this)">
+                    <div class="pill-icon"><i class="fa-solid fa-baseball-bat-ball"></i><span class="badge">10</span></div>
+                    <span>Cricket</span>
+                </button>
+                <button class="pill" onclick="filterSport('football', this)">
+                    <div class="pill-icon"><i class="fa-solid fa-futbol"></i><span class="badge">2</span></div>
+                    <span>Football</span>
+                </button>
+                <button class="pill" onclick="filterSport('tennis', this)">
+                    <div class="pill-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i><span class="badge">1</span></div>
+                    <span>Tennis</span>
+                </button>
+                <button class="pill" onclick="filterSport('motorsports', this)">
+                    <div class="pill-icon"><i class="fa-solid fa-flag-checkered"></i><span class="badge">2</span></div>
+                    <span>MotorSports</span>
+                </button>
+                <button class="pill" onclick="filterSport('wrestling', this)">
+                    <div class="pill-icon"><i class="fa-solid fa-hand-fist"></i><span class="badge">5</span></div>
+                    <span>Wrestling</span>
+                </button>
+            </div>
+
+            <!-- Status Tabs -->
+            <div class="status-tabs">
+                <button class="status-tab" onclick="filterStatus('recent', this)">Recent (2)</button>
+                <button class="status-tab active" onclick="filterStatus('live', this)">Live (1)</button>
+                <button class="status-tab" onclick="filterStatus('upcoming', this)">Upcoming (8)</button>
+                <button class="status-tab" onclick="filterStatus('all', this)">All (20)</button>
+            </div>
+
+            <!-- Live & Upcoming Matches Cards -->
+            <div class="matches-list" id="matchesList">
+                <!-- Matches generated via JS -->
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: CATEGORIES ================= -->
+        <section id="categoriesTab" class="tab-content">
+            <h2 class="section-title">Categories</h2>
+            <div class="category-grid" id="categoryGrid">
+                <!-- Grid Items matching Image 58725 -->
+            </div>
+            <div class="channel-grid" id="channelGrid" style="display:none;">
+                <button class="back-category-btn" onclick="hideChannels()"><i class="fa-solid fa-arrow-left"></i> Back to Categories</button>
+                <h3 id="selectedCategoryTitle" style="margin: 15px 0; color:#38bdf8;">Category Channels</h3>
+                <div class="channels-list" id="channelsListContainer"></div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: PROFILE & AUTH ================= -->
+        <section id="profileTab" class="tab-content">
+            <!-- Unauthenticated Form -->
+            <div class="auth-card" id="authBox">
+                <div class="auth-header">
+                    <i class="fa-solid fa-circle-user auth-avatar"></i>
+                    <h2>Welcome to Sportzfy</h2>
+                    <p>Login or Sign up to sync your preferences</p>
+                </div>
+
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="loginTabBtn" onclick="switchAuthMode('login')">Login</button>
+                    <button class="auth-tab-btn" id="signupTabBtn" onclick="switchAuthMode('signup')">Sign Up</button>
+                </div>
+
+                <form id="authForm" onsubmit="handleAuthSubmit(event)">
+                    <div class="input-group">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="tel" id="userMobile" placeholder="Mobile Number (e.g. 01700000000)" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="userPassword" placeholder="Password" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="authSubmitBtn">Login</button>
+                </form>
+
+                <div class="guest-divider">
+                    <span>OR</span>
+                </div>
+
+                <button class="guest-btn" onclick="loginAsGuest()"><i class="fa-solid fa-user-secret"></i> Continue as Guest</button>
+            </div>
+
+            <!-- Authenticated Profile Card -->
+            <div class="profile-card" id="userProfileBox" style="display:none;">
+                <div class="profile-avatar-box">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <h2 id="profileMobile">Guest User</h2>
+                <span class="user-badge" id="profileBadge">Guest Account</span>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>Favorites</span>
+                        <strong>12 Channels</strong>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Status</span>
+                        <strong>Active VIP</strong>
+                    </div>
+                </div>
+
+                <button class="logout-btn" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </section>
+
     </main>
 
-    <!-- ================= Video Player Modal ================= -->
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('homeTab', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('categoriesTab', this)">
+            <i class="fa-solid fa-border-all"></i>
+            <span>Categories</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('profileTab', this)">
+            <i class="fa-solid fa-user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+    <!-- HLS Video Player Modal -->
     <div class="player-modal" id="playerModal">
-        <div class="player-container">
+        <div class="player-content">
             <div class="player-header">
-                <h3 id="playingChannelTitle">Channel Name</h3>
-                <button class="close-player-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="modalChannelTitle">Live Match</h3>
+                <button class="close-player" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="video-box">
+            <div class="video-wrapper">
                 <video id="videoPlayer" controls autoplay></video>
             </div>
+        </div>
+    </div>
+
+    <!-- Generic Dialog Modal -->
+    <div class="dialog-modal" id="dialogModal">
+        <div class="dialog-content">
+            <h3 id="dialogTitle">Notice</h3>
+            <p id="dialogBody">Dialog message text goes here.</p>
+            <button class="dialog-close-btn" onclick="closeDialog()">OK</button>
         </div>
     </div>
 
