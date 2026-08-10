@@ -1,108 +1,188 @@
-const GITHUB_JSON_URL = "https://raw.githubusercontent.com/mdmominulislam777/Khorkuto-tv/main/data.json";
-
-let appData = [];
-let hlsPlayer = null;
-
-// 1. Fetch App Data from GitHub JSON
-async function loadAppData() {
-    const splashScreen = document.getElementById("splashScreen");
-
-    try {
-        const response = await fetch(`${GITHUB_JSON_URL}?t=${Date.now()}`);
-        
-        if (!response.ok) {
-            throw new Error(`Server Response Error (${response.status})`);
-        }
-        
-        const data = await response.json();
-        appData = data.categories || [];
-
-        // Render categories on main page
-        renderCategories();
-
-    } catch (error) {
-        console.error("Data loading error:", error);
-        alert("Failed to load data! Please check your internet connection.");
-    } finally {
-        // Ensure splash screen always hides cleanly
-        if (splashScreen) {
-            splashScreen.style.opacity = "0";
-            splashScreen.style.transition = "opacity 0.5s ease";
-            
-            setTimeout(() => {
-                splashScreen.style.display = "none";
-            }, 500);
-        }
+// Sample Matches Data
+const matchesData = [
+    {
+        id: "ban_ind_01",
+        sport: "cricket",
+        tournament: "Cricket || Asia Cup Live",
+        time: "LIVE NOW",
+        status: "live",
+        teamA: { name: "BAN", flag: "https://flagcdn.com/w80/bd.png" },
+        teamB: { name: "IND", flag: "https://flagcdn.com/w80/in.png" },
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    },
+    {
+        id: "ire_afg_01",
+        sport: "cricket",
+        tournament: "Cricket || One Day International",
+        time: "03:23:22 Live",
+        status: "live",
+        teamA: { name: "IRE", flag: "https://flagcdn.com/w80/ie.png" },
+        teamB: { name: "AFG", flag: "https://flagcdn.com/w80/af.png" },
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    },
+    {
+        id: "trt_sob_02",
+        sport: "cricket",
+        tournament: "Cricket || The Hundred Women",
+        time: "08:00 PM 10/08/2026",
+        status: "upcoming",
+        teamA: { name: "TRT-W", flag: "https://via.placeholder.com/40/1e293b/ffffff?text=TRT" },
+        teamB: { name: "SOB-W", flag: "https://via.placeholder.com/40/00b87c/ffffff?text=SOB" },
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    },
+    {
+        id: "bra_mar_03",
+        sport: "football",
+        tournament: "Football || FIFA World Cup",
+        time: "13/08/2026",
+        status: "upcoming",
+        teamA: { name: "Brazil", flag: "https://flagcdn.com/w80/br.png" },
+        teamB: { name: "Morocco", flag: "https://flagcdn.com/w80/ma.png" },
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
     }
-}
+];
 
-// 2. Render Categories in Big Cards
-function renderCategories() {
-    const categoryContainer = document.getElementById("categoryList");
-    if (!categoryContainer) return;
+// Sample Categories List (Matching image 58725)
+const categoriesData = [
+    { title: "Live Events - HD", thumb: "https://via.placeholder.com/60/38bdf8/0f172a?text=HD" },
+    { title: "Live Events - SD", thumb: "https://via.placeholder.com/60/00b87c/0f172a?text=SD" },
+    { title: "Sports Channels", thumb: "https://via.placeholder.com/60/ef4444/ffffff?text=Sports" },
+    { title: "FIFA + Live", thumb: "https://via.placeholder.com/60/0284c7/ffffff?text=FIFA" },
+    { title: "Tapmad LIVE", thumb: "https://via.placeholder.com/60/10b981/ffffff?text=Tapmad" },
+    { title: "Willow - Live", thumb: "https://via.placeholder.com/60/f59e0b/ffffff?text=Willow" },
+    { title: "Sportzfy Special", thumb: "https://via.placeholder.com/60/8b5cf6/ffffff?text=Special" },
+    { title: "KIDS", thumb: "https://via.placeholder.com/60/ec4899/ffffff?text=Kids" },
+    { title: "Information", thumb: "https://via.placeholder.com/60/6366f1/ffffff?text=Info" },
+    { title: "News Channels", thumb: "https://via.placeholder.com/60/ef4444/ffffff?text=News" },
+    { title: "Bangladesh", thumb: "https://flagcdn.com/w80/bd.png" },
+    { title: "JagoBD", thumb: "https://via.placeholder.com/60/00b87c/ffffff?text=JagoBD" },
+    { title: "Pakistan", thumb: "https://flagcdn.com/w80/pk.png" },
+    { title: "Nepal", thumb: "https://flagcdn.com/w80/np.png" },
+    { title: "DAZN", thumb: "https://via.placeholder.com/60/111827/ffffff?text=DAZN" },
+    { title: "Canais do Brasil", thumb: "https://flagcdn.com/w80/br.png" },
+    { title: "TSN", thumb: "https://via.placeholder.com/60/ef4444/ffffff?text=TSN" },
+    { title: "Fox Sports AU", thumb: "https://via.placeholder.com/60/f59e0b/ffffff?text=FOX" },
+    { title: "Sport TV", thumb: "https://via.placeholder.com/60/0284c7/ffffff?text=SportTV" },
+    { title: "Arabic Sports", thumb: "https://via.placeholder.com/60/10b981/ffffff?text=Arabic" },
+    { title: "Indian Sports", thumb: "https://flagcdn.com/w80/in.png" },
+    { title: "France Sports", thumb: "https://flagcdn.com/w80/fr.png" },
+    { title: "Africans Sports", thumb: "https://via.placeholder.com/60/8b5cf6/ffffff?text=Africa" },
+    { title: "Islamic Channels", thumb: "https://via.placeholder.com/60/00b87c/ffffff?text=Islamic" }
+];
 
-    if (appData.length === 0) {
-        categoryContainer.innerHTML = `<p style="text-align:center; grid-column: 1/-1; padding:30px; color:#94a3b8;">No categories found!</p>`;
+let hlsPlayer = null;
+let currentSportFilter = 'all';
+let currentStatusFilter = 'live';
+let authMode = 'login';
+
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+    renderMatches();
+    renderCategories();
+    checkAuthStatus();
+});
+
+// Render Matches Card
+function renderMatches() {
+    const container = document.getElementById("matchesList");
+    container.innerHTML = "";
+
+    const filtered = matchesData.filter(m => {
+        const matchSport = currentSportFilter === 'all' || m.sport === currentSportFilter;
+        const matchStatus = currentStatusFilter === 'all' || m.status === currentStatusFilter;
+        return matchSport && matchStatus;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<p style="text-align:center; padding:30px; color:#64748b;">No matches available for this filter.</p>`;
         return;
     }
 
-    let html = "";
-    appData.forEach(cat => {
-        const safeId = (cat.id || '').replace(/'/g, "\\'");
-        html += `
-            <div class="category-card" onclick="openCategory('${safeId}')">
-                <i class="${cat.icon || 'fa-solid fa-folder'}"></i>
-                <h3>${cat.name}</h3>
+    filtered.forEach(m => {
+        const card = document.createElement("div");
+        card.className = "match-card";
+        card.onclick = () => playMatchStream(m.tournament + " (" + m.teamA.name + " VS " + m.teamB.name + ")", m.streamUrl);
+        card.innerHTML = `
+            <div class="match-header">
+                <span class="tournament-name"><i class="fa-solid fa-trophy"></i> ${m.tournament}</span>
+                <span class="${m.status === 'live' ? 'live-badge' : ''}">${m.time}</span>
+            </div>
+            <div class="teams-container">
+                <div class="team">
+                    <img src="${m.teamA.flag}" class="team-flag" alt="${m.teamA.name}">
+                    <span class="team-name">${m.teamA.name}</span>
+                </div>
+                <span class="vs-badge">VS</span>
+                <div class="team team-right">
+                    <span class="team-name">${m.teamB.name}</span>
+                    <img src="${m.teamB.flag}" class="team-flag" alt="${m.teamB.name}">
+                </div>
             </div>
         `;
+        container.appendChild(card);
     });
-
-    categoryContainer.innerHTML = html;
 }
 
-// 3. Open Selected Category Channels
-function openCategory(catId) {
-    const selectedCategory = appData.find(c => c.id === catId);
-    if (!selectedCategory) return;
+// Render Categories Grid
+function renderCategories() {
+    const grid = document.getElementById("categoryGrid");
+    grid.innerHTML = "";
 
-    document.getElementById("headerTitle").innerText = selectedCategory.name;
-    document.getElementById("backBtn").style.display = "flex";
-    document.getElementById("menuBtn").style.display = "none";
-
-    document.getElementById("categoryList").style.display = "none";
-    const channelContainer = document.getElementById("channelList");
-    channelContainer.style.display = "grid";
-
-    let html = "";
-    if (!selectedCategory.channels || selectedCategory.channels.length === 0) {
-        html = `<p style="text-align:center; grid-column: 1/-1; padding:30px; color:#94a3b8;">No channels available in this category.</p>`;
-    } else {
-        selectedCategory.channels.forEach(ch => {
-            const safeName = (ch.name || '').replace(/'/g, "\\'");
-            const safeUrl = (ch.stream_url || '').replace(/'/g, "\\'");
-            html += `
-                <div class="channel-card" onclick="playStream('${safeName}', '${safeUrl}')">
-                    <img src="${ch.logo}" alt="${ch.name}" onerror="this.src='https://via.placeholder.com/60'">
-                    <span>${ch.name}</span>
-                </div>
-            `;
-        });
-    }
-
-    channelContainer.innerHTML = html;
+    categoriesData.forEach(cat => {
+        const card = document.createElement("div");
+        card.className = "category-card";
+        card.onclick = () => showChannels(cat.title);
+        card.innerHTML = `
+            <img src="${cat.thumb}" class="category-thumb" alt="${cat.title}">
+            <h3>${cat.title}</h3>
+        `;
+        grid.appendChild(card);
+    });
 }
 
-// 4. Back to Categories View
-function showCategoriesView() {
-    document.getElementById("headerTitle").innerText = "Categories";
-    document.getElementById("backBtn").style.display = "none";
-    document.getElementById("menuBtn").style.display = "flex";
+function showChannels(title) {
+    document.getElementById("categoryGrid").style.display = "none";
+    document.getElementById("channelGrid").style.display = "block";
+    document.getElementById("selectedCategoryTitle").innerText = title;
 
-    document.getElementById("channelList").style.display = "none";
-    document.getElementById("categoryList").style.display = "grid";
+    const list = document.getElementById("channelsListContainer");
+    list.innerHTML = `
+        <div class="channel-btn" onclick="playMatchStream('${title} - Server 1', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')"><i class="fa-solid fa-tv"></i> Stream Server 1</div>
+        <div class="channel-btn" onclick="playMatchStream('${title} - Server 2', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')"><i class="fa-solid fa-tv"></i> Stream Server 2 (FHD)</div>
+        <div class="channel-btn" onclick="playMatchStream('${title} - Backup', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')"><i class="fa-solid fa-tv"></i> Backup Stream</div>
+    `;
 }
 
-// 5. Sidebar Toggle Functions
+function hideChannels() {
+    document.getElementById("categoryGrid").style.display = "grid";
+    document.getElementById("channelGrid").style.display = "none";
+}
+
+// Filtering
+function filterSport(sport, btn) {
+    currentSportFilter = sport;
+    document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    renderMatches();
+}
+
+function filterStatus(status, btn) {
+    currentStatusFilter = status;
+    document.querySelectorAll(".status-tab").forEach(t => t.classList.remove("active"));
+    btn.classList.add("active");
+    renderMatches();
+}
+
+// Tab Switching
+function switchTab(tabId, btn) {
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+
+    document.getElementById(tabId).classList.add("active");
+    btn.classList.add("active");
+}
+
+// Navigation & Sidebar
 function openSidebar() {
     document.getElementById("sidebar").classList.add("open");
     document.getElementById("sidebarOverlay").classList.add("active");
@@ -113,18 +193,12 @@ function closeSidebar() {
     document.getElementById("sidebarOverlay").classList.remove("active");
 }
 
-// 6. Play HLS Stream
-function playStream(channelName, url) {
-    if (!url || url.includes("YOUR_M3U8_LINK")) {
-        alert("No live stream URL provided for this channel!");
-        return;
-    }
-
+// Play Stream
+function playMatchStream(title, url) {
     const modal = document.getElementById("playerModal");
     const video = document.getElementById("videoPlayer");
-    const title = document.getElementById("playingChannelTitle");
+    document.getElementById("modalChannelTitle").innerText = title;
 
-    title.innerText = channelName;
     modal.classList.add("active");
 
     if (Hls.isSupported()) {
@@ -132,32 +206,131 @@ function playStream(channelName, url) {
         hlsPlayer = new Hls();
         hlsPlayer.loadSource(url);
         hlsPlayer.attachMedia(video);
-        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function () {
-            video.play();
-        });
+        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play());
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = url;
-        video.addEventListener('loadedmetadata', function () {
-            video.play();
-        });
-    } else {
-        alert("Your browser does not support HLS streaming.");
+        video.play();
     }
 }
 
-// 7. Close Video Player
 function closePlayer() {
-    const modal = document.getElementById("playerModal");
     const video = document.getElementById("videoPlayer");
-
     video.pause();
     if (hlsPlayer) {
         hlsPlayer.destroy();
         hlsPlayer = null;
     }
-    video.src = "";
-    modal.classList.remove("active");
+    document.getElementById("playerModal").classList.remove("active");
 }
 
-// Initialize App
-document.addEventListener("DOMContentLoaded", loadAppData);
+// Drawer Features
+function openNetworkStream() {
+    closeSidebar();
+    const url = prompt("Enter Custom M3U8 Stream URL:");
+    if (url) playMatchStream("Custom Stream", url);
+}
+
+function toggleFloatingPlayer() {
+    closeSidebar();
+    const video = document.getElementById("videoPlayer");
+    if (document.pictureInPictureElement) {
+        document.exitPictureInPicture();
+    } else if (video) {
+        video.requestPictureInPicture().catch(() => showNotice("Floating Player", "Please start a stream video first to use Picture-in-Picture."));
+    }
+}
+
+function openQualitySettings() {
+    closeSidebar();
+    showNotice("Video Quality", "Quality Auto-selected based on your Internet speed (Auto / 1080p / 720p / 480p).");
+}
+
+function toggleCrashLog(checkbox) {
+    showNotice("Crash Log Dialog", checkbox.checked ? "Crash log reporting activated." : "Crash log reporting disabled.");
+}
+
+function shareApp() {
+    closeSidebar();
+    if (navigator.share) {
+        navigator.share({ title: 'Sportzfy TV', text: 'Download Sportzfy App for Live Sports Streaming!', url: window.location.href });
+    } else {
+        showNotice("Share App", "App Link copied to clipboard!");
+    }
+}
+
+function checkAppUpdate() {
+    closeSidebar();
+    showNotice("Update Check", "You are using the latest version of Sportzfy TV (v2.0).");
+}
+
+function exitApp() {
+    closeSidebar();
+    if (confirm("Are you sure you want to exit?")) {
+        window.close();
+    }
+}
+
+function toggleFavorite() {
+    const star = document.getElementById("starIcon");
+    star.style.color = star.style.color === 'gold' ? '#94a3b8' : 'gold';
+}
+
+function openSearchModal() {
+    const q = prompt("Search Channels or Matches:");
+    if (q) showNotice("Search Results", `No live events found matching "${q}".`);
+}
+
+function openMoreOptions() {
+    showNotice("Options", "Sportzfy v2.0 - High Definition Live Sports Streaming.");
+}
+
+function showNotice(title, msg) {
+    document.getElementById("dialogTitle").innerText = title;
+    document.getElementById("dialogBody").innerText = msg;
+    document.getElementById("dialogModal").classList.add("active");
+}
+
+function closeDialog() {
+    document.getElementById("dialogModal").classList.remove("active");
+}
+
+// Profile & Auth Logic
+function switchAuthMode(mode) {
+    authMode = mode;
+    document.getElementById("loginTabBtn").classList.toggle("active", mode === 'login');
+    document.getElementById("signupTabBtn").classList.toggle("active", mode === 'signup');
+    document.getElementById("authSubmitBtn").innerText = mode === 'login' ? 'Login' : 'Sign Up';
+}
+
+function handleAuthSubmit(e) {
+    e.preventDefault();
+    const mobile = document.getElementById("userMobile").value;
+    localStorage.setItem("user_session", JSON.stringify({ mobile: mobile, isGuest: false }));
+    checkAuthStatus();
+}
+
+function loginAsGuest() {
+    localStorage.setItem("user_session", JSON.stringify({ mobile: "Guest User", isGuest: true }));
+    checkAuthStatus();
+}
+
+function logoutUser() {
+    localStorage.removeItem("user_session");
+    checkAuthStatus();
+}
+
+function checkAuthStatus() {
+    const session = JSON.parse(localStorage.getItem("user_session"));
+    const authBox = document.getElementById("authBox");
+    const profileBox = document.getElementById("userProfileBox");
+
+    if (session) {
+        authBox.style.display = "none";
+        profileBox.style.display = "block";
+        document.getElementById("profileMobile").innerText = session.mobile;
+        document.getElementById("profileBadge").innerText = session.isGuest ? "Guest Mode" : "Verified User";
+    } else {
+        authBox.style.display = "block";
+        profileBox.style.display = "none";
+    }
+}
