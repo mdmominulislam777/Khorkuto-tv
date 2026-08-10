@@ -152,7 +152,7 @@ body {
 }
 
 .cat {
-    min-width: 65px;
+    min-width: 68px;
     padding: 10px;
     background: var(--bg-surface);
     border-radius: 14px;
@@ -170,7 +170,7 @@ body {
 
 .cat span {
     margin-top: 5px;
-    font-size: 10px;
+    font-size: 11px;
     white-space: nowrap;
 }
 
@@ -195,6 +195,7 @@ body {
 }
 
 .featured-card {
+    position: relative;
     min-width: 130px;
     background: var(--bg-card);
     border-radius: 12px;
@@ -231,14 +232,15 @@ body {
 
 .channel-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
     gap: 12px;
 }
 
 .channel-card {
+    position: relative;
     background: var(--bg-card);
     border-radius: 12px;
-    padding: 12px 8px;
+    padding: 14px 8px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -268,6 +270,34 @@ body {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* Favorite Button Styles */
+.fav-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: #9ca3af;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 5;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.fav-btn.active {
+    color: #ef4444;
+}
+
+.fav-btn:active {
+    transform: scale(1.2);
 }
 
 /* Video Player Modal */
