@@ -1,213 +1,22 @@
 /* ==========================================
-   Clean & Modern Dark UI
+   Global Reset & Base Variables
    ========================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: system-ui, -apple-system, sans-serif;
-    user-select: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
     background-color: #0f172a;
-    color: #ffffff;
+    color: #f8fafc;
     min-height: 100vh;
-}
-
-/* Loader Screen */
-.app-loader {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: #0f172a;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    z-index: 999;
 }
 
-.spinner {
-    width: 45px;
-    height: 45px;
-    border: 4px solid #1e293b;
-    border-top: 4px solid #00b87c;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Header */
-.app-header {
-    background: #1e293b;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-bottom: 1px solid #334155;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.back-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.header-title {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-/* Main Container */
-.main-container {
-    padding: 16px;
-}
-
-/* Category Grid */
-.category-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 14px;
-}
-
-.category-card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 24px 12px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-}
-
-.category-card:active {
-    transform: scale(0.96);
-    background: #253346;
-}
-
-.category-card i {
-    font-size: 32px;
-    color: #00b87c;
-    margin-bottom: 10px;
-}
-
-.category-card h3 {
-    font-size: 15px;
-    font-weight: 600;
-}
-
-/* Channel Grid */
-.channel-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
-}
-
-.channel-card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    padding: 12px 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: transform 0.15s;
-}
-
-.channel-card:active {
-    transform: scale(0.95);
-}
-
-.channel-card img {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.channel-card span {
-    font-size: 12px;
-    font-weight: 600;
-    text-align: center;
-    color: #cbd5e1;
-}
-/* ==========================================
-   Video Player Modal Styling
-   ========================================== */
-.player-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 15px;
-}
-
-.player-modal.active {
-    display: flex;
-}
-
-.player-box {
-    background: #1e293b;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 640px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    border: 1px solid #334155;
-}
-
-.player-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: #0f172a;
-    border-bottom: 1px solid #334155;
-}
-
-.player-header span {
-    font-size: 15px;
-    font-weight: 700;
-    color: #00b87c;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: #ef4444;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.video-container {
-    position: relative;
-    width: 100%;
-    background: #000;
-    aspect-ratio: 16 / 9;
-}
-
-.video-container video {
-    width: 100%;
-    height: 100%;
-}
 /* ==========================================
    Modern Splash / Loading Screen UI
    ========================================== */
@@ -221,7 +30,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 99999;
+    z-index: 9999;
     opacity: 1;
     transition: opacity 0.5s ease, visibility 0.5s ease;
 }
@@ -234,28 +43,34 @@ body {
     gap: 16px;
 }
 
-/* Logo Pulse Effect */
 .app-logo-box {
-    width: 85px;
-    height: 85px;
+    width: 95px;
+    height: 95px;
     background: #1e293b;
     border: 2px solid #00b87c;
     border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 25px rgba(0, 184, 124, 0.3);
+    box-shadow: 0 0 30px rgba(0, 184, 124, 0.35);
     animation: pulse 1.8s infinite ease-in-out;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.splash-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .logo-icon {
-    font-size: 38px;
+    font-size: 40px;
     color: #00b87c;
 }
 
-/* App Title */
 .app-name {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 800;
     color: #ffffff;
     letter-spacing: 0.5px;
@@ -265,9 +80,8 @@ body {
     color: #00b87c;
 }
 
-/* Modern Line Loader */
 .loader-line {
-    width: 140px;
+    width: 150px;
     height: 4px;
     background: #1e293b;
     border-radius: 10px;
@@ -293,20 +107,345 @@ body {
     font-weight: 500;
 }
 
-/* Hide Class for Fade Out */
-.splash-screen.fade-out {
-    opacity: 0;
-    visibility: hidden;
-}
-
-/* Animations */
 @keyframes pulse {
     0% { transform: scale(1); box-shadow: 0 0 15px rgba(0, 184, 124, 0.2); }
-    50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 184, 124, 0.5); }
+    50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(0, 184, 124, 0.5); }
     100% { transform: scale(1); box-shadow: 0 0 15px rgba(0, 184, 124, 0.2); }
 }
 
 @keyframes loadingAnimation {
     0% { left: -100%; }
     100% { left: 100%; }
+}
+
+/* ==========================================
+   Header Navigation Bar
+   ========================================== */
+.app-header {
+    background: #1e293b;
+    height: 60px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: #38bdf8;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.header-left h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.header-logo {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+/* ==========================================
+   Slide Menu / Sidebar
+   ========================================== */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #0f172a;
+    border-right: 1px solid #1e293b;
+    z-index: 999;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e293b;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+}
+
+.sidebar-brand span {
+    font-weight: 700;
+    font-size: 17px;
+    color: #ffffff;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-menu li {
+    padding: 12px 16px;
+    color: #cbd5e1;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sidebar-menu li:hover {
+    background: #1e293b;
+    color: #00b87c;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #64748b;
+    border-top: 1px solid #1e293b;
+}
+
+/* ==========================================
+   Large Categories Cards Layout
+   ========================================== */
+.main-container {
+    padding: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.category-card {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    min-height: 145px;
+}
+
+.category-card:hover, .category-card:active {
+    transform: translateY(-4px) scale(1.02);
+    border-color: #00b87c;
+    box-shadow: 0 8px 22px rgba(0, 184, 124, 0.3);
+    background: linear-gradient(145deg, #1e293b, #1e293b);
+}
+
+.category-card i {
+    font-size: 42px;
+    color: #00b87c;
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover i {
+    transform: scale(1.1);
+}
+
+.category-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+/* ==========================================
+   Channel List Grid
+   ========================================== */
+.channel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+}
+
+.channel-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.channel-card:hover {
+    transform: translateY(-3px);
+    border-color: #38bdf8;
+}
+
+.channel-card img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.channel-card span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+/* ==========================================
+   Video Player Modal
+   ========================================== */
+.player-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.player-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.player-container {
+    background: #0f172a;
+    width: 92%;
+    max-width: 800px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.player-header {
+    padding: 14px 18px;
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.player-header h3 {
+    font-size: 16px;
+    color: #ffffff;
+}
+
+.close-player-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.video-box {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background: #000;
+}
+
+.video-box video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
