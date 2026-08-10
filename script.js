@@ -1,6 +1,6 @@
 // ==================== LIVE API CONFIGURATION ====================
 // ১. আপনার নিজস্ব JSON API endpoint বা CricAPI / Football API এর URL এখানে বসান
-const LIVE_MATCHES_API_URL = "https://raw.githubusercontent.com/app-data/sports-api/main/matches.json";
+const LIVE_MATCHES_API_URL = "matches.json";
 const CATEGORIES_API_URL    = "https://raw.githubusercontent.com/app-data/sports-api/main/categories.json";
 
 // অটো আপডেট টাইম ইনটারভাল (মিলিসেকেন্ডে) - যেমন: ৩০ সেকেন্ড পর পর ডাটা অটো আপডেট হবে
