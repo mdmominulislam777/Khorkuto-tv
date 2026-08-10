@@ -1,0 +1,41 @@
+{
+  "status": "success",
+  "matches": [
+    {
+      "id": "match_01",
+      "sport": "cricket",
+      "tournament": "Asia Cup Live 2026",
+      "title": "BAN vs IND Live Stream",
+      "status": "live",
+      "time": "LIVE NOW",
+      "live_score": "BAN 185/4 (18.2)",
+      "teamA": {
+        "name": "BAN",
+        "flag": "https://flagcdn.com/w80/bd.png"
+      },
+      "teamB": {
+        "name": "IND",
+        "flag": "https://flagcdn.com/w80/in.png"
+      },
+      "stream_url": "https://your-live-server.com/hls/bangladesh-vs-india.m3u8"
+    },
+    {
+      "id": "match_02",
+      "sport": "football",
+      "tournament": "FIFA World Cup",
+      "title": "Brazil vs Morocco Live",
+      "status": "upcoming",
+      "time": "08:00 PM",
+      "live_score": "",
+      "teamA": {
+        "name": "Brazil",
+        "flag": "https://flagcdn.com/w80/br.png"
+      },
+      "teamB": {
+        "name": "Morocco",
+        "flag": "https://flagcdn.com/w80/ma.png"
+      },
+      "stream_url": "https://your-live-server.com/hls/brazil-vs-morocco.m3u8"
+    }
+  ]
+}
