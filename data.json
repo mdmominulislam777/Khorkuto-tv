@@ -7,7 +7,7 @@
       "channels": [
         {
           "name": "T Sports HD",
-          "logo": "T Sports.png",    
+          "logo": "logos/T Sports.png",    
           "stream_url": "https://s1.itcnbd.live/T-Sports-HD/tracks-v1a1/mono.m3u8"
         },
         {
