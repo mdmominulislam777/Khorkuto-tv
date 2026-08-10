@@ -6,6 +6,7 @@
     <title>Khorkuto TV</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
@@ -26,6 +27,18 @@
 
         <div class="channel-grid" id="channelList" style="display: none;"></div>
     </main>
+
+    <div class="player-modal" id="playerModal">
+        <div class="player-box">
+            <div class="player-header">
+                <span id="playingChannelTitle">Channel Name</span>
+                <button class="close-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="video-container">
+                <video id="videoPlayer" controls autoplay playsinline></video>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
