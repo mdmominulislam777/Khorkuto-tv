@@ -1,118 +1,128 @@
-// Sample Matches Data
-const matchesData = [
-    {
-        id: "ban_ind_01",
-        sport: "cricket",
-        tournament: "Cricket || Asia Cup Live",
-        time: "LIVE NOW",
-        status: "live",
-        teamA: { name: "BAN", flag: "https://flagcdn.com/w80/bd.png" },
-        teamB: { name: "IND", flag: "https://flagcdn.com/w80/in.png" },
-        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-    },
-    {
-        id: "ire_afg_01",
-        sport: "cricket",
-        tournament: "Cricket || One Day International",
-        time: "03:23:22 Live",
-        status: "live",
-        teamA: { name: "IRE", flag: "https://flagcdn.com/w80/ie.png" },
-        teamB: { name: "AFG", flag: "https://flagcdn.com/w80/af.png" },
-        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-    },
-    {
-        id: "trt_sob_02",
-        sport: "cricket",
-        tournament: "Cricket || The Hundred Women",
-        time: "08:00 PM 10/08/2026",
-        status: "upcoming",
-        teamA: { name: "TRT-W", flag: "https://via.placeholder.com/40/1e293b/ffffff?text=TRT" },
-        teamB: { name: "SOB-W", flag: "https://via.placeholder.com/40/00b87c/ffffff?text=SOB" },
-        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-    },
-    {
-        id: "bra_mar_03",
-        sport: "football",
-        tournament: "Football || FIFA World Cup",
-        time: "13/08/2026",
-        status: "upcoming",
-        teamA: { name: "Brazil", flag: "https://flagcdn.com/w80/br.png" },
-        teamB: { name: "Morocco", flag: "https://flagcdn.com/w80/ma.png" },
-        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-    }
-];
+// ==================== LIVE API CONFIGURATION ====================
+// ১. আপনার নিজস্ব JSON API endpoint বা CricAPI / Football API এর URL এখানে বসান
+const LIVE_MATCHES_API_URL = "https://raw.githubusercontent.com/app-data/sports-api/main/matches.json";
+const CATEGORIES_API_URL    = "https://raw.githubusercontent.com/app-data/sports-api/main/categories.json";
 
-// Sample Categories List (Matching image 58725)
-const categoriesData = [
-    { title: "Live Events - HD", thumb: "https://via.placeholder.com/60/38bdf8/0f172a?text=HD" },
-    { title: "Live Events - SD", thumb: "https://via.placeholder.com/60/00b87c/0f172a?text=SD" },
-    { title: "Sports Channels", thumb: "https://via.placeholder.com/60/ef4444/ffffff?text=Sports" },
-    { title: "FIFA + Live", thumb: "https://via.placeholder.com/60/0284c7/ffffff?text=FIFA" },
-    { title: "Tapmad LIVE", thumb: "https://via.placeholder.com/60/10b981/ffffff?text=Tapmad" },
-    { title: "Willow - Live", thumb: "https://via.placeholder.com/60/f59e0b/ffffff?text=Willow" },
-    { title: "Sportzfy Special", thumb: "https://via.placeholder.com/60/8b5cf6/ffffff?text=Special" },
-    { title: "KIDS", thumb: "https://via.placeholder.com/60/ec4899/ffffff?text=Kids" },
-    { title: "Information", thumb: "https://via.placeholder.com/60/6366f1/ffffff?text=Info" },
-    { title: "News Channels", thumb: "https://via.placeholder.com/60/ef4444/ffffff?text=News" },
-    { title: "Bangladesh", thumb: "https://flagcdn.com/w80/bd.png" },
-    { title: "JagoBD", thumb: "https://via.placeholder.com/60/00b87c/ffffff?text=JagoBD" },
-    { title: "Pakistan", thumb: "https://flagcdn.com/w80/pk.png" },
-    { title: "Nepal", thumb: "https://flagcdn.com/w80/np.png" },
-    { title: "DAZN", thumb: "https://via.placeholder.com/60/111827/ffffff?text=DAZN" },
-    { title: "Canais do Brasil", thumb: "https://flagcdn.com/w80/br.png" },
-    { title: "TSN", thumb: "https://via.placeholder.com/60/ef4444/ffffff?text=TSN" },
-    { title: "Fox Sports AU", thumb: "https://via.placeholder.com/60/f59e0b/ffffff?text=FOX" },
-    { title: "Sport TV", thumb: "https://via.placeholder.com/60/0284c7/ffffff?text=SportTV" },
-    { title: "Arabic Sports", thumb: "https://via.placeholder.com/60/10b981/ffffff?text=Arabic" },
-    { title: "Indian Sports", thumb: "https://flagcdn.com/w80/in.png" },
-    { title: "France Sports", thumb: "https://flagcdn.com/w80/fr.png" },
-    { title: "Africans Sports", thumb: "https://via.placeholder.com/60/8b5cf6/ffffff?text=Africa" },
-    { title: "Islamic Channels", thumb: "https://via.placeholder.com/60/00b87c/ffffff?text=Islamic" }
-];
+// অটো আপডেট টাইম ইনটারভাল (মিলিসেকেন্ডে) - যেমন: ৩০ সেকেন্ড পর পর ডাটা অটো আপডেট হবে
+const AUTO_REFRESH_INTERVAL = 30000; 
 
+let globalMatches = [];
+let globalCategories = [];
 let hlsPlayer = null;
 let currentSportFilter = 'all';
 let currentStatusFilter = 'live';
 let authMode = 'login';
 
-// Initialize
+// অ্যাপ লোড হলেই প্রথমবার ডাটা ফেচ হবে এবং অটো-পোকার (Auto-Polling) শুরু হবে
 document.addEventListener("DOMContentLoaded", () => {
-    renderMatches();
-    renderCategories();
+    initLiveApp();
     checkAuthStatus();
+    
+    // প্রতি ৩০ সেকেন্ড পর পর অটোমেটিক API কল হয়ে ম্যাচ ও স্কোর আপডেট হবে
+    setInterval(() => {
+        console.log("Auto refreshing live sports data...");
+        fetchLiveMatches(true); // silent background update
+    }, AUTO_REFRESH_INTERVAL);
 });
 
-// Render Matches Card
+async function initLiveApp() {
+    showLoader(true);
+    await Promise.all([fetchLiveMatches(), fetchCategories()]);
+    showLoader(false);
+}
+
+// ==================== REALTIME API FETCH LOGIC ====================
+
+// ১. লাইভ ম্যাচ অটো ফেচিং
+async function fetchLiveMatches(isBackgroundRefresh = false) {
+    try {
+        // Cache buster যোগ করা হয়েছে যাতে ব্রাউজার পুরাতন ডাটা ক্যাশ না করে
+        const response = await fetch(`${LIVE_MATCHES_API_URL}?t=${new Date().getTime()}`);
+        if (!response.ok) throw new Error("API Connection Failed");
+        
+        const data = await response.json();
+        globalMatches = data.matches || [];
+        
+        // স্ক্রিন অটো রি-রেন্ডার
+        renderMatches();
+        
+    } catch (error) {
+        console.error("Live Matches API Error:", error);
+        if (!isBackgroundRefresh) {
+            document.getElementById("matchesList").innerHTML = `
+                <div style="text-align:center; padding:30px; color:#ef4444;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size:30px; margin-bottom:10px;"></i>
+                    <p>লাইভ সার্ভারের সাথে সংযোগ করা যাচ্ছে না।</p>
+                </div>`;
+        }
+    }
+}
+
+// ২. ক্যাটাগরি ও চ্যানেল অটো ফেচিং
+async function fetchCategories() {
+    try {
+        const response = await fetch(`${CATEGORIES_API_URL}?t=${new Date().getTime()}`);
+        if (!response.ok) throw new Error("Categories API Error");
+        
+        const data = await response.json();
+        globalCategories = data.categories || [];
+        renderCategories();
+    } catch (error) {
+        console.error("Categories API Error:", error);
+    }
+}
+
+// UI Loader
+function showLoader(show) {
+    const container = document.getElementById("matchesList");
+    if (show && container) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:40px; color:#38bdf8;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:30px; margin-bottom:10px;"></i>
+                <p>লাইভ ম্যাচ লোড হচ্ছে...</p>
+            </div>`;
+    }
+}
+
+// ==================== DYNAMIC RENDER LOGIC ====================
+
 function renderMatches() {
     const container = document.getElementById("matchesList");
+    if (!container) return;
     container.innerHTML = "";
 
-    const filtered = matchesData.filter(m => {
+    const filtered = globalMatches.filter(m => {
         const matchSport = currentSportFilter === 'all' || m.sport === currentSportFilter;
         const matchStatus = currentStatusFilter === 'all' || m.status === currentStatusFilter;
         return matchSport && matchStatus;
     });
 
     if (filtered.length === 0) {
-        container.innerHTML = `<p style="text-align:center; padding:30px; color:#64748b;">No matches available for this filter.</p>`;
+        container.innerHTML = `<p style="text-align:center; padding:30px; color:#64748b;">বর্তমানে কোনো ম্যাচ পাওয়া যায়নি।</p>`;
         return;
     }
 
     filtered.forEach(m => {
         const card = document.createElement("div");
         card.className = "match-card";
-        card.onclick = () => playMatchStream(m.tournament + " (" + m.teamA.name + " VS " + m.teamB.name + ")", m.streamUrl);
+        
+        // ক্লিকে সরাসরি লাইভ স্ট্রিম চালু হবে
+        card.onclick = () => playMatchStream(m.title || m.tournament, m.stream_url);
+
         card.innerHTML = `
             <div class="match-header">
                 <span class="tournament-name"><i class="fa-solid fa-trophy"></i> ${m.tournament}</span>
-                <span class="${m.status === 'live' ? 'live-badge' : ''}">${m.time}</span>
+                <span class="${m.status === 'live' ? 'live-badge' : ''}">${m.status === 'live' ? '🔴 LIVE' : m.time}</span>
             </div>
             <div class="teams-container">
                 <div class="team">
                     <img src="${m.teamA.flag}" class="team-flag" alt="${m.teamA.name}">
                     <span class="team-name">${m.teamA.name}</span>
                 </div>
-                <span class="vs-badge">VS</span>
+                <div style="text-align:center;">
+                    <span class="vs-badge">VS</span>
+                    ${m.live_score ? `<div style="font-size:11px; color:#00b87c; font-weight:bold; margin-top:4px;">${m.live_score}</div>` : ''}
+                </div>
                 <div class="team team-right">
                     <span class="team-name">${m.teamB.name}</span>
                     <img src="${m.teamB.flag}" class="team-flag" alt="${m.teamB.name}">
@@ -123,15 +133,15 @@ function renderMatches() {
     });
 }
 
-// Render Categories Grid
 function renderCategories() {
     const grid = document.getElementById("categoryGrid");
+    if (!grid) return;
     grid.innerHTML = "";
 
-    categoriesData.forEach(cat => {
+    globalCategories.forEach(cat => {
         const card = document.createElement("div");
         card.className = "category-card";
-        card.onclick = () => showChannels(cat.title);
+        card.onclick = () => showChannels(cat.title, cat.channels || []);
         card.innerHTML = `
             <img src="${cat.thumb}" class="category-thumb" alt="${cat.title}">
             <h3>${cat.title}</h3>
@@ -140,17 +150,26 @@ function renderCategories() {
     });
 }
 
-function showChannels(title) {
+function showChannels(title, channels) {
     document.getElementById("categoryGrid").style.display = "none";
     document.getElementById("channelGrid").style.display = "block";
     document.getElementById("selectedCategoryTitle").innerText = title;
 
     const list = document.getElementById("channelsListContainer");
-    list.innerHTML = `
-        <div class="channel-btn" onclick="playMatchStream('${title} - Server 1', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')"><i class="fa-solid fa-tv"></i> Stream Server 1</div>
-        <div class="channel-btn" onclick="playMatchStream('${title} - Server 2', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')"><i class="fa-solid fa-tv"></i> Stream Server 2 (FHD)</div>
-        <div class="channel-btn" onclick="playMatchStream('${title} - Backup', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')"><i class="fa-solid fa-tv"></i> Backup Stream</div>
-    `;
+    list.innerHTML = "";
+
+    if (channels.length === 0) {
+        list.innerHTML = `<div class="channel-btn" onclick="playMatchStream('${title}', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')"><i class="fa-solid fa-tv"></i> Default Stream</div>`;
+        return;
+    }
+
+    channels.forEach(ch => {
+        const btn = document.createElement("div");
+        btn.className = "channel-btn";
+        btn.onclick = () => playMatchStream(ch.name, ch.url);
+        btn.innerHTML = `<i class="fa-solid fa-tv"></i> ${ch.name}`;
+        list.appendChild(btn);
+    });
 }
 
 function hideChannels() {
@@ -158,7 +177,8 @@ function hideChannels() {
     document.getElementById("channelGrid").style.display = "none";
 }
 
-// Filtering
+// ==================== NAVIGATION & UTILS ====================
+
 function filterSport(sport, btn) {
     currentSportFilter = sport;
     document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
@@ -173,7 +193,6 @@ function filterStatus(status, btn) {
     renderMatches();
 }
 
-// Tab Switching
 function switchTab(tabId, btn) {
     document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
     document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
@@ -182,7 +201,6 @@ function switchTab(tabId, btn) {
     btn.classList.add("active");
 }
 
-// Navigation & Sidebar
 function openSidebar() {
     document.getElementById("sidebar").classList.add("open");
     document.getElementById("sidebarOverlay").classList.add("active");
@@ -193,8 +211,14 @@ function closeSidebar() {
     document.getElementById("sidebarOverlay").classList.remove("active");
 }
 
-// Play Stream
+// ==================== PLAYER LOGIC ====================
+
 function playMatchStream(title, url) {
+    if (!url) {
+        showNotice("Stream Error", "No stream link available for this match yet.");
+        return;
+    }
+
     const modal = document.getElementById("playerModal");
     const video = document.getElementById("videoPlayer");
     document.getElementById("modalChannelTitle").innerText = title;
@@ -215,7 +239,7 @@ function playMatchStream(title, url) {
 
 function closePlayer() {
     const video = document.getElementById("videoPlayer");
-    video.pause();
+    if (video) video.pause();
     if (hlsPlayer) {
         hlsPlayer.destroy();
         hlsPlayer = null;
@@ -223,11 +247,12 @@ function closePlayer() {
     document.getElementById("playerModal").classList.remove("active");
 }
 
-// Drawer Features
+// ==================== DRAWER FEATURES ====================
+
 function openNetworkStream() {
     closeSidebar();
     const url = prompt("Enter Custom M3U8 Stream URL:");
-    if (url) playMatchStream("Custom Stream", url);
+    if (url) playMatchStream("Network Stream", url);
 }
 
 function toggleFloatingPlayer() {
@@ -236,23 +261,23 @@ function toggleFloatingPlayer() {
     if (document.pictureInPictureElement) {
         document.exitPictureInPicture();
     } else if (video) {
-        video.requestPictureInPicture().catch(() => showNotice("Floating Player", "Please start a stream video first to use Picture-in-Picture."));
+        video.requestPictureInPicture().catch(() => showNotice("Floating Player", "Please start a stream video first."));
     }
 }
 
 function openQualitySettings() {
     closeSidebar();
-    showNotice("Video Quality", "Quality Auto-selected based on your Internet speed (Auto / 1080p / 720p / 480p).");
+    showNotice("Video Quality", "Quality auto-adjusts based on your bandwidth (Auto / 1080p / 720p).");
 }
 
 function toggleCrashLog(checkbox) {
-    showNotice("Crash Log Dialog", checkbox.checked ? "Crash log reporting activated." : "Crash log reporting disabled.");
+    showNotice("Crash Log", checkbox.checked ? "Crash reporting enabled." : "Crash reporting disabled.");
 }
 
 function shareApp() {
     closeSidebar();
     if (navigator.share) {
-        navigator.share({ title: 'Sportzfy TV', text: 'Download Sportzfy App for Live Sports Streaming!', url: window.location.href });
+        navigator.share({ title: 'Sportzfy TV', text: 'Watch Live Sports on Sportzfy App!', url: window.location.href });
     } else {
         showNotice("Share App", "App Link copied to clipboard!");
     }
@@ -260,28 +285,26 @@ function shareApp() {
 
 function checkAppUpdate() {
     closeSidebar();
-    showNotice("Update Check", "You are using the latest version of Sportzfy TV (v2.0).");
+    showNotice("Update Check", "You are using the latest version (v2.0).");
 }
 
 function exitApp() {
     closeSidebar();
-    if (confirm("Are you sure you want to exit?")) {
-        window.close();
-    }
+    if (confirm("Are you sure you want to exit?")) window.close();
 }
 
 function toggleFavorite() {
     const star = document.getElementById("starIcon");
-    star.style.color = star.style.color === 'gold' ? '#94a3b8' : 'gold';
+    if (star) star.style.color = star.style.color === 'gold' ? '#94a3b8' : 'gold';
 }
 
 function openSearchModal() {
-    const q = prompt("Search Channels or Matches:");
-    if (q) showNotice("Search Results", `No live events found matching "${q}".`);
+    const q = prompt("Search Matches or Channels:");
+    if (q) showNotice("Search Results", `No matches found for "${q}".`);
 }
 
 function openMoreOptions() {
-    showNotice("Options", "Sportzfy v2.0 - High Definition Live Sports Streaming.");
+    showNotice("Sportzfy TV", "Version 2.0 - High Definition Live Sports Streaming.");
 }
 
 function showNotice(title, msg) {
@@ -294,7 +317,8 @@ function closeDialog() {
     document.getElementById("dialogModal").classList.remove("active");
 }
 
-// Profile & Auth Logic
+// ==================== AUTH & PROFILE ====================
+
 function switchAuthMode(mode) {
     authMode = mode;
     document.getElementById("loginTabBtn").classList.toggle("active", mode === 'login');
@@ -323,6 +347,8 @@ function checkAuthStatus() {
     const session = JSON.parse(localStorage.getItem("user_session"));
     const authBox = document.getElementById("authBox");
     const profileBox = document.getElementById("userProfileBox");
+
+    if (!authBox || !profileBox) return;
 
     if (session) {
         authBox.style.display = "none";
