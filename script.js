@@ -3,41 +3,35 @@ const GITHUB_JSON_URL = "https://raw.githubusercontent.com/mdmominulislam777/Kho
 let appData = [];
 let hlsPlayer = null;
 
-// ১. ডাটা ফেচ করা এবং লোডিং পেজ হাইড করা
+// ১. ডাটা ফেচ করা
 async function loadAppData() {
     const splashScreen = document.getElementById("splashScreen");
-    const statusText = document.getElementById("statusText");
 
     try {
-        if(statusText) statusText.innerText = "কানেক্ট করা হচ্ছে...";
-
         const response = await fetch(`${GITHUB_JSON_URL}?t=${Date.now()}`);
         
         if (!response.ok) {
-            throw new Error(`HTTP Status: ${response.status}`);
+            throw new Error(`Server Response Error (${response.status})`);
         }
         
         const data = await response.json();
         appData = data.categories || [];
 
-        // ক্যাটাগরি সাজানো
+        // ক্যাটাগরি রেন্ডার করা
         renderCategories();
 
-        // ডাটা লোড সম্পূর্ণ হলে লোডিং পেজ হাইড করা
-        setTimeout(() => {
-            if(splashScreen) splashScreen.classList.add("fade-out");
-        }, 500);
-
     } catch (error) {
-        console.error("ডাটা লোড হতে সমস্যা হয়েছে:", error);
+        console.error("ডাটা লোড সমস্যা:", error);
+        alert("ডাটা লোড করতে সমস্যা হয়েছে! দয়া করে পেজটি রিফ্রেশ দিন।");
+    } finally {
+        // ডাটা আসুক বা না আসুক — লোডিং পেজ অবশ্যই সরে যাবে
         if (splashScreen) {
-            splashScreen.innerHTML = `
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 45px; color: #ef4444; margin-bottom: 12px;"></i>
-                    <h3 style="color: #ffffff; font-size: 18px;">ডাটা লোড করতে ব্যর্থ হয়েছে!</h3>
-                    <p style="color: #94a3b8; font-size: 13px; margin-top: 6px;">ইন্টারনেট কানেকশন চেক করে রিফ্রেশ দিন।</p>
-                </div>
-            `;
+            splashScreen.style.opacity = "0";
+            splashScreen.style.transition = "opacity 0.5s ease";
+            
+            setTimeout(() => {
+                splashScreen.style.display = "none";
+            }, 500);
         }
     }
 }
@@ -45,8 +39,14 @@ async function loadAppData() {
 // ২. ক্যাটাগরি দেখানো
 function renderCategories() {
     const categoryContainer = document.getElementById("categoryList");
-    let html = "";
+    if (!categoryContainer) return;
 
+    if (appData.length === 0) {
+        categoryContainer.innerHTML = `<p style="text-align:center; padding:20px; color:#94a3b8;">কোনো ক্যাটাগরি পাওয়া যায়নি!</p>`;
+        return;
+    }
+
+    let html = "";
     appData.forEach(cat => {
         html += `
             <div class="category-card" onclick="openCategory('${cat.id}')">
@@ -84,7 +84,7 @@ function openCategory(catId) {
     channelContainer.innerHTML = html;
 }
 
-// ৪. ক্যাটাগরি ভিউতে ফেরত যাওয়া
+// ৪. ব্যাক বাটন (ক্যাটাগরি ভিউতে ফিরে যাওয়া)
 function showCategoriesView() {
     document.getElementById("headerTitle").innerText = "Categories";
     document.getElementById("backBtn").style.display = "none";
@@ -93,10 +93,10 @@ function showCategoriesView() {
     document.getElementById("categoryList").style.display = "grid";
 }
 
-// ৫. চ্যানেল প্লে করা
+// ৫. প্লেয়ার চালু করা
 function playStream(channelName, url) {
-    if (!url) {
-        alert("এই চ্যানেলের স্ট্রিম লিংক পাওয়া যায়নি!");
+    if (!url || url.includes("YOUR_M3U8_LINK")) {
+        alert("এই চ্যানেলের লাইভ লিংক যুক্ত করা হয়নি!");
         return;
     }
 
@@ -108,9 +108,7 @@ function playStream(channelName, url) {
     modal.classList.add("active");
 
     if (Hls.isSupported()) {
-        if (hlsPlayer) {
-            hlsPlayer.destroy();
-        }
+        if (hlsPlayer) hlsPlayer.destroy();
         hlsPlayer = new Hls();
         hlsPlayer.loadSource(url);
         hlsPlayer.attachMedia(video);
@@ -123,11 +121,11 @@ function playStream(channelName, url) {
             video.play();
         });
     } else {
-        alert("আপনার ব্রাউজারে HLS ভিডিও সাপোর্ট করছে না।");
+        alert("আপনার ব্রাউজারে HLS সাপোর্ট করে না।");
     }
 }
 
-// ৬. ভিডিও বন্ধ করা
+// ৬. প্লেয়ার বন্ধ করা
 function closePlayer() {
     const modal = document.getElementById("playerModal");
     const video = document.getElementById("videoPlayer");
@@ -141,4 +139,5 @@ function closePlayer() {
     modal.classList.remove("active");
 }
 
+// অ্যাপ স্টার্ট
 document.addEventListener("DOMContentLoaded", loadAppData);
