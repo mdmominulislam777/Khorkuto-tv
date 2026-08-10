@@ -1,53 +1,81 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khorkuto TV</title>
     <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HLS.js for IPTV Player -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-<!-- ================= Fullscreen Splash / Loading Page ================= -->
-<div class="splash-screen" id="splashScreen">
-    <div class="splash-content">
-        <div class="app-logo-box">
-            <i class="fa-solid fa-tv logo-icon"></i>
+
+    <!-- ================= Fullscreen Splash / Loading Page ================= -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-content">
+            <div class="app-logo-box">
+                <img src="logo.png" alt="Logo" class="splash-logo" onerror="this.style.display='none'; document.getElementById('fallbackIcon').style.display='block';">
+                <i class="fa-solid fa-tv logo-icon" id="fallbackIcon" style="display:none;"></i>
+            </div>
+            <h1 class="app-name">Khorkuto <span>TV</span></h1>
+            
+            <div class="loader-line"></div>
+            <p class="status-text" id="statusText">Connecting to server...</p>
         </div>
-        <h1 class="app-name">Khorkuto <span>TV</span></h1>
-        
-        <div class="loader-line"></div>
-        <p class="status-text" id="statusText">ডাটা কানেক্ট করা হচ্ছে...</p>
-    </div>
-</div>
-
-    <div class="app-loader" id="appLoader">
-        <div class="spinner"></div>
-        <p>ডাটা লোড হচ্ছে, অপেক্ষা করুন...</p>
     </div>
 
+    <!-- ================= Slide Menu / Sidebar ================= -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <img src="logo.png" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40'">
+                <span>Khorkuto TV</span>
+            </div>
+            <button class="close-btn" onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="showCategoriesView(); closeSidebar();"><i class="fa-solid fa-house"></i> Home</li>
+            <li onclick="location.reload();"><i class="fa-solid fa-rotate-right"></i> Refresh Data</li>
+            <li onclick="alert('Khorkuto TV - Modern Live Streaming Web App'); closeSidebar();"><i class="fa-solid fa-circle-info"></i> About App</li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Version 2.0</p>
+        </div>
+    </aside>
+
+    <!-- ================= Header Navigation ================= -->
     <header class="app-header">
-        <button class="back-btn" id="backBtn" onclick="showCategoriesView()" style="display: none;">
-            <i class="fa-solid fa-arrow-left"></i>
-        </button>
-        <h2 class="header-title" id="headerTitle">Categories</h2>
+        <div class="header-left">
+            <button class="icon-btn" id="menuBtn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <button class="icon-btn" id="backBtn" onclick="showCategoriesView()" style="display:none;"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 id="headerTitle">Categories</h2>
+        </div>
+        <div class="header-right">
+            <img src="logo.png" alt="Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/35'">
+        </div>
     </header>
 
+    <!-- ================= Main Content Container ================= -->
     <main class="main-container">
+        <!-- Large Category Cards Grid -->
         <div class="category-grid" id="categoryList"></div>
 
-        <div class="channel-grid" id="channelList" style="display: none;"></div>
+        <!-- Channel List Grid -->
+        <div class="channel-grid" id="channelList" style="display:none;"></div>
     </main>
 
+    <!-- ================= Video Player Modal ================= -->
     <div class="player-modal" id="playerModal">
-        <div class="player-box">
+        <div class="player-container">
             <div class="player-header">
-                <span id="playingChannelTitle">Channel Name</span>
-                <button class="close-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="playingChannelTitle">Channel Name</h3>
+                <button class="close-player-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="video-container">
-                <video id="videoPlayer" controls autoplay playsinline></video>
+            <div class="video-box">
+                <video id="videoPlayer" controls autoplay></video>
             </div>
         </div>
     </div>
