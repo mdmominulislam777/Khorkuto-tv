@@ -3,31 +3,42 @@ const GITHUB_JSON_URL = "https://raw.githubusercontent.com/mdmominulislam777/Kho
 let appData = [];
 let hlsPlayer = null;
 
-// ১. ডাটা ফেচ করা
+// ১. ডাটা ফেচ করা এবং লোডিং পেজ হাইড করা
 async function loadAppData() {
-    const loader = document.getElementById("appLoader");
+    const splashScreen = document.getElementById("splashScreen");
+    const statusText = document.getElementById("statusText");
+
     try {
+        if(statusText) statusText.innerText = "কানেক্ট করা হচ্ছে...";
+
         const response = await fetch(`${GITHUB_JSON_URL}?t=${Date.now()}`);
         
         if (!response.ok) {
-            throw new Error(`HTTP Error! Status: ${response.status}`);
+            throw new Error(`HTTP Status: ${response.status}`);
         }
         
         const data = await response.json();
         appData = data.categories || [];
 
-        loader.style.display = "none";
+        // ক্যাটাগরি সাজানো
         renderCategories();
+
+        // ডাটা লোড সম্পূর্ণ হলে লোডিং পেজ হাইড করা
+        setTimeout(() => {
+            if(splashScreen) splashScreen.classList.add("fade-out");
+        }, 500);
 
     } catch (error) {
         console.error("ডাটা লোড হতে সমস্যা হয়েছে:", error);
-        loader.innerHTML = `
-            <div style="color: #ef4444; text-align: center; padding: 20px;">
-                <i class="fa-solid fa-circle-exclamation" style="font-size: 40px; margin-bottom: 10px;"></i>
-                <p style="font-weight: bold; font-size: 16px;">ডাটা লোড হতে সমস্যা হয়েছে!</p>
-                <p style="font-size: 12px; color: #94a3b8; margin-top: 5px;">${error.message}</p>
-            </div>
-        `;
+        if (splashScreen) {
+            splashScreen.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 45px; color: #ef4444; margin-bottom: 12px;"></i>
+                    <h3 style="color: #ffffff; font-size: 18px;">ডাটা লোড করতে ব্যর্থ হয়েছে!</h3>
+                    <p style="color: #94a3b8; font-size: 13px; margin-top: 6px;">ইন্টারনেট কানেকশন চেক করে রিফ্রেশ দিন।</p>
+                </div>
+            `;
+        }
     }
 }
 
