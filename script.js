@@ -1,13 +1,14 @@
 // ==========================================
-// Khorkuto TV - Consolidated Script
+// Khorkuto TV - Consolidated Script (English & Favorites)
 // ==========================================
 
 let channels = [];
-let currentCategory = "All";
+let currentCategory = "Sports"; // Default category is now Sports
+let favorites = JSON.parse(localStorage.getItem("favChannels")) || [];
 let hls = null;
 
 // DOM Elements
-let channelList, featuredList, featuredSection, video, search, searchArea, playerContainer, currentChannelName;
+let channelList, featuredList, featuredSection, video, search, searchArea, playerContainer, currentChannelName, mainSectionTitle;
 
 document.addEventListener("DOMContentLoaded", () => {
     channelList = document.getElementById("channelList");
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     searchArea = document.getElementById("searchArea");
     playerContainer = document.getElementById("playerContainer");
     currentChannelName = document.getElementById("currentChannelName");
+    mainSectionTitle = document.getElementById("mainSectionTitle");
 
     initApp();
 });
@@ -58,6 +60,13 @@ function setupEventListeners() {
             const target = e.currentTarget;
             target.classList.add("active");
             currentCategory = target.getAttribute("data-category");
+
+            // Update main section title dynamically
+            if (currentCategory === "Sports") mainSectionTitle.textContent = "⚽ Sports Channels";
+            else if (currentCategory === "Favorites") mainSectionTitle.textContent = "❤️ Favorite Channels";
+            else if (currentCategory === "All") mainSectionTitle.textContent = "📺 All Channels";
+            else mainSectionTitle.textContent = `📺 ${currentCategory} Channels`;
+
             renderChannels();
         });
     });
@@ -71,6 +80,24 @@ function setupEventListeners() {
 }
 
 // ------------------------------------------
+// Favorites Management
+// ------------------------------------------
+function toggleFavorite(channelId, event) {
+    if (event) event.stopPropagation(); // Prevent playing channel when clicking heart icon
+
+    const index = favorites.indexOf(channelId);
+    if (index === -1) {
+        favorites.push(channelId);
+    } else {
+        favorites.splice(index, 1);
+    }
+
+    localStorage.setItem("favChannels", JSON.stringify(favorites));
+    renderChannels();
+    renderFeaturedChannels();
+}
+
+// ------------------------------------------
 // Load Channels
 // ------------------------------------------
 async function loadChannels() {
@@ -78,7 +105,7 @@ async function loadChannels() {
 
     channelList.innerHTML = `
         <div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-muted);">
-            ⏳ চ্যানেল লোড হচ্ছে...
+            ⏳ Loading channels...
         </div>`;
 
     try {
@@ -96,7 +123,7 @@ async function loadChannels() {
         console.error(err);
         channelList.innerHTML = `
             <div style="grid-column: 1/-1; text-align:center; padding:30px; color:#ef4444;">
-                ❌ channels.json ফাইল লোড করা সম্ভব হয়নি।
+                ❌ Could not load channels.json file.
             </div>`;
         hideSplash();
     }
@@ -119,9 +146,13 @@ function renderFeaturedChannels() {
     featuredList.innerHTML = "";
 
     featured.forEach(channel => {
+        const isFav = favorites.includes(channel.id);
         const card = document.createElement("div");
         card.className = "featured-card";
         card.innerHTML = `
+            <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${channel.id}, event)">
+                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+            </button>
             <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=TV';">
             <h4>${channel.name || 'Unknown'}</h4>
             <p>${channel.category || 'General'}</p>
@@ -142,23 +173,35 @@ function renderChannels() {
 
     const filtered = channels.filter(channel => {
         const nameMatch = (channel.name || "").toLowerCase().includes(keyword);
-        const categoryMatch = currentCategory === "All" || 
-                              (channel.category && channel.category.toLowerCase().includes(currentCategory.toLowerCase()));
+
+        let categoryMatch = false;
+        if (currentCategory === "All") {
+            categoryMatch = true;
+        } else if (currentCategory === "Favorites") {
+            categoryMatch = favorites.includes(channel.id);
+        } else if (channel.category) {
+            categoryMatch = channel.category.toLowerCase().includes(currentCategory.toLowerCase());
+        }
+
         return nameMatch && categoryMatch;
     });
 
     if (filtered.length === 0) {
         channelList.innerHTML = `
             <div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-muted);">
-                🔍 কোনো চ্যানেল পাওয়া যায়নি।
+                🔍 No channels found.
             </div>`;
         return;
     }
 
     filtered.forEach(channel => {
+        const isFav = favorites.includes(channel.id);
         const card = document.createElement("div");
         card.className = "channel-card";
         card.innerHTML = `
+            <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${channel.id}, event)" title="Favorite">
+                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+            </button>
             <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/50?text=TV';">
             <h4>${channel.name}</h4>
         `;
