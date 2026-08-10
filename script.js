@@ -1,9 +1,9 @@
 // ==================== LIVE API CONFIGURATION ====================
-// ১. আপনার নিজস্ব JSON API endpoint বা CricAPI / Football API এর URL এখানে বসান
-const LIVE_MATCHES_API_URL = "matches.json";
-const CATEGORIES_API_URL    = "https://raw.githubusercontent.com/app-data/sports-api/main/categories.json";
+// ১. আপনার রিপোজিটরির matches.json ও data.json ফাইলের সঠিক Relative Path
+const LIVE_MATCHES_API_URL = "./matches.json";
+const CATEGORIES_API_URL    = "./data.json";
 
-// অটো আপডেট টাইম ইনটারভাল (মিলিসেকেন্ডে) - যেমন: ৩০ সেকেন্ড পর পর ডাটা অটো আপডেট হবে
+// অটো আপডেট টাইম ইনটারভাল (৩০ সেকেন্ড পর পর ডাটা অটো আপডেট হবে)
 const AUTO_REFRESH_INTERVAL = 30000; 
 
 let globalMatches = [];
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initLiveApp();
     checkAuthStatus();
     
-    // প্রতি ৩০ সেকেন্ড পর পর অটোমেটিক API কল হয়ে ম্যাচ ও স্কোর আপডেট হবে
+    // প্রতি ৩০ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে ডাটা আপডেট হবে
     setInterval(() => {
         console.log("Auto refreshing live sports data...");
         fetchLiveMatches(true); // silent background update
@@ -49,11 +49,14 @@ async function fetchLiveMatches(isBackgroundRefresh = false) {
     } catch (error) {
         console.error("Live Matches API Error:", error);
         if (!isBackgroundRefresh) {
-            document.getElementById("matchesList").innerHTML = `
-                <div style="text-align:center; padding:30px; color:#ef4444;">
-                    <i class="fa-solid fa-triangle-exclamation" style="font-size:30px; margin-bottom:10px;"></i>
-                    <p>লাইভ সার্ভারের সাথে সংযোগ করা যাচ্ছে না।</p>
-                </div>`;
+            const container = document.getElementById("matchesList");
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:30px; color:#ef4444;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size:30px; margin-bottom:10px;"></i>
+                        <p>লাইভ সার্ভারের সাথে সংযোগ করা যাচ্ছে না। matches.json ফাইলটি চেক করুন।</p>
+                    </div>`;
+            }
         }
     }
 }
@@ -91,9 +94,14 @@ function renderMatches() {
     if (!container) return;
     container.innerHTML = "";
 
+    // Case-insensitive & Trim Filter Logic (যাতে বড়/ছোট হাতের অক্ষরের জন্য ম্যাচ মিস না হয়)
     const filtered = globalMatches.filter(m => {
-        const matchSport = currentSportFilter === 'all' || m.sport === currentSportFilter;
-        const matchStatus = currentStatusFilter === 'all' || m.status === currentStatusFilter;
+        const matchSport = currentSportFilter === 'all' || 
+            (m.sport && m.sport.toLowerCase().trim() === currentSportFilter.toLowerCase().trim());
+            
+        const matchStatus = currentStatusFilter === 'all' || 
+            (m.status && m.status.toLowerCase().trim() === currentStatusFilter.toLowerCase().trim());
+            
         return matchSport && matchStatus;
     });
 
@@ -109,23 +117,25 @@ function renderMatches() {
         // ক্লিকে সরাসরি লাইভ স্ট্রিম চালু হবে
         card.onclick = () => playMatchStream(m.title || m.tournament, m.stream_url);
 
+        const isLive = m.status && m.status.toLowerCase().trim() === 'live';
+
         card.innerHTML = `
             <div class="match-header">
-                <span class="tournament-name"><i class="fa-solid fa-trophy"></i> ${m.tournament}</span>
-                <span class="${m.status === 'live' ? 'live-badge' : ''}">${m.status === 'live' ? '🔴 LIVE' : m.time}</span>
+                <span class="tournament-name"><i class="fa-solid fa-trophy"></i> ${m.tournament || 'Live Tournament'}</span>
+                <span class="${isLive ? 'live-badge' : ''}">${isLive ? '🔴 LIVE' : (m.time || '')}</span>
             </div>
             <div class="teams-container">
                 <div class="team">
-                    <img src="${m.teamA.flag}" class="team-flag" alt="${m.teamA.name}">
-                    <span class="team-name">${m.teamA.name}</span>
+                    <img src="${m.teamA?.flag || 'https://via.placeholder.com/40'}" class="team-flag" alt="${m.teamA?.name || 'Team A'}">
+                    <span class="team-name">${m.teamA?.name || 'Team A'}</span>
                 </div>
                 <div style="text-align:center;">
                     <span class="vs-badge">VS</span>
                     ${m.live_score ? `<div style="font-size:11px; color:#00b87c; font-weight:bold; margin-top:4px;">${m.live_score}</div>` : ''}
                 </div>
                 <div class="team team-right">
-                    <span class="team-name">${m.teamB.name}</span>
-                    <img src="${m.teamB.flag}" class="team-flag" alt="${m.teamB.name}">
+                    <span class="team-name">${m.teamB?.name || 'Team B'}</span>
+                    <img src="${m.teamB?.flag || 'https://via.placeholder.com/40'}" class="team-flag" alt="${m.teamB?.name || 'Team B'}">
                 </div>
             </div>
         `;
@@ -138,12 +148,17 @@ function renderCategories() {
     if (!grid) return;
     grid.innerHTML = "";
 
+    if (globalCategories.length === 0) {
+        grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; padding:20px; color:#64748b;">কোনো ক্যাটাগরি পাওয়া যায়নি।</p>`;
+        return;
+    }
+
     globalCategories.forEach(cat => {
         const card = document.createElement("div");
         card.className = "category-card";
         card.onclick = () => showChannels(cat.title, cat.channels || []);
         card.innerHTML = `
-            <img src="${cat.thumb}" class="category-thumb" alt="${cat.title}">
+            <img src="${cat.thumb || 'https://via.placeholder.com/50'}" class="category-thumb" alt="${cat.title}">
             <h3>${cat.title}</h3>
         `;
         grid.appendChild(card);
