@@ -8,6 +8,7 @@
     --bg-surface: #1f2937;
     --bg-header: #111827;
     --primary: #e50914;
+    --accent-blue: #00d2ff;
     --text-primary: #ffffff;
     --text-muted: #9ca3af;
     --border-color: #2b3442;
@@ -45,11 +46,8 @@ body {
     visibility: hidden;
 }
 
-.splash-logo {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
+.brand-text.logo-splash {
+    font-size: 32px;
 }
 
 .loader {
@@ -66,17 +64,20 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Header */
+/* ----------------------------------
+   Header & Text Logo Styling
+---------------------------------- */
 .top-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 12px;
+    padding: 12px 16px;
     background: var(--bg-header);
     position: sticky;
     top: 0;
     z-index: 1000;
     border-bottom: 1px solid var(--border-color);
+    height: 62px; /* সুন্দর ক্লিন হাইট */
 }
 
 .header-left {
@@ -84,32 +85,62 @@ body {
     align-items: center;
 }
 
-/* ১. হেডারের লোগো সাইজ ৮০px করা হলো */
-.header-brand-logo {
-    height: 80px !important;
-    width: auto !important;
-    max-width: 250px;
-    object-fit: contain;
+/* ইমেজের বদলে বড় ও আকর্ষণীয় টেক্সট লোগো */
+.brand-text {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.5px;
+    user-select: none;
 }
 
+.brand-text i {
+    color: var(--accent-blue);
+    font-size: 22px;
+    background: rgba(0, 210, 255, 0.15);
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
+.brand-text span {
+    color: var(--accent-blue);
+}
+
+/* ----------------------------------
+   Header Buttons (Search, Refresh, Fav)
+---------------------------------- */
 .header-right {
     display: flex;
-    gap: 6px;
+    gap: 8px;
+    align-items: center;
 }
 
+/* সব বাটন এখন একই সাইজ ও ডিজাইনের */
 .header-right button {
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     background: var(--bg-surface);
     color: var(--text-primary);
-    font-size: 15px;
+    font-size: 16px;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.1s;
 }
 
+.header-right button:active {
+    transform: scale(0.95);
+}
+
+/* ফেভারিট বাটনের লাল শেপ সরিয়ে আইকন কালার লাল রাখা হয়েছে */
 .header-right button#favHeaderBtn {
+    background: var(--bg-surface);
     color: #ef4444;
 }
 
@@ -207,7 +238,6 @@ body {
     align-items: center;
 }
 
-/* ২. Featured চ্যানেল আইকন ৮৮px এবং গোল */
 .featured-card img {
     width: 88px !important;
     height: 88px !important;
@@ -268,7 +298,6 @@ body {
     transform: scale(0.95);
 }
 
-/* ৩. মূল চ্যানেল আইকন ৮৮px এবং গোল */
 .channel-card img {
     width: 88px !important;
     height: 88px !important;
