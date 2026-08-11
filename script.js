@@ -1,246 +1,165 @@
-// ==========================================
-// StreamZX - Consolidated Script
-// ==========================================
-
-let channels = [];
-let currentCategory = "Sports"; // Default category
-let favorites = JSON.parse(localStorage.getItem("favChannels")) || [];
-let hls = null;
-
-// DOM Elements
-let channelList, featuredList, featuredSection, video, search, searchArea, playerContainer, currentChannelName, mainSectionTitle;
-
 document.addEventListener("DOMContentLoaded", () => {
-    channelList = document.getElementById("channelList");
-    featuredList = document.getElementById("featuredList");
-    featuredSection = document.getElementById("featuredSection");
-    video = document.getElementById("video");
-    search = document.getElementById("search");
-    searchArea = document.getElementById("searchArea");
-    playerContainer = document.getElementById("playerContainer");
-    currentChannelName = document.getElementById("currentChannelName");
-    mainSectionTitle = document.getElementById("mainSectionTitle");
+    // Hide Splash Screen after loading
+    setTimeout(() => {
+        const splash = document.getElementById("splash");
+        if (splash) splash.classList.add("hidden");
+    }, 1000);
 
-    initApp();
-});
+    // Sample Channel Data
+    const channels = [
+        { id: 1, name: "Gazi TV", category: "Sports", featured: true, logo: "https://via.placeholder.com/150", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { id: 2, name: "T Sports (1080p)", category: "Sports", featured: true, logo: "https://via.placeholder.com/150", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { id: 3, name: "RTV HD", category: "Entertainment", featured: true, logo: "https://via.placeholder.com/150", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { id: 4, name: "A Sports HD", category: "Sports", featured: false, logo: "https://via.placeholder.com/150", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { id: 5, name: "Pk Sports HD", category: "Sports", featured: false, logo: "https://via.placeholder.com/150", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+        { id: 6, name: "QAZ Sports HD", category: "Sports", featured: false, logo: "https://via.placeholder.com/150", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+    ];
 
-function initApp() {
-    setupEventListeners();
-    loadChannels();
-}
+    let favorites = JSON.parse(localStorage.getItem("streamzx_favs")) || [];
+    let currentCategory = "Sports";
 
-function hideSplash() {
-    const splash = document.getElementById("splash");
-    if (splash) {
-        setTimeout(() => splash.classList.add("hidden"), 500);
-    }
-}
+    const channelList = document.getElementById("channelList");
+    const featuredList = document.getElementById("featuredList");
+    const searchArea = document.getElementById("searchArea");
+    const searchBtn = document.getElementById("searchBtn");
+    const searchInput = document.getElementById("search");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const favHeaderBtn = document.getElementById("favHeaderBtn");
+    const mainSectionTitle = document.getElementById("mainSectionTitle");
 
-function setupEventListeners() {
-    // Search toggle
-    document.getElementById("searchBtn").addEventListener("click", () => {
-        searchArea.classList.toggle("active");
-        if (searchArea.classList.contains("active")) search.focus();
-    });
+    // Player Elements
+    const playerContainer = document.getElementById("playerContainer");
+    const video = document.getElementById("video");
+    const currentChannelName = document.getElementById("currentChannelName");
+    const closePlayerBtn = document.getElementById("closePlayerBtn");
+    let hls;
 
-    // Favorites Header Button click
-    document.getElementById("favHeaderBtn").addEventListener("click", () => {
-        document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
-        currentCategory = "Favorites";
-        mainSectionTitle.textContent = "❤️ Favorite Channels";
-        renderChannels();
-    });
-
-    // Refresh
-    document.getElementById("refreshBtn").addEventListener("click", () => {
-        loadChannels();
-    });
-
-    // Search filter input
-    search.addEventListener("input", () => {
-        renderChannels();
-    });
-
-    // Category click
-    document.querySelectorAll(".cat").forEach(cat => {
-        cat.addEventListener("click", (e) => {
-            document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
-            const target = e.currentTarget;
-            target.classList.add("active");
-            currentCategory = target.getAttribute("data-category");
-
-            if (currentCategory === "Sports") mainSectionTitle.textContent = "⚽ Sports Channels";
-            else mainSectionTitle.textContent = `📺 ${currentCategory} Channels`;
-
-            renderChannels();
+    // Render Featured Channels
+    function renderFeatured() {
+        featuredList.innerHTML = "";
+        const featured = channels.filter(c => c.featured);
+        featured.forEach(ch => {
+            const card = document.createElement("div");
+            card.className = "featured-card";
+            card.onclick = () => playChannel(ch.name, ch.url);
+            card.innerHTML = `
+                <img src="${ch.logo}" alt="${ch.name}">
+                <h4>${ch.name}</h4>
+                <p>${ch.category}</p>
+            `;
+            featuredList.appendChild(card);
         });
-    });
-
-    // Close Player
-    document.getElementById("closePlayerBtn").addEventListener("click", () => {
-        if (video) video.pause();
-        if (hls) hls.destroy();
-        playerContainer.classList.add("hidden");
-    });
-}
-
-// ------------------------------------------
-// Favorites Management
-// ------------------------------------------
-function toggleFavorite(channelId, event) {
-    if (event) event.stopPropagation();
-
-    const index = favorites.indexOf(channelId);
-    if (index === -1) {
-        favorites.push(channelId);
-    } else {
-        favorites.splice(index, 1);
     }
 
-    localStorage.setItem("favChannels", JSON.stringify(favorites));
-    renderChannels();
-    renderFeaturedChannels();
-}
+    // Render Main Channel Grid
+    function renderChannels(category = "Sports", filterText = "", showOnlyFavs = false) {
+        channelList.innerHTML = "";
+        
+        let filtered = channels;
 
-// ------------------------------------------
-// Load Channels
-// ------------------------------------------
-async function loadChannels() {
-    if (!channelList) return;
-
-    channelList.innerHTML = `
-        <div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-muted);">
-            ⏳ Loading channels...
-        </div>`;
-
-    try {
-        const response = await fetch("channels.json?t=" + Date.now());
-        if (!response.ok) throw new Error("Failed to load channels");
-
-        const data = await response.json();
-        channels = Array.isArray(data) ? data : (data.channels || []);
-
-        renderFeaturedChannels();
-        renderChannels();
-        hideSplash();
-
-    } catch (err) {
-        console.error(err);
-        channelList.innerHTML = `
-            <div style="grid-column: 1/-1; text-align:center; padding:30px; color:#ef4444;">
-                ❌ Could not load channels.json file.
-            </div>`;
-        hideSplash();
-    }
-}
-
-// ------------------------------------------
-// Render Featured Channels
-// ------------------------------------------
-function renderFeaturedChannels() {
-    if (!featuredList || !featuredSection) return;
-
-    const featured = channels.filter(c => c.featured === true);
-
-    if (featured.length === 0) {
-        featuredSection.style.display = "none";
-        return;
-    }
-
-    featuredSection.style.display = "block";
-    featuredList.innerHTML = "";
-
-    featured.forEach(channel => {
-        const isFav = favorites.includes(channel.id);
-        const card = document.createElement("div");
-        card.className = "featured-card";
-        card.innerHTML = `
-            <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${channel.id}, event)">
-                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-            </button>
-            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=TV';">
-            <h4>${channel.name || 'Unknown'}</h4>
-            <p>${channel.category || 'General'}</p>
-        `;
-        card.onclick = () => playChannel(channel);
-        featuredList.appendChild(card);
-    });
-}
-
-// ------------------------------------------
-// Render Main Channel List
-// ------------------------------------------
-function renderChannels() {
-    if (!channelList) return;
-
-    channelList.innerHTML = "";
-    const keyword = search ? search.value.toLowerCase().trim() : "";
-
-    const filtered = channels.filter(channel => {
-        const nameMatch = (channel.name || "").toLowerCase().includes(keyword);
-
-        let categoryMatch = false;
-        if (currentCategory === "Favorites") {
-            categoryMatch = favorites.includes(channel.id);
-        } else if (channel.category) {
-            categoryMatch = channel.category.toLowerCase().includes(currentCategory.toLowerCase());
+        if (showOnlyFavs) {
+            filtered = channels.filter(c => favorites.includes(c.id));
+            mainSectionTitle.textContent = "❤️ Favorite Channels";
+        } else {
+            if (category) {
+                filtered = filtered.filter(c => c.category === category);
+                mainSectionTitle.textContent = `⚽ ${category} Channels`;
+            }
+            if (filterText) {
+                filtered = filtered.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()));
+            }
         }
 
-        return nameMatch && categoryMatch;
-    });
+        if (filtered.length === 0) {
+            channelList.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px;">No channels found!</p>`;
+            return;
+        }
 
-    if (filtered.length === 0) {
-        channelList.innerHTML = `
-            <div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--text-muted);">
-                🔍 No channels found.
-            </div>`;
-        return;
-    }
-
-    filtered.forEach(channel => {
-        const isFav = favorites.includes(channel.id);
-        const card = document.createElement("div");
-        card.className = "channel-card";
-        card.innerHTML = `
-            <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${channel.id}, event)" title="Favorite">
-                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-            </button>
-            <img src="${channel.logo || 'logo.png'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/50?text=TV';">
-            <h4>${channel.name}</h4>
-        `;
-        card.onclick = () => playChannel(channel);
-        channelList.appendChild(card);
-    });
-}
-
-// ------------------------------------------
-// Play Channel with HLS.js
-// ------------------------------------------
-function playChannel(channel) {
-    if (!channel || !channel.url) return;
-
-    currentChannelName.textContent = channel.name;
-    playerContainer.classList.remove("hidden");
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    if (hls) {
-        hls.destroy();
-    }
-
-    if (Hls.isSupported() && channel.url.includes(".m3u8")) {
-        hls = new Hls();
-        hls.loadSource(channel.url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            video.play().catch(e => console.log("Autoplay blocked:", e));
+        filtered.forEach(ch => {
+            const isFav = favorites.includes(ch.id);
+            const card = document.createElement("div");
+            card.className = "channel-card";
+            card.innerHTML = `
+                <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${ch.id})">
+                    <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i>
+                </button>
+                <img src="${ch.logo}" alt="${ch.name}">
+                <h4>${ch.name}</h4>
+            `;
+            card.onclick = () => playChannel(ch.name, ch.url);
+            channelList.appendChild(card);
         });
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = channel.url;
-        video.play().catch(e => console.log("Autoplay blocked:", e));
-    } else {
-        video.src = channel.url;
-        video.play().catch(e => console.log("Autoplay blocked:", e));
     }
 
-    localStorage.setItem("lastChannel", JSON.stringify(channel));
-}
+    // Toggle Favorite Function
+    window.toggleFavorite = (id) => {
+        if (favorites.includes(id)) {
+            favorites = favorites.filter(fId => fId !== id);
+        } else {
+            favorites.push(id);
+        }
+        localStorage.setItem("streamzx_favs", JSON.stringify(favorites));
+        renderChannels(currentCategory, searchInput.value);
+    };
+
+    // Play Channel in Modal
+    function playChannel(name, url) {
+        currentChannelName.textContent = name;
+        playerContainer.classList.remove("hidden");
+
+        if (Hls.isSupported()) {
+            if (hls) hls.destroy();
+            hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+            video.src = url;
+            video.play();
+        }
+    }
+
+    // Close Video Player
+    closePlayerBtn.onclick = () => {
+        playerContainer.classList.add("hidden");
+        video.pause();
+        if (hls) hls.destroy();
+    };
+
+    // Category Click Event
+    document.querySelectorAll(".cat").forEach(catBtn => {
+        catBtn.onclick = () => {
+            document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
+            catBtn.classList.add("active");
+            currentCategory = catBtn.dataset.category;
+            renderChannels(currentCategory, searchInput.value);
+        };
+    });
+
+    // Toggle Search Bar
+    searchBtn.onclick = () => {
+        searchArea.classList.toggle("active");
+        if (searchArea.classList.contains("active")) searchInput.focus();
+    };
+
+    // Search Input Event
+    searchInput.oninput = (e) => {
+        renderChannels(currentCategory, e.target.value);
+    };
+
+    // Refresh Button Event
+    refreshBtn.onclick = () => {
+        searchInput.value = "";
+        renderFeatured();
+        renderChannels(currentCategory);
+    };
+
+    // Favorite Header Button Click
+    favHeaderBtn.onclick = () => {
+        renderChannels(null, "", true);
+    };
+
+    // Initial Load
+    renderFeatured();
+    renderChannels(currentCategory);
+});
