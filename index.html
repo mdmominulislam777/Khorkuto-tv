@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>StreamZX - Live TV</title>
 
-    <!-- Google Fonts for Logo -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&display=swap" rel="stylesheet">
-
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -26,18 +21,8 @@
 
     <!-- Splash Screen -->
     <div id="splash">
-        <div class="brand-logo logo-splash">
-            <div class="logo-icon-wrap">
-                <span class="speed-line"></span>
-                <span class="speed-line"></span>
-                <div class="play-btn">
-                    <i class="fa-solid fa-play"></i>
-                </div>
-            </div>
-            <div class="brand-title">
-                <span class="stream-text">Stream</span><span class="zx-text">ZX</span>
-            </div>
-        </div>
+        <img src="logo.png" alt="StreamZX" class="splash-logo" onerror="this.src='https://via.placeholder.com/120?text=StreamZX'">
+        <h2>StreamZX</h2>
         <div class="loader"></div>
     </div>
 
@@ -53,18 +38,7 @@
     <!-- Top Header -->
     <header class="top-header">
         <div class="header-left">
-            <div class="brand-logo">
-                <div class="logo-icon-wrap">
-                    <span class="speed-line"></span>
-                    <span class="speed-line"></span>
-                    <div class="play-btn">
-                        <i class="fa-solid fa-play"></i>
-                    </div>
-                </div>
-                <div class="brand-title">
-                    <span class="stream-text">Stream</span><span class="zx-text">ZX</span>
-                </div>
-            </div>
+            <img src="logo1.png" alt="StreamZX" class="header-brand-logo" onerror="this.src='https://via.placeholder.com/140x35?text=StreamZX'">
         </div>
         <div class="header-right">
             <button id="favHeaderBtn" title="Favorites"><i class="fa-solid fa-heart"></i></button>
