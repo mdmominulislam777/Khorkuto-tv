@@ -86,8 +86,8 @@ body {
 
 /* ১. হেডারের লোগো সাইজ ৮০px করা হলো */
 .header-brand-logo {
-    height: 80px !important;
-    width: auto !important;
+    height: 48px !important;
+    width: 48px !important;
     max-width: 250px;
     object-fit: contain;
 }
