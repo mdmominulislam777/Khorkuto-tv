@@ -1,5 +1,5 @@
 /* ==========================================
-   StreamZX - Complete Modern Dark Theme CSS
+   StreamZX - Modern Dark Theme Layout
 ========================================== */
 
 :root {
@@ -8,7 +8,6 @@
     --bg-surface: #1f2937;
     --bg-header: #111827;
     --primary: #e50914;
-    --accent-blue: #00d2ff;
     --text-primary: #ffffff;
     --text-muted: #9ca3af;
     --border-color: #2b3442;
@@ -46,16 +45,19 @@ body {
     visibility: hidden;
 }
 
-.logo-splash {
-    transform: scale(1.2);
+.splash-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .loader {
-    margin-top: 25px;
-    width: 32px;
-    height: 32px;
+    margin-top: 20px;
+    width: 35px;
+    height: 35px;
     border: 3px solid var(--border-color);
-    border-top-color: var(--accent-blue);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -64,18 +66,17 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Header Area */
+/* Header */
 .top-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 14px;
+    padding: 10px 12px;
     background: var(--bg-header);
     position: sticky;
     top: 0;
     z-index: 1000;
     border-bottom: 1px solid var(--border-color);
-    height: 64px;
 }
 
 .header-left {
@@ -83,109 +84,29 @@ body {
     align-items: center;
 }
 
-/* ----------------------------------
-   Exact Logo Replica Styling
----------------------------------- */
-.brand-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    user-select: none;
-    cursor: pointer;
+/* ১. হেডারের লোগো সাইজ ৮০px করা হলো */
+.header-brand-logo {
+    height: 80px !important;
+    width: auto !important;
+    max-width: 250px;
+    object-fit: contain;
 }
 
-.logo-icon-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.speed-line {
-    position: absolute;
-    left: -6px;
-    height: 2px;
-    background: #00f0ff;
-    border-radius: 2px;
-    box-shadow: 0 0 6px #00f0ff;
-}
-.speed-line:nth-child(1) { top: 6px; width: 7px; opacity: 0.7; }
-.speed-line:nth-child(2) { bottom: 6px; width: 9px; opacity: 0.9; }
-
-.play-btn {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, #00d2ff 0%, #0052d4 100%);
-    border: 2px solid #00f0ff;
-    border-radius: 8px 14px 14px 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: skewX(-12deg);
-    box-shadow: 0 0 12px rgba(0, 210, 255, 0.7), inset 0 0 6px rgba(255, 255, 255, 0.4);
-}
-
-.play-btn i {
-    color: #ffffff;
-    font-size: 13px;
-    margin-left: 2px;
-    transform: skewX(12deg);
-    filter: drop-shadow(0 0 3px #00f0ff);
-}
-
-.brand-title {
-    font-family: 'Orbitron', 'Arial Black', sans-serif;
-    font-size: 24px;
-    font-weight: 900;
-    font-style: italic;
-    letter-spacing: -1px;
-    transform: skewX(-10deg);
-    display: flex;
-    align-items: center;
-}
-
-.stream-text {
-    background: linear-gradient(180deg, #ffffff 20%, #e2e8f0 50%, #94a3b8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 1.2px #000000;
-    filter: drop-shadow(1.5px 1.5px 0px #000000);
-}
-
-.zx-text {
-    background: linear-gradient(180deg, #00f0ff 10%, #0088ff 50%, #0040c0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 1.2px #000000;
-    filter: drop-shadow(1.5px 1.5px 0px #000000) drop-shadow(0 0 6px rgba(0, 240, 255, 0.4));
-}
-
-/* ----------------------------------
-   Header Buttons (Same Design)
----------------------------------- */
 .header-right {
     display: flex;
-    gap: 8px;
-    align-items: center;
+    gap: 6px;
 }
 
 .header-right button {
     width: 38px;
     height: 38px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border: none;
+    border-radius: 10px;
     background: var(--bg-surface);
     color: var(--text-primary);
     font-size: 15px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s, transform 0.1s;
-}
-
-.header-right button:active {
-    transform: scale(0.95);
+    transition: background 0.2s, color 0.2s;
 }
 
 .header-right button#favHeaderBtn {
@@ -207,7 +128,7 @@ body {
     padding: 12px;
     border: 1px solid var(--border-color);
     outline: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--bg-surface);
     color: var(--text-primary);
     font-size: 14px;
@@ -217,7 +138,7 @@ body {
 .category-slider {
     display: flex;
     overflow-x: auto;
-    gap: 10px;
+    gap: 12px;
     padding: 12px;
     scrollbar-width: none;
 }
@@ -228,15 +149,15 @@ body {
 
 .cat {
     min-width: 85px;
-    padding: 10px 8px;
+    padding: 12px 10px;
     background: var(--bg-surface);
-    border-radius: 14px;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
     user-select: none;
-    font-size: 16px;
+    font-size: 18px;
     border: 1px solid transparent;
 }
 
@@ -246,15 +167,15 @@ body {
 }
 
 .cat span {
-    margin-top: 5px;
+    margin-top: 6px;
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
 }
 
-/* Section Titles */
+/* Section Title */
 .section-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     margin: 12px 12px 10px;
 }
@@ -274,7 +195,7 @@ body {
 
 .featured-card {
     position: relative;
-    min-width: 130px;
+    min-width: 140px;
     background: var(--bg-card);
     border-radius: 16px;
     padding: 12px 8px;
@@ -286,7 +207,7 @@ body {
     align-items: center;
 }
 
-/* Featured Channel Icons - 88px & Circle */
+/* ২. Featured চ্যানেল আইকন ৮৮px এবং গোল */
 .featured-card img {
     width: 88px !important;
     height: 88px !important;
@@ -347,7 +268,7 @@ body {
     transform: scale(0.95);
 }
 
-/* Main Channel Icons - 88px & Circle */
+/* ৩. মূল চ্যানেল আইকন ৮৮px এবং গোল */
 .channel-card img {
     width: 88px !important;
     height: 88px !important;
