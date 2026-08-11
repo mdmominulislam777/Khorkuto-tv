@@ -1,5 +1,5 @@
 // ==========================================
-// Khorkuto TV - Consolidated Script
+// StreamZX - Consolidated Script
 // ==========================================
 
 let channels = [];
@@ -88,7 +88,7 @@ function setupEventListeners() {
 // Favorites Management
 // ------------------------------------------
 function toggleFavorite(channelId, event) {
-    if (event) event.stopPropagation(); // Prevent playing channel when clicking heart icon
+    if (event) event.stopPropagation();
 
     const index = favorites.indexOf(channelId);
     if (index === -1) {
