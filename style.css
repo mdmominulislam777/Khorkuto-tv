@@ -82,15 +82,25 @@ body {
 .header-left {
     display: flex;
     align-items: center;
+    gap: 10px; /* আইকন এবং টেক্সটের মাঝে ফাকা জায়গা */
 }
 
-/* ১. হেডারের লোগো সাইজ ৪৮px করা হলো */
-.header-brand-logo {
-    height: 48px !important;
-    width: auto !important;
-    max-width: 250px;
-    object-fit: contain;
+/* বাম পাশের অ্যাপ আইকন */
+.header-app-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    object-fit: cover;
 }
+
+/* ব্র্যান্ড টেক্সট (StreamZX) */
+.brand-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+}
+
 
 .header-right {
     display: flex;
