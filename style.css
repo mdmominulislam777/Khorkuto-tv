@@ -84,11 +84,11 @@ body {
     align-items: center;
 }
 
-/* ১. হেডারের লোগো বড় করা হয়েছে */
+/* ১. হেডারের লোগো সাইজ ৮০px করা হলো */
 .header-brand-logo {
-    height: 48px !important;
+    height: 80px !important;
     width: auto !important;
-    max-width: 200px;
+    max-width: 250px;
     object-fit: contain;
 }
 
@@ -195,7 +195,7 @@ body {
 
 .featured-card {
     position: relative;
-    min-width: 130px;
+    min-width: 140px;
     background: var(--bg-card);
     border-radius: 16px;
     padding: 12px 8px;
@@ -207,10 +207,10 @@ body {
     align-items: center;
 }
 
-/* ২ ও ৩. Featured চ্যানেল আইকন বড়, সম্পূর্ণ গোল ও পারফেক্ট ফিট */
+/* ২. Featured চ্যানেল আইকন ৮৮px এবং গোল */
 .featured-card img {
-    width: 68px !important;
-    height: 68px !important;
+    width: 88px !important;
+    height: 88px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     background: var(--bg-main);
@@ -245,7 +245,7 @@ body {
 
 @media (min-width: 600px) {
     .channel-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
 }
 
@@ -268,10 +268,10 @@ body {
     transform: scale(0.95);
 }
 
-/* ২ ও ৩. মূল চ্যানেল আইকন বড়, সম্পূর্ণ গোল ও পারফেক্ট ফিট */
+/* ৩. মূল চ্যানেল আইকন ৮৮px এবং গোল */
 .channel-card img {
-    width: 68px !important;
-    height: 68px !important;
+    width: 88px !important;
+    height: 88px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     background: var(--bg-main);
