@@ -1,5 +1,5 @@
 /* ==========================================
-   Khorkuto TV - Modern Dark Theme Layout
+   StreamZX - Modern Dark Theme Layout
 ========================================== */
 
 :root {
@@ -48,7 +48,8 @@ body {
 .splash-logo {
     width: 100px;
     height: 100px;
-    border-radius: 20px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .loader {
@@ -83,11 +84,11 @@ body {
     align-items: center;
 }
 
-/* ব্র্যান্ড লোগো ইমেজ সাইজ */
+/* ১. হেডারের লোগো বড় করা হয়েছে */
 .header-brand-logo {
-    height: 36px;
-    width: auto;
-    max-width: 160px;
+    height: 48px !important;
+    width: auto !important;
+    max-width: 200px;
     object-fit: contain;
 }
 
@@ -112,7 +113,6 @@ body {
     color: #ef4444;
 }
 
-
 /* Search Area */
 .search-area {
     padding: 10px 12px;
@@ -134,7 +134,7 @@ body {
     font-size: 14px;
 }
 
-/* Bigger Category Slider */
+/* Category Slider */
 .category-slider {
     display: flex;
     overflow-x: auto;
@@ -195,20 +195,27 @@ body {
 
 .featured-card {
     position: relative;
-    min-width: 125px;
+    min-width: 130px;
     background: var(--bg-card);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 12px 8px;
     text-align: center;
     border: 1px solid var(--border-color);
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* ২ ও ৩. Featured চ্যানেল আইকন বড়, সম্পূর্ণ গোল ও পারফেক্ট ফিট */
 .featured-card img {
-    width: 55px;
-    height: 55px;
-    border-radius: 10px;
-    object-fit: cover;
+    width: 68px !important;
+    height: 68px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    background: var(--bg-main);
+    border: 2px solid var(--border-color);
+    padding: 2px;
     margin-bottom: 8px;
 }
 
@@ -217,6 +224,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
 }
 
 .featured-card p {
@@ -224,7 +232,7 @@ body {
     color: var(--text-muted);
 }
 
-/* Perfectly Fitted Channel Grid */
+/* Main Channel Grid */
 .main-content {
     padding: 0 10px;
 }
@@ -244,7 +252,7 @@ body {
 .channel-card {
     position: relative;
     background: var(--bg-card);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 12px 6px;
     display: flex;
     flex-direction: column;
@@ -260,11 +268,15 @@ body {
     transform: scale(0.95);
 }
 
+/* ২ ও ৩. মূল চ্যানেল আইকন বড়, সম্পূর্ণ গোল ও পারফেক্ট ফিট */
 .channel-card img {
-    width: 52px;
-    height: 52px;
-    border-radius: 10px;
-    object-fit: cover;
+    width: 68px !important;
+    height: 68px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    background: var(--bg-main);
+    border: 2px solid var(--border-color);
+    padding: 2px;
     margin-bottom: 8px;
 }
 
@@ -284,7 +296,7 @@ body {
     position: absolute;
     top: 6px;
     right: 6px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     border: none;
     color: #9ca3af;
     width: 24px;
