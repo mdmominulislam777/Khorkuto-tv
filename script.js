@@ -60,7 +60,7 @@ function setupEventListeners() {
         document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
 
         currentCategory = "Favorites";
-        mainSectionTitle.textContent = "☆ Favorite Channels";
+        mainSectionTitle.textContent ="♡ Favorite Channels";
 
         renderChannels();
     });
