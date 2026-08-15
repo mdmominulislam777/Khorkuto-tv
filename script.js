@@ -60,7 +60,7 @@ function setupEventListeners() {
         document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
 
         currentCategory = "Favorites";
-        mainSectionTitle.textContent ="♡ Favorite Channels";
+        mainSectionTitle.textContent ="⭐ Favorite Channels";
 
         renderChannels();
     });
@@ -220,7 +220,7 @@ function renderFeaturedChannels() {
                 class="fav-btn ${isFav ? 'active' : ''}"
                 onclick="toggleFavorite(${channel.id}, event)"
             >
-                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-star"></i>
             </button>
 
             <img
