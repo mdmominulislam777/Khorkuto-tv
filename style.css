@@ -366,3 +366,17 @@ video {
     background: #000;
     display: block;
 }
+/* Header always stays above video player */
+.top-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999 !important;
+}
+
+/* Video player stays below header */
+.player-container {
+    z-index: 1000 !important;
+}
