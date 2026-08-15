@@ -244,3 +244,29 @@ function playChannel(channel) {
 
     localStorage.setItem("lastChannel", JSON.stringify(channel));
 }
+// ==========================================
+// Monetag Ads
+// ==========================================
+
+// In-App Interstitial
+show_11580289({
+    type: 'inApp',
+    inAppSettings: {
+        frequency: 2,
+        capping: 0.1,
+        interval: 30,
+        timeout: 5,
+        everyPage: false
+    }
+});
+
+// Rewarded Popup
+function showRewardedAd() {
+    show_11580289('pop')
+        .then(() => {
+            console.log('Rewarded ad completed');
+        })
+        .catch((e) => {
+            console.log('Rewarded ad error:', e);
+        });
+}
