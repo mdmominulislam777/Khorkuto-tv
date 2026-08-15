@@ -366,17 +366,36 @@ video {
     background: #000;
     display: block;
 }
-/* Header always stays above video player */
+/* ==========================================
+   FIXED HEADER - Always Above Player
+   ========================================== */
+
 .top-header {
     position: fixed !important;
     top: 0;
     left: 0;
     right: 0;
     width: 100%;
-    z-index: 9999 !important;
+    z-index: 99999 !important;
 }
 
-/* Video player stays below header */
+/* Header-এর নিচে content শুরু হবে */
+body {
+    padding-top: 70px;
+}
+
+/* Player Header-এর নিচে থাকবে */
 .player-container {
     z-index: 1000 !important;
+}
+
+/* Search area */
+.search-area {
+    z-index: 9998 !important;
+}
+
+/* Category */
+.category-slider {
+    position: relative;
+    z-index: 10;
 }
