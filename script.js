@@ -11,10 +11,15 @@ let hls = null;
 // Monetag Ad Settings
 // ==========================================
 
-let channelClickCount = 0;
+// প্রথম Channel click-এর জন্য শুধুমাত্র ১টি Ad
+let firstChannelAdShown = false;
 let isAdShowing = false;
 
+
+// ==========================================
 // DOM Elements
+// ==========================================
+
 let channelList, featuredList, featuredSection, video, search, searchArea;
 let playerContainer, currentChannelName, mainSectionTitle;
 
@@ -62,6 +67,7 @@ function hideSplash() {
         setTimeout(() => {
             splash.classList.add("hidden");
         }, 500);
+
     }
 }
 
@@ -84,7 +90,9 @@ function setupEventListeners() {
             if (searchArea.classList.contains("active")) {
                 search.focus();
             }
+
         });
+
     }
 
 
@@ -101,10 +109,13 @@ function setupEventListeners() {
 
             currentCategory = "Favorites";
 
-            mainSectionTitle.textContent = "⭐ Favorite Channels";
+            mainSectionTitle.textContent =
+                "⭐ Favorite Channels";
 
             renderChannels();
+
         });
+
     }
 
 
@@ -116,6 +127,7 @@ function setupEventListeners() {
         refreshBtn.addEventListener("click", () => {
             loadChannels();
         });
+
     }
 
 
@@ -125,6 +137,7 @@ function setupEventListeners() {
         search.addEventListener("input", () => {
             renderChannels();
         });
+
     }
 
 
@@ -141,25 +154,31 @@ function setupEventListeners() {
 
             target.classList.add("active");
 
-            currentCategory = target.getAttribute("data-category");
+            currentCategory =
+                target.getAttribute("data-category");
 
             if (currentCategory === "Sports") {
 
-                mainSectionTitle.textContent = "⚽ Sports Channels";
+                mainSectionTitle.textContent =
+                    "⚽ Sports Channels";
 
             } else {
 
                 mainSectionTitle.textContent =
                     `📺 ${currentCategory} Channels`;
+
             }
 
             renderChannels();
+
         });
+
     });
 
 
     // Close Player
-    const closePlayerBtn = document.getElementById("closePlayerBtn");
+    const closePlayerBtn =
+        document.getElementById("closePlayerBtn");
 
     if (closePlayerBtn) {
 
@@ -173,11 +192,15 @@ function setupEventListeners() {
 
                 hls.destroy();
                 hls = null;
+
             }
 
             playerContainer.classList.add("hidden");
+
         });
+
     }
+
 }
 
 
@@ -200,6 +223,7 @@ function toggleFavorite(channelId, event) {
     } else {
 
         favorites.splice(index, 1);
+
     }
 
     localStorage.setItem(
@@ -209,6 +233,7 @@ function toggleFavorite(channelId, event) {
 
     renderChannels();
     renderFeaturedChannels();
+
 }
 
 
@@ -253,7 +278,10 @@ async function loadChannels() {
 
     } catch (err) {
 
-        console.error("Channel loading error:", err);
+        console.error(
+            "Channel loading error:",
+            err
+        );
 
         channelList.innerHTML = `
             <div style="
@@ -267,7 +295,9 @@ async function loadChannels() {
         `;
 
         hideSplash();
+
     }
+
 }
 
 
@@ -287,6 +317,7 @@ function renderFeaturedChannels() {
         featuredSection.style.display = "none";
 
         return;
+
     }
 
     featuredSection.style.display = "block";
@@ -325,12 +356,15 @@ function renderFeaturedChannels() {
             <p>${channel.category || "General"}</p>
         `;
 
+        // প্রথম Channel click → Ad → তারপর Play
         card.onclick = () => {
             playChannelWithAd(channel);
         };
 
         featuredList.appendChild(card);
+
     });
+
 }
 
 
@@ -349,32 +383,35 @@ function renderChannels() {
             ? search.value.toLowerCase().trim()
             : "";
 
-    const filtered = channels.filter(channel => {
+    const filtered =
+        channels.filter(channel => {
 
-        const nameMatch =
-            (channel.name || "")
-                .toLowerCase()
-                .includes(keyword);
-
-        let categoryMatch = false;
-
-        if (currentCategory === "Favorites") {
-
-            categoryMatch =
-                favorites.includes(channel.id);
-
-        } else if (channel.category) {
-
-            categoryMatch =
-                channel.category
+            const nameMatch =
+                (channel.name || "")
                     .toLowerCase()
-                    .includes(
-                        currentCategory.toLowerCase()
-                    );
-        }
+                    .includes(keyword);
 
-        return nameMatch && categoryMatch;
-    });
+            let categoryMatch = false;
+
+            if (currentCategory === "Favorites") {
+
+                categoryMatch =
+                    favorites.includes(channel.id);
+
+            } else if (channel.category) {
+
+                categoryMatch =
+                    channel.category
+                        .toLowerCase()
+                        .includes(
+                            currentCategory.toLowerCase()
+                        );
+
+            }
+
+            return nameMatch && categoryMatch;
+
+        });
 
 
     if (filtered.length === 0) {
@@ -391,6 +428,7 @@ function renderChannels() {
         `;
 
         return;
+
     }
 
 
@@ -424,74 +462,97 @@ function renderChannels() {
             <h4>${channel.name || "Unknown"}</h4>
         `;
 
+        // প্রথম Channel click → Ad → তারপর Play
         card.onclick = () => {
             playChannelWithAd(channel);
         };
 
         channelList.appendChild(card);
+
     });
+
 }
 
 
 // ==========================================
-// Monetag Rewarded Popup
+// Monetag - FIRST CHANNEL CLICK ONLY
 // ==========================================
 
 function playChannelWithAd(channel) {
 
     if (!channel || !channel.url) return;
 
-    channelClickCount++;
 
-    console.log(
-        "Channel click:",
-        channelClickCount
-    );
+    // ======================================
+    // প্রথম Ad ইতিমধ্যে দেখানো হয়ে থাকলে
+    // সরাসরি Channel Play
+    // ======================================
 
-
-    // প্রতি ৩টি click-এ ১টি ad
-    if (channelClickCount % 3 !== 0) {
+    if (firstChannelAdShown) {
 
         playChannel(channel);
 
         return;
+
     }
 
 
-    // Monetag SDK না থাকলে সরাসরি play
+    // ======================================
+    // Monetag SDK না থাকলে
+    // Ad দেখানোর চেষ্টা না করে Play
+    // ======================================
+
     if (typeof show_11580289 !== "function") {
 
         console.log(
-            "Monetag SDK not loaded."
+            "Monetag SDK not loaded. Playing channel."
         );
+
+        firstChannelAdShown = true;
 
         playChannel(channel);
 
         return;
+
     }
 
 
-    // ইতিমধ্যে ad চলছে
-    if (isAdShowing) return;
+    // ======================================
+    // Ad already showing
+    // ======================================
+
+    if (isAdShowing) {
+        return;
+    }
+
 
     isAdShowing = true;
 
     console.log(
-        "Showing Monetag Rewarded Popup..."
+        "Showing FIRST Channel Ad..."
     );
 
+
+    // ======================================
+    // Show Monetag Popup
+    // ======================================
 
     show_11580289("pop")
 
         .then(() => {
 
             console.log(
-                "Monetag ad completed."
+                "First Channel Ad completed."
             );
+
+            // আর কখনো এই page session-এ Ad দেখাবে না
+            firstChannelAdShown = true;
 
             isAdShowing = false;
 
+            // Ad শেষ/Close → Channel Play
             playChannel(channel);
+
         })
 
         .catch((e) => {
@@ -501,11 +562,16 @@ function playChannelWithAd(channel) {
                 e
             );
 
+            // Error হলেও পরের Channel-এ আর Ad নয়
+            firstChannelAdShown = true;
+
             isAdShowing = false;
 
-            // Ad fail করলেও channel চলবে
+            // Ad fail হলেও Channel Play
             playChannel(channel);
+
         });
+
 }
 
 
@@ -517,12 +583,15 @@ function playChannel(channel) {
 
     if (!channel || !channel.url) return;
 
+
     currentChannelName.textContent =
         channel.name;
+
 
     playerContainer.classList.remove(
         "hidden"
     );
+
 
     window.scrollTo({
         top: 0,
@@ -530,12 +599,18 @@ function playChannel(channel) {
     });
 
 
+    // আগের HLS বন্ধ
     if (hls) {
 
         hls.destroy();
         hls = null;
+
     }
 
+
+    // ======================================
+    // HLS.js M3U8
+    // ======================================
 
     if (
         Hls.isSupported() &&
@@ -558,9 +633,16 @@ function playChannel(channel) {
                         "Autoplay blocked:",
                         e
                     );
+
                 });
+
             }
         );
+
+
+    // ======================================
+    // Native HLS
+    // ======================================
 
     } else if (
         video.canPlayType(
@@ -576,7 +658,13 @@ function playChannel(channel) {
                 "Autoplay blocked:",
                 e
             );
+
         });
+
+
+    // ======================================
+    // Normal Video
+    // ======================================
 
     } else {
 
@@ -588,44 +676,21 @@ function playChannel(channel) {
                 "Autoplay blocked:",
                 e
             );
+
         });
+
     }
 
 
+    // Last Channel Save
     localStorage.setItem(
         "lastChannel",
         JSON.stringify(channel)
     );
+
 }
 
 
 // ==========================================
-// Monetag In-App Interstitial
+// END
 // ==========================================
-
-if (typeof show_11580289 === "function") {
-
-    show_11580289({
-
-        type: "inApp",
-
-        inAppSettings: {
-
-            frequency: 2,
-
-            capping: 0.1,
-
-            interval: 30,
-
-            timeout: 5,
-
-            everyPage: false
-        }
-    });
-
-} else {
-
-    console.log(
-        "Monetag SDK not loaded for In-App Interstitial."
-    );
-                    }
