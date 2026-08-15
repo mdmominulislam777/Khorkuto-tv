@@ -242,14 +242,14 @@ body {
 }
 
 .featured-card img {
-    width: 88px !important;
-    height: 88px !important;
+    width: 110px !important;
+    height: 110px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     background: var(--bg-main);
     border: 2px solid var(--border-color);
-    padding: 2px;
-    margin-bottom: 8px;
+    padding: 3px;
+    margin-bottom: 10px;
 }
 
 .featured-card h4 {
@@ -305,14 +305,14 @@ body {
 }
 
 .channel-card img {
-    width: 88px !important;
-    height: 88px !important;
+    width: 110px !important;
+    height: 110px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     background: var(--bg-main);
     border: 2px solid var(--border-color);
-    padding: 2px;
-    margin-bottom: 8px;
+    padding: 3px;
+    margin-bottom: 10px;
 }
 
 .channel-card h4 {
