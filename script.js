@@ -270,16 +270,20 @@ function showRewardedAd() {
             console.log('Rewarded ad error:', e);
         });
 }
+console.log("Monetag test started");
+
 setTimeout(() => {
+    console.log("show_11580289 =", typeof show_11580289);
+
     if (typeof show_11580289 === "function") {
-        show_11580289('pop')
+        show_11580289("pop")
             .then(() => {
-                console.log("Ad completed");
+                console.log("Monetag popup completed");
             })
-            .catch(e => {
-                console.log("Ad error:", e);
+            .catch((e) => {
+                console.error("Monetag popup error:", e);
             });
     } else {
-        console.log("Monetag SDK not loaded");
+        console.error("Monetag SDK NOT loaded");
     }
 }, 5000);
