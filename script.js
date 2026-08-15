@@ -470,3 +470,36 @@ if (typeof show_11580289 === "function") {
 
     console.log("Monetag SDK not loaded for In-App Interstitial.");
 }
+/* ==========================================
+   FIXED HEADER - Always Above Player
+   ========================================== */
+
+.top-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 99999 !important;
+}
+
+/* Header-এর নিচে content শুরু হবে */
+body {
+    padding-top: 70px;
+}
+
+/* Player যেন Header-এর নিচে থাকে */
+.player-container {
+    z-index: 1000 !important;
+}
+
+/* Search area-ও Header-এর নিচে থাকবে */
+.search-area {
+    z-index: 9998 !important;
+}
+
+/* Category/Header-এর সঙ্গে overlap কমানো */
+.category-slider {
+    position: relative;
+    z-index: 10;
+}
