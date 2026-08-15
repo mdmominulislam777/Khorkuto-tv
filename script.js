@@ -3,7 +3,7 @@
 // ==========================================
 
 let channels = [];
-let currentCategory = "Sports"; // Default category
+let currentCategory = "Sports";
 let favorites = JSON.parse(localStorage.getItem("favChannels")) || [];
 let hls = null;
 
@@ -15,9 +15,16 @@ let channelClickCount = 0;
 let isAdShowing = false;
 
 // DOM Elements
-let channelList, featuredList, featuredSection, video, search, searchArea, playerContainer, currentChannelName, mainSectionTitle;
+let channelList, featuredList, featuredSection, video, search, searchArea;
+let playerContainer, currentChannelName, mainSectionTitle;
+
+
+// ==========================================
+// App Start
+// ==========================================
 
 document.addEventListener("DOMContentLoaded", () => {
+
     channelList = document.getElementById("channelList");
     featuredList = document.getElementById("featuredList");
     featuredSection = document.getElementById("featuredSection");
@@ -31,55 +38,104 @@ document.addEventListener("DOMContentLoaded", () => {
     initApp();
 });
 
+
+// ==========================================
+// Initialize App
+// ==========================================
+
 function initApp() {
     setupEventListeners();
     loadChannels();
 }
 
+
+// ==========================================
+// Hide Splash
+// ==========================================
+
 function hideSplash() {
+
     const splash = document.getElementById("splash");
 
     if (splash) {
-        setTimeout(() => splash.classList.add("hidden"), 500);
+
+        setTimeout(() => {
+            splash.classList.add("hidden");
+        }, 500);
     }
 }
+
+
+// ==========================================
+// Event Listeners
+// ==========================================
 
 function setupEventListeners() {
 
     // Search toggle
-    document.getElementById("searchBtn").addEventListener("click", () => {
-        searchArea.classList.toggle("active");
+    const searchBtn = document.getElementById("searchBtn");
 
-        if (searchArea.classList.contains("active")) {
-            search.focus();
-        }
-    });
+    if (searchBtn) {
 
-    // Favorites Header Button click
-    document.getElementById("favHeaderBtn").addEventListener("click", () => {
-        document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
+        searchBtn.addEventListener("click", () => {
 
-        currentCategory = "Favorites";
-        mainSectionTitle.textContent ="⭐ Favorite Channels";
+            searchArea.classList.toggle("active");
 
-        renderChannels();
-    });
+            if (searchArea.classList.contains("active")) {
+                search.focus();
+            }
+        });
+    }
+
+
+    // Favorites Header Button
+    const favHeaderBtn = document.getElementById("favHeaderBtn");
+
+    if (favHeaderBtn) {
+
+        favHeaderBtn.addEventListener("click", () => {
+
+            document.querySelectorAll(".cat").forEach(c => {
+                c.classList.remove("active");
+            });
+
+            currentCategory = "Favorites";
+
+            mainSectionTitle.textContent = "⭐ Favorite Channels";
+
+            renderChannels();
+        });
+    }
+
 
     // Refresh
-    document.getElementById("refreshBtn").addEventListener("click", () => {
-        loadChannels();
-    });
+    const refreshBtn = document.getElementById("refreshBtn");
 
-    // Search filter input
-    search.addEventListener("input", () => {
-        renderChannels();
-    });
+    if (refreshBtn) {
 
-    // Category click
+        refreshBtn.addEventListener("click", () => {
+            loadChannels();
+        });
+    }
+
+
+    // Search
+    if (search) {
+
+        search.addEventListener("input", () => {
+            renderChannels();
+        });
+    }
+
+
+    // Categories
     document.querySelectorAll(".cat").forEach(cat => {
+
         cat.addEventListener("click", (e) => {
 
-            document.querySelectorAll(".cat").forEach(c => c.classList.remove("active"));
+            document.querySelectorAll(".cat").forEach(c => {
+                c.classList.remove("active");
+            });
 
             const target = e.currentTarget;
 
@@ -88,35 +144,46 @@ function setupEventListeners() {
             currentCategory = target.getAttribute("data-category");
 
             if (currentCategory === "Sports") {
+
                 mainSectionTitle.textContent = "⚽ Sports Channels";
+
             } else {
-                mainSectionTitle.textContent = `📺 ${currentCategory} Channels`;
+
+                mainSectionTitle.textContent =
+                    `📺 ${currentCategory} Channels`;
             }
 
             renderChannels();
         });
     });
 
+
     // Close Player
-    document.getElementById("closePlayerBtn").addEventListener("click", () => {
+    const closePlayerBtn = document.getElementById("closePlayerBtn");
 
-        if (video) {
-            video.pause();
-        }
+    if (closePlayerBtn) {
 
-        if (hls) {
-            hls.destroy();
-            hls = null;
-        }
+        closePlayerBtn.addEventListener("click", () => {
 
-        playerContainer.classList.add("hidden");
-    });
+            if (video) {
+                video.pause();
+            }
+
+            if (hls) {
+
+                hls.destroy();
+                hls = null;
+            }
+
+            playerContainer.classList.add("hidden");
+        });
+    }
 }
 
 
-// ------------------------------------------
+// ==========================================
 // Favorites Management
-// ------------------------------------------
+// ==========================================
 
 function toggleFavorite(channelId, event) {
 
@@ -127,35 +194,47 @@ function toggleFavorite(channelId, event) {
     const index = favorites.indexOf(channelId);
 
     if (index === -1) {
+
         favorites.push(channelId);
+
     } else {
+
         favorites.splice(index, 1);
     }
 
-    localStorage.setItem("favChannels", JSON.stringify(favorites));
+    localStorage.setItem(
+        "favChannels",
+        JSON.stringify(favorites)
+    );
 
     renderChannels();
     renderFeaturedChannels();
 }
 
 
-// ------------------------------------------
+// ==========================================
 // Load Channels
-// ------------------------------------------
+// ==========================================
 
 async function loadChannels() {
 
     if (!channelList) return;
 
     channelList.innerHTML = `
-        <div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">
+        <div style="
+            grid-column:1/-1;
+            text-align:center;
+            padding:30px;
+            color:var(--text-muted);
+        ">
             ⏳ Loading channels...
         </div>
     `;
 
     try {
 
-        const response = await fetch("channels.json?t=" + Date.now());
+        const response =
+            await fetch("channels.json?t=" + Date.now());
 
         if (!response.ok) {
             throw new Error("Failed to load channels");
@@ -169,14 +248,20 @@ async function loadChannels() {
 
         renderFeaturedChannels();
         renderChannels();
+
         hideSplash();
 
     } catch (err) {
 
-        console.error(err);
+        console.error("Channel loading error:", err);
 
         channelList.innerHTML = `
-            <div style="grid-column:1/-1;text-align:center;padding:30px;color:#ef4444;">
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:30px;
+                color:#ef4444;
+            ">
                 ❌ Could not load channels.json file.
             </div>
         `;
@@ -186,15 +271,16 @@ async function loadChannels() {
 }
 
 
-// ------------------------------------------
+// ==========================================
 // Render Featured Channels
-// ------------------------------------------
+// ==========================================
 
 function renderFeaturedChannels() {
 
     if (!featuredList || !featuredSection) return;
 
-    const featured = channels.filter(c => c.featured === true);
+    const featured =
+        channels.filter(c => c.featured === true);
 
     if (featured.length === 0) {
 
@@ -209,41 +295,48 @@ function renderFeaturedChannels() {
 
     featured.forEach(channel => {
 
-        const isFav = favorites.includes(channel.id);
+        const isFav =
+            favorites.includes(channel.id);
 
-        const card = document.createElement("div");
+        const card =
+            document.createElement("div");
 
         card.className = "featured-card";
 
         card.innerHTML = `
             <button
-                class="fav-btn ${isFav ? 'active' : ''}"
+                class="fav-btn ${isFav ? "active" : ""}"
                 onclick="toggleFavorite(${channel.id}, event)"
+                title="Favorite"
             >
-                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-star"></i>
+                <i class="${isFav ? "fa-solid" : "fa-regular"} fa-star"></i>
             </button>
 
             <img
-                src="${channel.logo || 'logo.png'}"
-                onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=TV';"
+                src="${channel.logo || "logo.png"}"
+                onerror="
+                    this.onerror=null;
+                    this.src='https://via.placeholder.com/60?text=TV';
+                "
             >
 
-            <h4>${channel.name || 'Unknown'}</h4>
+            <h4>${channel.name || "Unknown"}</h4>
 
-            <p>${channel.category || 'General'}</p>
+            <p>${channel.category || "General"}</p>
         `;
 
-        // Monetag → তারপর Channel Play
-        card.onclick = () => playChannelWithAd(channel);
+        card.onclick = () => {
+            playChannelWithAd(channel);
+        };
 
         featuredList.appendChild(card);
     });
 }
 
 
-// ------------------------------------------
-// Render Main Channel List
-// ------------------------------------------
+// ==========================================
+// Render Main Channels
+// ==========================================
 
 function renderChannels() {
 
@@ -251,9 +344,10 @@ function renderChannels() {
 
     channelList.innerHTML = "";
 
-    const keyword = search
-        ? search.value.toLowerCase().trim()
-        : "";
+    const keyword =
+        search
+            ? search.value.toLowerCase().trim()
+            : "";
 
     const filtered = channels.filter(channel => {
 
@@ -266,23 +360,32 @@ function renderChannels() {
 
         if (currentCategory === "Favorites") {
 
-            categoryMatch = favorites.includes(channel.id);
+            categoryMatch =
+                favorites.includes(channel.id);
 
         } else if (channel.category) {
 
             categoryMatch =
                 channel.category
                     .toLowerCase()
-                    .includes(currentCategory.toLowerCase());
+                    .includes(
+                        currentCategory.toLowerCase()
+                    );
         }
 
         return nameMatch && categoryMatch;
     });
 
+
     if (filtered.length === 0) {
 
         channelList.innerHTML = `
-            <div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:30px;
+                color:var(--text-muted);
+            ">
                 🔍 No channels found.
             </div>
         `;
@@ -290,33 +393,40 @@ function renderChannels() {
         return;
     }
 
+
     filtered.forEach(channel => {
 
-        const isFav = favorites.includes(channel.id);
+        const isFav =
+            favorites.includes(channel.id);
 
-        const card = document.createElement("div");
+        const card =
+            document.createElement("div");
 
         card.className = "channel-card";
 
         card.innerHTML = `
             <button
-                class="fav-btn ${isFav ? 'active' : ''}"
+                class="fav-btn ${isFav ? "active" : ""}"
                 onclick="toggleFavorite(${channel.id}, event)"
                 title="Favorite"
             >
-                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                <i class="${isFav ? "fa-solid" : "fa-regular"} fa-star"></i>
             </button>
 
             <img
-                src="${channel.logo || 'logo.png'}"
-                onerror="this.onerror=null; this.src='https://via.placeholder.com/50?text=TV';"
+                src="${channel.logo || "logo.png"}"
+                onerror="
+                    this.onerror=null;
+                    this.src='https://via.placeholder.com/50?text=TV';
+                "
             >
 
-            <h4>${channel.name}</h4>
+            <h4>${channel.name || "Unknown"}</h4>
         `;
 
-        // Monetag → তারপর Channel Play
-        card.onclick = () => playChannelWithAd(channel);
+        card.onclick = () => {
+            playChannelWithAd(channel);
+        };
 
         channelList.appendChild(card);
     });
@@ -327,16 +437,19 @@ function renderChannels() {
 // Monetag Rewarded Popup
 // ==========================================
 
-// প্রতি ৩টি Channel Click-এ ১টি Popup Ad
 function playChannelWithAd(channel) {
 
     if (!channel || !channel.url) return;
 
     channelClickCount++;
 
-    console.log("Channel click:", channelClickCount);
+    console.log(
+        "Channel click:",
+        channelClickCount
+    );
 
-    // প্রথম ২টি click → সরাসরি Play
+
+    // প্রতি ৩টি click-এ ১টি ad
     if (channelClickCount % 3 !== 0) {
 
         playChannel(channel);
@@ -344,72 +457,90 @@ function playChannelWithAd(channel) {
         return;
     }
 
-    // Monetag SDK না থাকলে সরাসরি Play
+
+    // Monetag SDK না থাকলে সরাসরি play
     if (typeof show_11580289 !== "function") {
 
-        console.log("Monetag SDK not loaded. Playing channel directly.");
+        console.log(
+            "Monetag SDK not loaded."
+        );
 
         playChannel(channel);
 
         return;
     }
 
+
     // ইতিমধ্যে ad চলছে
     if (isAdShowing) return;
 
     isAdShowing = true;
 
-    console.log("Showing Monetag Rewarded Popup...");
+    console.log(
+        "Showing Monetag Rewarded Popup..."
+    );
+
 
     show_11580289("pop")
 
         .then(() => {
 
-            console.log("Monetag ad completed.");
+            console.log(
+                "Monetag ad completed."
+            );
 
             isAdShowing = false;
 
-            // Ad শেষ/close হওয়ার পর Channel Play
             playChannel(channel);
         })
 
         .catch((e) => {
 
-            console.error("Monetag popup error:", e);
+            console.error(
+                "Monetag popup error:",
+                e
+            );
 
             isAdShowing = false;
 
-            // Ad fail করলেও Channel বন্ধ থাকবে না
+            // Ad fail করলেও channel চলবে
             playChannel(channel);
         });
 }
 
 
-// ------------------------------------------
-// Play Channel with HLS.js
-// ------------------------------------------
+// ==========================================
+// Play Channel
+// ==========================================
 
 function playChannel(channel) {
 
     if (!channel || !channel.url) return;
 
-    currentChannelName.textContent = channel.name;
+    currentChannelName.textContent =
+        channel.name;
 
-    playerContainer.classList.remove("hidden");
+    playerContainer.classList.remove(
+        "hidden"
+    );
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
 
+
     if (hls) {
 
         hls.destroy();
-
         hls = null;
     }
 
-    if (Hls.isSupported() && channel.url.includes(".m3u8")) {
+
+    if (
+        Hls.isSupported() &&
+        channel.url.includes(".m3u8")
+    ) {
 
         hls = new Hls();
 
@@ -417,19 +548,34 @@ function playChannel(channel) {
 
         hls.attachMedia(video);
 
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        hls.on(
+            Hls.Events.MANIFEST_PARSED,
+            () => {
 
-            video.play().catch(e => {
-                console.log("Autoplay blocked:", e);
-            });
-        });
+                video.play().catch(e => {
 
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+                    console.log(
+                        "Autoplay blocked:",
+                        e
+                    );
+                });
+            }
+        );
+
+    } else if (
+        video.canPlayType(
+            "application/vnd.apple.mpegurl"
+        )
+    ) {
 
         video.src = channel.url;
 
         video.play().catch(e => {
-            console.log("Autoplay blocked:", e);
+
+            console.log(
+                "Autoplay blocked:",
+                e
+            );
         });
 
     } else {
@@ -437,9 +583,14 @@ function playChannel(channel) {
         video.src = channel.url;
 
         video.play().catch(e => {
-            console.log("Autoplay blocked:", e);
+
+            console.log(
+                "Autoplay blocked:",
+                e
+            );
         });
     }
+
 
     localStorage.setItem(
         "lastChannel",
@@ -455,51 +606,26 @@ function playChannel(channel) {
 if (typeof show_11580289 === "function") {
 
     show_11580289({
+
         type: "inApp",
 
         inAppSettings: {
+
             frequency: 2,
+
             capping: 0.1,
+
             interval: 30,
+
             timeout: 5,
+
             everyPage: false
         }
     });
 
 } else {
 
-    console.log("Monetag SDK not loaded for In-App Interstitial.");
-}
-/* ==========================================
-   FIXED HEADER - Always Above Player
-   ========================================== */
-
-.top-header {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 99999 !important;
-}
-
-/* Header-এর নিচে content শুরু হবে */
-body {
-    padding-top: 70px;
-}
-
-/* Player যেন Header-এর নিচে থাকে */
-.player-container {
-    z-index: 1000 !important;
-}
-
-/* Search area-ও Header-এর নিচে থাকবে */
-.search-area {
-    z-index: 9998 !important;
-}
-
-/* Category/Header-এর সঙ্গে overlap কমানো */
-.category-slider {
-    position: relative;
-    z-index: 10;
-}
+    console.log(
+        "Monetag SDK not loaded for In-App Interstitial."
+    );
+                    }
