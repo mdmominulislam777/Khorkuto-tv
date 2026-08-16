@@ -767,3 +767,138 @@ video {
         height: 70px !important;
     }
 }
+/* ==========================================
+   BOTTOM NAVIGATION
+   StreamZX - 3 Navigation Buttons
+========================================== */
+
+.bottom-navigation {
+    position: fixed;
+
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+
+    height: 64px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    align-items: stretch;
+
+    background: rgba(17, 24, 39, 0.97);
+
+    border: 1px solid var(--border-color);
+
+    border-radius: 18px;
+
+    padding: 5px;
+
+    z-index: 99998;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.45);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+
+/* Navigation Button */
+
+.bottom-nav-btn {
+    position: relative;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: var(--text-muted);
+
+    border-radius: 14px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+/* Icon */
+
+.bottom-nav-btn i {
+    font-size: 19px;
+}
+
+
+/* Text */
+
+.bottom-nav-btn span {
+    font-size: 10px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* Active Button */
+
+.bottom-nav-btn.active {
+    background: var(--primary);
+
+    color: #ffffff;
+}
+
+
+/* Press Animation */
+
+.bottom-nav-btn:active {
+    transform: scale(0.94);
+}
+
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .bottom-navigation {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+
+        height: 62px;
+
+        border-radius: 17px;
+    }
+
+    .bottom-nav-btn i {
+        font-size: 18px;
+    }
+
+    .bottom-nav-btn span {
+        font-size: 10px;
+    }
+
+}
+
+
+/* Prevent bottom navigation
+   from covering channel content */
+
+body {
+    padding-bottom: 90px;
+}
