@@ -54,7 +54,7 @@ body {
 
 
 /* ==========================================
-   SPLASH SCREEN
+   SPLASH
 ========================================== */
 
 #splash {
@@ -79,6 +79,7 @@ body {
 #splash.hidden {
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
 }
 
 .splash-logo {
@@ -87,6 +88,13 @@ body {
 
     border-radius: 50%;
     object-fit: cover;
+}
+
+#splash h2 {
+    margin-top: 12px;
+
+    font-size: 22px;
+    font-weight: 700;
 }
 
 .loader {
@@ -115,14 +123,14 @@ body {
 ========================================== */
 
 .top-header {
-    position: fixed !important;
+    position: fixed;
 
     top: 0;
     left: 0;
     right: 0;
 
     width: 100%;
-    min-height: 70px;
+    height: 70px;
 
     display: flex;
     align-items: center;
@@ -134,12 +142,13 @@ body {
 
     border-bottom: 1px solid var(--border-color);
 
-    z-index: 99999 !important;
+    z-index: 99999;
 }
 
 .header-left {
     display: flex;
     align-items: center;
+
     gap: 10px;
 
     min-width: 0;
@@ -152,11 +161,13 @@ body {
     flex-shrink: 0;
 
     border-radius: 10px;
+
     object-fit: cover;
 }
 
 .brand-title {
     font-size: 20px;
+
     font-weight: 700;
 
     color: var(--text-primary);
@@ -169,6 +180,7 @@ body {
 .header-right {
     display: flex;
     align-items: center;
+
     gap: 6px;
 
     flex-shrink: 0;
@@ -198,10 +210,6 @@ body {
     transform: scale(0.92);
 }
 
-.header-right button#favHeaderBtn {
-    color: var(--text-primary) !important;
-}
-
 
 /* ==========================================
    SEARCH
@@ -216,7 +224,7 @@ body {
 
     position: relative;
 
-    z-index: 9998;
+    z-index: 100;
 }
 
 .search-area.active {
@@ -229,11 +237,13 @@ body {
     padding: 12px 14px;
 
     border: 1px solid var(--border-color);
+
     outline: none;
 
     border-radius: 10px;
 
     background: var(--bg-surface);
+
     color: var(--text-primary);
 
     font-size: 14px;
@@ -251,7 +261,7 @@ body {
 .categories-folder {
     width: calc(100% - 24px);
 
-    margin: 12px 12px 18px;
+    margin: 12px;
 
     background: var(--bg-card);
 
@@ -260,10 +270,6 @@ body {
     border-radius: 18px;
 
     overflow: hidden;
-
-    position: relative;
-
-    z-index: 10;
 }
 
 
@@ -273,12 +279,14 @@ body {
 
 .categories-header {
     width: 100%;
-    height: 76px;
+
+    height: 55px;
 
     display: flex;
+
     align-items: center;
 
-    padding: 0 24px;
+    padding: 0 15px;
 
     background: var(--bg-surface);
 
@@ -287,18 +295,20 @@ body {
 
 .categories-title {
     display: flex;
+
     align-items: center;
 
-    gap: 12px;
+    gap: 10px;
 
     color: var(--text-primary);
 
-    font-size: 25px;
+    font-size: 18px;
+
     font-weight: 600;
 }
 
 .categories-title i {
-    font-size: 30px;
+    font-size: 20px;
 }
 
 
@@ -306,17 +316,19 @@ body {
    CATEGORY SLIDER
 ========================================== */
 
-.categories-folder .category-slider {
+.category-slider {
     width: 100%;
 
     display: flex;
+
     align-items: center;
 
-    gap: 16px;
+    gap: 10px;
 
-    padding: 20px;
+    padding: 12px;
 
     overflow-x: auto;
+
     overflow-y: hidden;
 
     scrollbar-width: none;
@@ -324,36 +336,39 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
-.categories-folder .category-slider::-webkit-scrollbar {
+.category-slider::-webkit-scrollbar {
     display: none;
 }
 
 
 /* ==========================================
-   CATEGORY BUTTON
+   CATEGORY CARD
 ========================================== */
 
 .categories-folder .cat {
-    flex: 0 0 174px;
+    flex: 0 0 100px;
 
-    width: 174px;
-    height: 155px;
+    width: 100px;
+    height: 90px;
 
     background: var(--bg-surface);
 
     border: 1px solid transparent;
 
-    border-radius: 20px;
+    border-radius: 15px;
 
     display: flex;
+
     flex-direction: column;
 
     align-items: center;
+
     justify-content: center;
 
     color: var(--text-primary);
 
     cursor: pointer;
+
     user-select: none;
 
     transition:
@@ -363,28 +378,23 @@ body {
 }
 
 .categories-folder .cat i {
-    font-size: 34px;
+    font-size: 25px;
 
-    margin-bottom: 12px;
+    margin-bottom: 7px;
 }
 
 .categories-folder .cat span {
-    font-size: 21px;
+    font-size: 13px;
 
     font-weight: 500;
 
     white-space: nowrap;
 }
 
-
-/* ==========================================
-   ACTIVE CATEGORY
-========================================== */
-
 .categories-folder .cat.active {
     background: var(--primary);
 
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255,255,255,0.25);
 }
 
 .categories-folder .cat:active {
@@ -406,7 +416,7 @@ body {
 
 
 /* ==========================================
-   FEATURED CHANNELS
+   FEATURED
 ========================================== */
 
 .featured-slider {
@@ -432,15 +442,15 @@ body {
 .featured-card {
     position: relative;
 
-    flex: 0 0 230px;
+    flex: 0 0 150px;
 
-    min-width: 230px;
+    min-width: 150px;
 
     background: var(--bg-card);
 
     border-radius: 16px;
 
-    padding: 12px 8px;
+    padding: 10px;
 
     text-align: center;
 
@@ -449,13 +459,15 @@ body {
     cursor: pointer;
 
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
 }
 
 .featured-card img {
-    width: 110px !important;
-    height: 110px !important;
+    width: 80px !important;
+    height: 80px !important;
 
     border-radius: 50% !important;
 
@@ -467,7 +479,7 @@ body {
 
     padding: 3px;
 
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .featured-card h4 {
@@ -486,6 +498,8 @@ body {
     font-size: 10px;
 
     color: var(--text-muted);
+
+    margin-top: 3px;
 }
 
 
@@ -510,13 +524,6 @@ body {
     gap: 10px;
 }
 
-@media (min-width: 600px) {
-    .channel-grid {
-        grid-template-columns:
-            repeat(auto-fill, minmax(130px, 1fr));
-    }
-}
-
 
 /* ==========================================
    CHANNEL CARD
@@ -527,13 +534,16 @@ body {
 
     width: 100%;
 
+    min-width: 0;
+
     background: var(--bg-card);
 
     border-radius: 16px;
 
-    padding: 12px 6px;
+    padding: 10px 6px;
 
     display: flex;
+
     flex-direction: column;
 
     align-items: center;
@@ -552,8 +562,8 @@ body {
 }
 
 .channel-card img {
-    width: 110px !important;
-    height: 110px !important;
+    width: 80px !important;
+    height: 80px !important;
 
     max-width: 100%;
 
@@ -567,7 +577,7 @@ body {
 
     padding: 3px;
 
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .channel-card h4 {
@@ -592,7 +602,7 @@ body {
 
 
 /* ==========================================
-   FAVORITE BUTTON
+   FAVORITE
 ========================================== */
 
 .fav-btn {
@@ -605,33 +615,28 @@ body {
     height: 24px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0,0,0,0.6);
 
     border: none;
+
     border-radius: 50%;
 
-    color: var(--text-primary) !important;
+    color: #fff;
 
     font-size: 11px;
 
     cursor: pointer;
 
     z-index: 5;
-
-    transition:
-        color 0.2s ease,
-        transform 0.2s ease;
 }
 
 .fav-btn.active {
-    color: var(--text-primary) !important;
-}
-
-.fav-btn:active {
-    transform: scale(1.2);
+    color: #ffd700;
 }
 
 
@@ -642,9 +647,9 @@ body {
 .player-container {
     position: sticky;
 
-    top: 0;
+    top: 70px;
 
-    z-index: 1000 !important;
+    z-index: 1000;
 
     width: 100%;
 
@@ -659,6 +664,7 @@ body {
     display: flex;
 
     justify-content: space-between;
+
     align-items: center;
 
     padding: 8px 12px;
@@ -694,51 +700,70 @@ video {
 
 
 /* ==========================================
-   MOBILE
+   TABLET / DESKTOP
 ========================================== */
 
-@media (max-width: 480px) {
+@media (min-width: 600px) {
 
-    .brand-title {
-        font-size: 20px;
-    }
-
-    .categories-folder {
-        margin-top: 12px;
-    }
-
-    .categories-header {
-        height: 76px;
-
-        padding: 0 24px;
-    }
-
-    .categories-title {
-        font-size: 25px;
-    }
-
-    .categories-title i {
-        font-size: 30px;
-    }
-
-    .categories-folder .category-slider {
-        gap: 16px;
-
-        padding: 20px;
+    .channel-grid {
+        grid-template-columns:
+            repeat(auto-fill, minmax(130px, 1fr));
     }
 
     .categories-folder .cat {
-        flex: 0 0 174px;
+        flex-basis: 110px;
 
-        width: 174px;
-        height: 155px;
+        width: 110px;
+        height: 95px;
+    }
+
+    .channel-card img {
+        width: 90px !important;
+        height: 90px !important;
+    }
+}
+
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 360px) {
+
+    .brand-title {
+        font-size: 18px;
+    }
+
+    .header-right {
+        gap: 4px;
+    }
+
+    .header-right button {
+        width: 34px;
+        height: 34px;
+    }
+
+    .categories-folder .cat {
+        flex-basis: 92px;
+
+        width: 92px;
+        height: 84px;
     }
 
     .categories-folder .cat i {
-        font-size: 34px;
+        font-size: 22px;
     }
 
     .categories-folder .cat span {
-        font-size: 21px;
+        font-size: 12px;
+    }
+
+    .channel-grid {
+        gap: 7px;
+    }
+
+    .channel-card img {
+        width: 70px !important;
+        height: 70px !important;
     }
 }
