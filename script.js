@@ -1,25 +1,21 @@
 // ==========================================
-// StreamZX - Consolidated Script
+// StreamZX - Fixed & Consolidated Script
 // ==========================================
 
 let channels = [];
-
 let currentCategory = "Sports";
 
 let favorites =
-    JSON.parse(localStorage.getItem("favChannels")) || [];
+    JSON.parse(localStorage.getItem("favChannels") || "[]");
 
 let hls = null;
-
 
 // ==========================================
 // Monetag
 // ==========================================
 
 let firstChannelAdShown = false;
-
 let isAdShowing = false;
-
 
 // ==========================================
 // DOM
@@ -35,30 +31,19 @@ let playerContainer;
 let currentChannelName;
 let mainSectionTitle;
 
-
 // ==========================================
 // APP START
 // ==========================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    channelList =
-        document.getElementById("channelList");
+    channelList = document.getElementById("channelList");
+    featuredList = document.getElementById("featuredList");
+    featuredSection = document.getElementById("featuredSection");
 
-    featuredList =
-        document.getElementById("featuredList");
-
-    featuredSection =
-        document.getElementById("featuredSection");
-
-    video =
-        document.getElementById("video");
-
-    search =
-        document.getElementById("search");
-
-    searchArea =
-        document.getElementById("searchArea");
+    video = document.getElementById("video");
+    search = document.getElementById("search");
+    searchArea = document.getElementById("searchArea");
 
     playerContainer =
         document.getElementById("playerContainer");
@@ -69,23 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
     mainSectionTitle =
         document.getElementById("mainSectionTitle");
 
-
-    initApp();
-
-});
-
-
-// ==========================================
-// INIT
-// ==========================================
-
-function initApp() {
-
     setupEventListeners();
 
-    loadChannels();
+    // Safety: কোনো কারণে loadChannels আটকে গেলেও
+    // 8 সেকেন্ড পর Splash বন্ধ হবে
+    setTimeout(() => {
+        hideSplash();
+    }, 8000);
 
-}
+    loadChannels();
+});
 
 
 // ==========================================
@@ -94,13 +72,11 @@ function initApp() {
 
 function hideSplash() {
 
-    const splash =
-        document.getElementById("splash");
+    const splash = document.getElementById("splash");
 
     if (!splash) return;
 
     splash.classList.add("hidden");
-
 }
 
 
@@ -110,7 +86,6 @@ function hideSplash() {
 
 function setupEventListeners() {
 
-
     // ======================================
     // SEARCH
     // ======================================
@@ -118,28 +93,22 @@ function setupEventListeners() {
     const searchBtn =
         document.getElementById("searchBtn");
 
-    if (searchBtn) {
+    if (searchBtn && searchArea && search) {
 
         searchBtn.addEventListener("click", () => {
 
             searchArea.classList.toggle("active");
 
-            if (
-                searchArea.classList.contains("active")
-            ) {
+            if (searchArea.classList.contains("active")) {
 
                 search.focus();
 
             } else {
 
                 search.value = "";
-
                 renderChannels();
-
             }
-
         });
-
     }
 
 
@@ -157,22 +126,14 @@ function setupEventListeners() {
             document
                 .querySelectorAll(".categories-folder .cat")
                 .forEach(cat => {
-
                     cat.classList.remove("active");
-
                 });
 
-
-            currentCategory =
-                "Favorites";
-
+            currentCategory = "Favorites";
 
             updateSectionTitle();
-
             renderChannels();
-
         });
-
     }
 
 
@@ -190,7 +151,6 @@ function setupEventListeners() {
             loadChannels();
 
         });
-
     }
 
 
@@ -201,11 +161,8 @@ function setupEventListeners() {
     if (search) {
 
         search.addEventListener("input", () => {
-
             renderChannels();
-
         });
-
     }
 
 
@@ -224,29 +181,19 @@ function setupEventListeners() {
                         ".categories-folder .cat"
                     )
                     .forEach(c => {
-
                         c.classList.remove("active");
-
                     });
 
-
-                const target =
-                    e.currentTarget;
-
+                const target = e.currentTarget;
 
                 target.classList.add("active");
 
-
                 currentCategory =
-                    target.dataset.category;
-
+                    target.dataset.category || "Sports";
 
                 updateSectionTitle();
-
                 renderChannels();
-
             });
-
         });
 
 
@@ -255,10 +202,7 @@ function setupEventListeners() {
     // ======================================
 
     const closePlayerBtn =
-        document.getElementById(
-            "closePlayerBtn"
-        );
-
+        document.getElementById("closePlayerBtn");
 
     if (closePlayerBtn) {
 
@@ -266,29 +210,22 @@ function setupEventListeners() {
             "click",
             closePlayer
         );
-
     }
 
 
     // ======================================
     // BOTTOM NAVIGATION
-    // ONLY 3 BUTTONS
+    // HTML-এর আসল ID ব্যবহার করা হয়েছে
     // ======================================
 
     const liveEventBtn =
-        document.getElementById(
-            "liveEventBtn"
-        );
+        document.getElementById("liveEventNav");
 
     const sportsNavBtn =
-        document.getElementById(
-            "sportsNavBtn"
-        );
+        document.getElementById("sportsNav");
 
     const categoryNavBtn =
-        document.getElementById(
-            "categoryNavBtn"
-        );
+        document.getElementById("categoryNav");
 
 
     // ======================================
@@ -297,36 +234,28 @@ function setupEventListeners() {
 
     if (liveEventBtn) {
 
-        liveEventBtn.addEventListener(
-            "click",
-            () => {
+        liveEventBtn.addEventListener("click", () => {
 
-                setActiveBottomNav(
-                    liveEventBtn
-                );
+            setActiveBottomNav(liveEventBtn);
 
+            mainSectionTitle.textContent =
+                "🔴 Live Events";
 
-                // বর্তমানে Live Event-এর জন্য
-                // placeholder section
-
-                mainSectionTitle.textContent =
-                    "🔴 Live Events";
-
-
-                channelList.innerHTML = `
-                    <div style="
-                        grid-column:1/-1;
-                        text-align:center;
-                        padding:30px;
-                        color:var(--text-muted);
-                    ">
-                        🔴 Live Events
-                    </div>
-                `;
-
-            }
-        );
-
+            channelList.innerHTML = `
+                <div style="
+                    grid-column:1/-1;
+                    text-align:center;
+                    padding:30px;
+                    color:var(--text-muted);
+                ">
+                    🔴 Live Events
+                    <br>
+                    <small>
+                        Live Events module will appear here.
+                    </small>
+                </div>
+            `;
+        });
     }
 
 
@@ -336,46 +265,32 @@ function setupEventListeners() {
 
     if (sportsNavBtn) {
 
-        sportsNavBtn.addEventListener(
-            "click",
-            () => {
+        sportsNavBtn.addEventListener("click", () => {
 
-                setActiveBottomNav(
-                    sportsNavBtn
-                );
+            setActiveBottomNav(sportsNavBtn);
 
+            currentCategory = "Sports";
 
-                currentCategory =
-                    "Sports";
+            document
+                .querySelectorAll(
+                    ".categories-folder .cat"
+                )
+                .forEach(cat => {
 
-
-                document
-                    .querySelectorAll(
-                        ".categories-folder .cat"
-                    )
-                    .forEach(cat => {
-
-                        cat.classList.toggle(
-                            "active",
-                            cat.dataset.category ===
-                            "Sports"
-                        );
-
-                    });
-
-
-                updateSectionTitle();
-
-                renderChannels();
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
+                    cat.classList.toggle(
+                        "active",
+                        cat.dataset.category === "Sports"
+                    );
                 });
 
-            }
-        );
+            updateSectionTitle();
+            renderChannels();
 
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
     }
 
 
@@ -385,35 +300,24 @@ function setupEventListeners() {
 
     if (categoryNavBtn) {
 
-        categoryNavBtn.addEventListener(
-            "click",
-            () => {
+        categoryNavBtn.addEventListener("click", () => {
 
-                setActiveBottomNav(
-                    categoryNavBtn
+            setActiveBottomNav(categoryNavBtn);
+
+            const categoryFolder =
+                document.querySelector(
+                    ".categories-folder"
                 );
 
+            if (categoryFolder) {
 
-                const categoryFolder =
-                    document.querySelector(
-                        ".categories-folder"
-                    );
-
-
-                if (categoryFolder) {
-
-                    categoryFolder.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }
-
+                categoryFolder.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
             }
-        );
-
+        });
     }
-
 }
 
 
@@ -426,18 +330,12 @@ function setActiveBottomNav(activeButton) {
     document
         .querySelectorAll(".bottom-nav-btn")
         .forEach(button => {
-
             button.classList.remove("active");
-
         });
 
-
     if (activeButton) {
-
         activeButton.classList.add("active");
-
     }
-
 }
 
 
@@ -472,18 +370,14 @@ function updateSectionTitle() {
 
         Favorites:
             "⭐ Favorite Channels"
-
     };
-
 
     if (mainSectionTitle) {
 
         mainSectionTitle.textContent =
             titles[currentCategory] ||
             "📺 Channels";
-
     }
-
 }
 
 
@@ -494,37 +388,29 @@ function updateSectionTitle() {
 function toggleFavorite(channelId, event) {
 
     if (event) {
-
         event.stopPropagation();
-
     }
 
+    const id = String(channelId);
 
     const index =
-        favorites.indexOf(channelId);
-
+        favorites.findIndex(
+            fav => String(fav) === id
+        );
 
     if (index === -1) {
-
         favorites.push(channelId);
-
     } else {
-
         favorites.splice(index, 1);
-
     }
-
 
     localStorage.setItem(
         "favChannels",
         JSON.stringify(favorites)
     );
 
-
     renderChannels();
-
     renderFeaturedChannels();
-
 }
 
 
@@ -534,8 +420,10 @@ function toggleFavorite(channelId, event) {
 
 async function loadChannels() {
 
-    if (!channelList) return;
-
+    if (!channelList) {
+        hideSplash();
+        return;
+    }
 
     channelList.innerHTML = `
         <div style="
@@ -548,26 +436,39 @@ async function loadChannels() {
         </div>
     `;
 
-
     try {
+
+        // ======================================
+        // FETCH WITH TIMEOUT
+        // ======================================
+
+        const controller =
+            new AbortController();
+
+        const timeout =
+            setTimeout(() => {
+                controller.abort();
+            }, 7000);
+
 
         const response =
             await fetch(
-                "channels.json?t=" +
-                Date.now(),
+                "./channels.json?t=" + Date.now(),
                 {
-                    cache: "no-store"
+                    cache: "no-store",
+                    signal: controller.signal
                 }
             );
+
+        clearTimeout(timeout);
 
 
         if (!response.ok) {
 
             throw new Error(
-                "HTTP " +
+                "channels.json HTTP " +
                 response.status
             );
-
         }
 
 
@@ -575,74 +476,107 @@ async function loadChannels() {
             await response.json();
 
 
-        channels =
-            Array.isArray(data)
-                ? data
-                : Array.isArray(data.channels)
-                    ? data.channels
-                    : [];
+        // ======================================
+        // SUPPORT:
+        // []
+        // OR
+        // { channels: [] }
+        // ======================================
 
+        if (Array.isArray(data)) {
 
-        if (!Array.isArray(channels)) {
+            channels = data;
+
+        } else if (
+            data &&
+            Array.isArray(data.channels)
+        ) {
+
+            channels = data.channels;
+
+        } else {
 
             channels = [];
 
+            throw new Error(
+                "Invalid channels.json format"
+            );
         }
 
 
-        renderFeaturedChannels();
-
-        renderChannels();
-
-
         console.log(
-            "Channels loaded:",
+            "✅ Channels loaded:",
             channels.length
         );
+
+
+        renderFeaturedChannels();
+        renderChannels();
 
 
     } catch (error) {
 
         console.error(
-            "Channel loading error:",
+            "❌ Channel loading error:",
             error
         );
+
+
+        let errorMessage =
+            error.name === "AbortError"
+                ? "channels.json loading timeout"
+                : error.message;
 
 
         channelList.innerHTML = `
             <div style="
                 grid-column:1/-1;
                 text-align:center;
-                padding:30px;
+                padding:30px 15px;
                 color:#ef4444;
             ">
-                ❌ Could not load channels.json
-                <br>
+
+                ❌ Could not load channels
+
+                <br><br>
+
                 <small style="
                     color:var(--text-muted);
                     display:block;
-                    margin-top:8px;
                 ">
-                    ${escapeHTML(error.message)}
+                    ${escapeHTML(errorMessage)}
                 </small>
+
+                <br>
+
+                <button
+                    onclick="loadChannels()"
+                    style="
+                        padding:10px 18px;
+                        border:none;
+                        border-radius:10px;
+                        background:#e50914;
+                        color:#fff;
+                        font-weight:600;
+                    "
+                >
+                    🔄 Try Again
+                </button>
+
             </div>
         `;
-
-
-    } finally {
-
-        // গুরুত্বপূর্ণ:
-        // JSON load fail হলেও Splash আটকে থাকবে না
-
-        hideSplash();
-
     }
 
+    // ======================================
+    // ALWAYS HIDE SPLASH
+    // ======================================
+
+    hideSplash();
 }
 
 
 // ==========================================
-// FEATURED
+// FEATURED CHANNELS
 // ==========================================
 
 function renderFeaturedChannels() {
@@ -654,25 +588,21 @@ function renderFeaturedChannels() {
 
 
     const featured =
-        channels.filter(
-            channel =>
-                channel.featured === true
+        channels.filter(channel =>
+            channel.featured === true ||
+            channel.featured === "true"
         );
 
 
     if (!featured.length) {
 
-        featuredSection.style.display =
-            "none";
+        featuredSection.style.display = "none";
 
         return;
-
     }
 
 
-    featuredSection.style.display =
-        "block";
-
+    featuredSection.style.display = "block";
 
     featuredList.innerHTML = "";
 
@@ -680,17 +610,17 @@ function renderFeaturedChannels() {
     featured.forEach(channel => {
 
         const isFav =
-            favorites.includes(
-                channel.id
+            favorites.some(
+                fav =>
+                    String(fav) ===
+                    String(channel.id)
             );
 
 
         const card =
             document.createElement("div");
 
-
-        card.className =
-            "featured-card";
+        card.className = "featured-card";
 
 
         card.innerHTML = `
@@ -712,14 +642,14 @@ function renderFeaturedChannels() {
 
             <img
                 src="${escapeHTML(
-                    channel.logo || "logo.png"
+                    getChannelLogo(channel)
                 )}"
                 alt="${escapeHTML(
                     channel.name || "TV"
                 )}"
                 onerror="
                     this.onerror=null;
-                    this.src='https://via.placeholder.com/80?text=TV';
+                    this.src='logo.png';
                 "
             >
 
@@ -752,7 +682,6 @@ function renderFeaturedChannels() {
                     channel.id,
                     event
                 );
-
             }
         );
 
@@ -768,9 +697,7 @@ function renderFeaturedChannels() {
 
 
         featuredList.appendChild(card);
-
     });
-
 }
 
 
@@ -788,9 +715,7 @@ function renderChannels() {
 
     const keyword =
         search
-            ? search.value
-                .toLowerCase()
-                .trim()
+            ? search.value.toLowerCase().trim()
             : "";
 
 
@@ -798,9 +723,7 @@ function renderChannels() {
         channels.filter(channel => {
 
             const nameMatch =
-                String(
-                    channel.name || ""
-                )
+                String(channel.name || "")
                     .toLowerCase()
                     .includes(keyword);
 
@@ -814,22 +737,20 @@ function renderChannels() {
             ) {
 
                 categoryMatch =
-                    favorites.includes(
-                        channel.id
+                    favorites.some(
+                        fav =>
+                            String(fav) ===
+                            String(channel.id)
                     );
 
             } else {
 
                 categoryMatch =
-                    String(
-                        channel.category || ""
-                    )
+                    String(channel.category || "")
                         .toLowerCase()
                         .includes(
-                            currentCategory
-                                .toLowerCase()
+                            currentCategory.toLowerCase()
                         );
-
             }
 
 
@@ -837,7 +758,6 @@ function renderChannels() {
                 nameMatch &&
                 categoryMatch
             );
-
         });
 
 
@@ -855,24 +775,23 @@ function renderChannels() {
         `;
 
         return;
-
     }
 
 
     filtered.forEach(channel => {
 
         const isFav =
-            favorites.includes(
-                channel.id
+            favorites.some(
+                fav =>
+                    String(fav) ===
+                    String(channel.id)
             );
 
 
         const card =
             document.createElement("div");
 
-
-        card.className =
-            "channel-card";
+        card.className = "channel-card";
 
 
         card.innerHTML = `
@@ -894,14 +813,14 @@ function renderChannels() {
 
             <img
                 src="${escapeHTML(
-                    channel.logo || "logo.png"
+                    getChannelLogo(channel)
                 )}"
                 alt="${escapeHTML(
                     channel.name || "TV"
                 )}"
                 onerror="
                     this.onerror=null;
-                    this.src='https://via.placeholder.com/80?text=TV';
+                    this.src='logo.png';
                 "
             >
 
@@ -927,7 +846,6 @@ function renderChannels() {
                     channel.id,
                     event
                 );
-
             }
         );
 
@@ -943,9 +861,39 @@ function renderChannels() {
 
 
         channelList.appendChild(card);
-
     });
+}
 
+
+// ==========================================
+// GET CHANNEL LOGO
+// ==========================================
+
+function getChannelLogo(channel) {
+
+    return (
+        channel.logo ||
+        channel.image ||
+        channel.logoUrl ||
+        "logo.png"
+    );
+}
+
+
+// ==========================================
+// GET CHANNEL URL
+// ==========================================
+
+function getChannelURL(channel) {
+
+    return (
+        channel.url ||
+        channel.stream_url ||
+        channel.streamUrl ||
+        channel.m3u8 ||
+        channel.m3u8_url ||
+        ""
+    );
 }
 
 
@@ -961,7 +909,6 @@ function escapeHTML(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }
 
 
@@ -971,38 +918,48 @@ function escapeHTML(value) {
 
 function playChannelWithAd(channel) {
 
-    if (
-        !channel ||
-        !channel.url
-    ) return;
+    if (!channel) return;
 
 
+    const url =
+        getChannelURL(channel);
+
+
+    if (!url) {
+
+        alert(
+            "এই চ্যানেলের কোনো stream URL নেই।"
+        );
+
+        return;
+    }
+
+
+    // প্রথমবারের পর সরাসরি player
     if (firstChannelAdShown) {
 
         playChannel(channel);
 
         return;
-
     }
 
 
+    // Monetag unavailable হলে
+    // সরাসরি player
     if (
         typeof show_11580289 !==
         "function"
     ) {
 
-        firstChannelAdShown =
-            true;
+        firstChannelAdShown = true;
 
         playChannel(channel);
 
         return;
-
     }
 
 
     if (isAdShowing) return;
-
 
     isAdShowing = true;
 
@@ -1021,21 +978,15 @@ function playChannelWithAd(channel) {
 
             ad.then(() => {
 
-                firstChannelAdShown =
-                    true;
-
-                isAdShowing =
-                    false;
+                firstChannelAdShown = true;
+                isAdShowing = false;
 
                 playChannel(channel);
 
             }).catch(() => {
 
-                firstChannelAdShown =
-                    true;
-
-                isAdShowing =
-                    false;
+                firstChannelAdShown = true;
+                isAdShowing = false;
 
                 playChannel(channel);
 
@@ -1043,14 +994,10 @@ function playChannelWithAd(channel) {
 
         } else {
 
-            firstChannelAdShown =
-                true;
-
-            isAdShowing =
-                false;
+            firstChannelAdShown = true;
+            isAdShowing = false;
 
             playChannel(channel);
-
         }
 
     } catch (error) {
@@ -1060,17 +1007,11 @@ function playChannelWithAd(channel) {
             error
         );
 
-
-        firstChannelAdShown =
-            true;
-
-        isAdShowing =
-            false;
+        firstChannelAdShown = true;
+        isAdShowing = false;
 
         playChannel(channel);
-
     }
-
 }
 
 
@@ -1080,9 +1021,26 @@ function playChannelWithAd(channel) {
 
 function playChannel(channel) {
 
+    if (!channel) return;
+
+
+    const url =
+        getChannelURL(channel);
+
+
+    if (!url) {
+
+        alert(
+            "এই চ্যানেলের stream URL পাওয়া যায়নি।"
+        );
+
+        return;
+    }
+
+
     if (
-        !channel ||
-        !channel.url
+        !video ||
+        !playerContainer
     ) return;
 
 
@@ -1101,14 +1059,25 @@ function playChannel(channel) {
     });
 
 
+    // ======================================
+    // DESTROY OLD HLS
+    // ======================================
+
     if (hls) {
 
-        hls.destroy();
+        try {
+            hls.destroy();
+        } catch (e) {
+            console.log(e);
+        }
 
         hls = null;
-
     }
 
+
+    // ======================================
+    // RESET VIDEO
+    // ======================================
 
     video.pause();
 
@@ -1117,32 +1086,28 @@ function playChannel(channel) {
     video.load();
 
 
-    const url =
-        String(
-            channel.url
-        ).trim();
+    const streamURL =
+        String(url).trim();
 
 
     // ======================================
-    // HLS
+    // HLS.JS
     // ======================================
 
     if (
         typeof Hls !== "undefined" &&
         Hls.isSupported() &&
-        (
-            url.includes(".m3u8") ||
-            url.includes("m3u8")
-        )
+        /m3u8/i.test(streamURL)
     ) {
 
         hls =
             new Hls({
-                enableWorker: true
+                enableWorker: true,
+                lowLatencyMode: true
             });
 
 
-        hls.loadSource(url);
+        hls.loadSource(streamURL);
 
         hls.attachMedia(video);
 
@@ -1158,9 +1123,7 @@ function playChannel(channel) {
                             "Autoplay blocked:",
                             error
                         );
-
                     });
-
             }
         );
 
@@ -1174,6 +1137,41 @@ function playChannel(channel) {
                     data
                 );
 
+
+                if (
+                    data.fatal &&
+                    data.type ===
+                    Hls.ErrorTypes.NETWORK_ERROR
+                ) {
+
+                    console.log(
+                        "Trying HLS recovery..."
+                    );
+
+                    hls.startLoad();
+                }
+
+
+                else if (
+                    data.fatal &&
+                    data.type ===
+                    Hls.ErrorTypes.MEDIA_ERROR
+                ) {
+
+                    console.log(
+                        "Trying media recovery..."
+                    );
+
+                    hls.recoverMediaError();
+                }
+
+
+                else if (data.fatal) {
+
+                    console.error(
+                        "Fatal HLS error"
+                    );
+                }
             }
         );
 
@@ -1190,8 +1188,7 @@ function playChannel(channel) {
         )
     ) {
 
-        video.src = url;
-
+        video.src = streamURL;
 
         video.play()
             .catch(error => {
@@ -1200,20 +1197,17 @@ function playChannel(channel) {
                     "Autoplay blocked:",
                     error
                 );
-
             });
-
     }
 
 
     // ======================================
-    // NORMAL VIDEO
+    // NORMAL MP4 / VIDEO
     // ======================================
 
     else {
 
-        video.src = url;
-
+        video.src = streamURL;
 
         video.play()
             .catch(error => {
@@ -1222,17 +1216,28 @@ function playChannel(channel) {
                     "Autoplay blocked:",
                     error
                 );
-
             });
-
     }
 
 
-    localStorage.setItem(
-        "lastChannel",
-        JSON.stringify(channel)
-    );
+    // ======================================
+    // SAVE LAST CHANNEL
+    // ======================================
 
+    try {
+
+        localStorage.setItem(
+            "lastChannel",
+            JSON.stringify(channel)
+        );
+
+    } catch (e) {
+
+        console.log(
+            "Could not save last channel",
+            e
+        );
+    }
 }
 
 
@@ -1244,10 +1249,13 @@ function closePlayer() {
 
     if (hls) {
 
-        hls.destroy();
+        try {
+            hls.destroy();
+        } catch (e) {
+            console.log(e);
+        }
 
         hls = null;
-
     }
 
 
@@ -1258,7 +1266,6 @@ function closePlayer() {
         video.removeAttribute("src");
 
         video.load();
-
     }
 
 
@@ -1267,7 +1274,5 @@ function closePlayer() {
         playerContainer.classList.add(
             "hidden"
         );
-
     }
-
-}
+        }
