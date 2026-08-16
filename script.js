@@ -3,6 +3,7 @@
 // ==========================================
 
 let channels = [];
+
 let currentCategory = "Sports";
 
 let favorites =
@@ -10,7 +11,13 @@ let favorites =
 
 let hls = null;
 
+
+// ==========================================
+// Monetag
+// ==========================================
+
 let firstChannelAdShown = false;
+
 let isAdShowing = false;
 
 
@@ -62,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mainSectionTitle =
         document.getElementById("mainSectionTitle");
 
+
     initApp();
 
 });
@@ -81,7 +89,7 @@ function initApp() {
 
 
 // ==========================================
-// SPLASH
+// HIDE SPLASH
 // ==========================================
 
 function hideSplash() {
@@ -91,11 +99,7 @@ function hideSplash() {
 
     if (!splash) return;
 
-    setTimeout(() => {
-
-        splash.classList.add("hidden");
-
-    }, 500);
+    splash.classList.add("hidden");
 
 }
 
@@ -108,7 +112,7 @@ function setupEventListeners() {
 
 
     // ======================================
-    // SEARCH BUTTON
+    // SEARCH
     // ======================================
 
     const searchBtn =
@@ -153,13 +157,17 @@ function setupEventListeners() {
             document
                 .querySelectorAll(".categories-folder .cat")
                 .forEach(cat => {
+
                     cat.classList.remove("active");
+
                 });
 
-            currentCategory = "Favorites";
 
-            mainSectionTitle.textContent =
-                "⭐ Favorite Channels";
+            currentCategory =
+                "Favorites";
+
+
+            updateSectionTitle();
 
             renderChannels();
 
@@ -202,7 +210,7 @@ function setupEventListeners() {
 
 
     // ======================================
-    // CATEGORIES
+    // CATEGORY BUTTONS
     // ======================================
 
     document
@@ -216,16 +224,22 @@ function setupEventListeners() {
                         ".categories-folder .cat"
                     )
                     .forEach(c => {
+
                         c.classList.remove("active");
+
                     });
+
 
                 const target =
                     e.currentTarget;
 
+
                 target.classList.add("active");
+
 
                 currentCategory =
                     target.dataset.category;
+
 
                 updateSectionTitle();
 
@@ -245,6 +259,7 @@ function setupEventListeners() {
             "closePlayerBtn"
         );
 
+
     if (closePlayerBtn) {
 
         closePlayerBtn.addEventListener(
@@ -257,42 +272,81 @@ function setupEventListeners() {
 
     // ======================================
     // BOTTOM NAVIGATION
-    // Only 3 Buttons
-    // Live Event / Category / Sports
+    // ONLY 3 BUTTONS
     // ======================================
 
-    const bottomNavButtons =
-        document.querySelectorAll(".bottom-nav-btn");
+    const liveEventBtn =
+        document.getElementById(
+            "liveEventBtn"
+        );
+
+    const sportsNavBtn =
+        document.getElementById(
+            "sportsNavBtn"
+        );
+
+    const categoryNavBtn =
+        document.getElementById(
+            "categoryNavBtn"
+        );
 
 
-    bottomNavButtons.forEach(btn => {
+    // ======================================
+    // LIVE EVENT
+    // ======================================
 
-        btn.addEventListener("click", () => {
+    if (liveEventBtn) {
 
-            // Remove active from all buttons
-            bottomNavButtons.forEach(item => {
+        liveEventBtn.addEventListener(
+            "click",
+            () => {
 
-                item.classList.remove("active");
-
-            });
-
-
-            // Active current button
-            btn.classList.add("active");
-
-
-            const page =
-                btn.getAttribute("data-page");
+                setActiveBottomNav(
+                    liveEventBtn
+                );
 
 
-            // ==================================
-            // LIVE EVENT
-            // ==================================
+                // বর্তমানে Live Event-এর জন্য
+                // placeholder section
 
-            if (page === "live-event") {
+                mainSectionTitle.textContent =
+                    "🔴 Live Events";
 
-                // Keep existing channel system
-                currentCategory = "Sports";
+
+                channelList.innerHTML = `
+                    <div style="
+                        grid-column:1/-1;
+                        text-align:center;
+                        padding:30px;
+                        color:var(--text-muted);
+                    ">
+                        🔴 Live Events
+                    </div>
+                `;
+
+            }
+        );
+
+    }
+
+
+    // ======================================
+    // SPORTS
+    // ======================================
+
+    if (sportsNavBtn) {
+
+        sportsNavBtn.addEventListener(
+            "click",
+            () => {
+
+                setActiveBottomNav(
+                    sportsNavBtn
+                );
+
+
+                currentCategory =
+                    "Sports";
 
 
                 document
@@ -301,60 +355,44 @@ function setupEventListeners() {
                     )
                     .forEach(cat => {
 
-                        cat.classList.remove(
-                            "active"
+                        cat.classList.toggle(
+                            "active",
+                            cat.dataset.category ===
+                            "Sports"
                         );
-
-
-                        if (
-                            cat.getAttribute(
-                                "data-category"
-                            ) === "Sports"
-                        ) {
-
-                            cat.classList.add(
-                                "active"
-                            );
-
-                        }
 
                     });
 
 
-                if (mainSectionTitle) {
-
-                    mainSectionTitle.textContent =
-                        "🔴 Live Events";
-
-                }
-
+                updateSectionTitle();
 
                 renderChannels();
 
-
-                // Scroll to channel area
-                const main =
-                    document.querySelector(
-                        ".main-content"
-                    );
-
-                if (main) {
-
-                    main.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
 
             }
+        );
+
+    }
 
 
-            // ==================================
-            // CATEGORY
-            // ==================================
+    // ======================================
+    // CATEGORY
+    // ======================================
 
-            else if (page === "category") {
+    if (categoryNavBtn) {
+
+        categoryNavBtn.addEventListener(
+            "click",
+            () => {
+
+                setActiveBottomNav(
+                    categoryNavBtn
+                );
+
 
                 const categoryFolder =
                     document.querySelector(
@@ -372,69 +410,33 @@ function setupEventListeners() {
                 }
 
             }
+        );
+
+    }
+
+}
 
 
-            // ==================================
-            // SPORTS
-            // ==================================
+// ==========================================
+// BOTTOM NAV ACTIVE
+// ==========================================
 
-            else if (page === "sports") {
+function setActiveBottomNav(activeButton) {
 
-                currentCategory =
-                    "Sports";
+    document
+        .querySelectorAll(".bottom-nav-btn")
+        .forEach(button => {
 
-
-                document
-                    .querySelectorAll(
-                        ".categories-folder .cat"
-                    )
-                    .forEach(cat => {
-
-                        cat.classList.remove(
-                            "active"
-                        );
-
-
-                        if (
-                            cat.getAttribute(
-                                "data-category"
-                            ) === "Sports"
-                        ) {
-
-                            cat.classList.add(
-                                "active"
-                            );
-
-                        }
-
-                    });
-
-
-                updateSectionTitle();
-
-                renderChannels();
-
-
-                const main =
-                    document.querySelector(
-                        ".main-content"
-                    );
-
-
-                if (main) {
-
-                    main.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }
-
-            }
+            button.classList.remove("active");
 
         });
 
-    });
+
+    if (activeButton) {
+
+        activeButton.classList.add("active");
+
+    }
 
 }
 
@@ -552,14 +554,18 @@ async function loadChannels() {
         const response =
             await fetch(
                 "channels.json?t=" +
-                Date.now()
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
             );
 
 
         if (!response.ok) {
 
             throw new Error(
-                "channels.json not found"
+                "HTTP " +
+                response.status
             );
 
         }
@@ -577,11 +583,22 @@ async function loadChannels() {
                     : [];
 
 
+        if (!Array.isArray(channels)) {
+
+            channels = [];
+
+        }
+
+
         renderFeaturedChannels();
 
         renderChannels();
 
-        hideSplash();
+
+        console.log(
+            "Channels loaded:",
+            channels.length
+        );
 
 
     } catch (error) {
@@ -600,9 +617,22 @@ async function loadChannels() {
                 color:#ef4444;
             ">
                 ❌ Could not load channels.json
+                <br>
+                <small style="
+                    color:var(--text-muted);
+                    display:block;
+                    margin-top:8px;
+                ">
+                    ${escapeHTML(error.message)}
+                </small>
             </div>
         `;
 
+
+    } finally {
+
+        // গুরুত্বপূর্ণ:
+        // JSON load fail হলেও Splash আটকে থাকবে না
 
         hideSplash();
 
@@ -612,7 +642,7 @@ async function loadChannels() {
 
 
 // ==========================================
-// FEATURED CHANNELS
+// FEATURED
 // ==========================================
 
 function renderFeaturedChannels() {
@@ -650,7 +680,9 @@ function renderFeaturedChannels() {
     featured.forEach(channel => {
 
         const isFav =
-            favorites.includes(channel.id);
+            favorites.includes(
+                channel.id
+            );
 
 
         const card =
@@ -664,7 +696,9 @@ function renderFeaturedChannels() {
         card.innerHTML = `
 
             <button
-                class="fav-btn ${isFav ? "active" : ""}"
+                class="fav-btn ${
+                    isFav ? "active" : ""
+                }"
                 title="Favorite">
 
                 <i class="${
@@ -677,8 +711,12 @@ function renderFeaturedChannels() {
 
 
             <img
-                src="${channel.logo || "logo.png"}"
-                alt="${channel.name || "TV"}"
+                src="${escapeHTML(
+                    channel.logo || "logo.png"
+                )}"
+                alt="${escapeHTML(
+                    channel.name || "TV"
+                )}"
                 onerror="
                     this.onerror=null;
                     this.src='https://via.placeholder.com/80?text=TV';
@@ -698,6 +736,7 @@ function renderFeaturedChannels() {
                     channel.category || "General"
                 )}
             </p>
+
         `;
 
 
@@ -758,9 +797,10 @@ function renderChannels() {
     const filtered =
         channels.filter(channel => {
 
-
             const nameMatch =
-                (channel.name || "")
+                String(
+                    channel.name || ""
+                )
                     .toLowerCase()
                     .includes(keyword);
 
@@ -838,7 +878,9 @@ function renderChannels() {
         card.innerHTML = `
 
             <button
-                class="fav-btn ${isFav ? "active" : ""}"
+                class="fav-btn ${
+                    isFav ? "active" : ""
+                }"
                 title="Favorite">
 
                 <i class="${
@@ -851,8 +893,12 @@ function renderChannels() {
 
 
             <img
-                src="${channel.logo || "logo.png"}"
-                alt="${channel.name || "TV"}"
+                src="${escapeHTML(
+                    channel.logo || "logo.png"
+                )}"
+                alt="${escapeHTML(
+                    channel.name || "TV"
+                )}"
                 onerror="
                     this.onerror=null;
                     this.src='https://via.placeholder.com/80?text=TV';
@@ -865,6 +911,7 @@ function renderChannels() {
                     channel.name || "Unknown"
                 )}
             </h4>
+
         `;
 
 
@@ -903,7 +950,7 @@ function renderChannels() {
 
 
 // ==========================================
-// HTML SAFE TEXT
+// ESCAPE HTML
 // ==========================================
 
 function escapeHTML(value) {
@@ -920,7 +967,6 @@ function escapeHTML(value) {
 
 // ==========================================
 // MONETAG
-// First Channel Click = One Ad
 // ==========================================
 
 function playChannelWithAd(channel) {
@@ -945,7 +991,8 @@ function playChannelWithAd(channel) {
         "function"
     ) {
 
-        firstChannelAdShown = true;
+        firstChannelAdShown =
+            true;
 
         playChannel(channel);
 
@@ -968,7 +1015,8 @@ function playChannelWithAd(channel) {
 
         if (
             ad &&
-            typeof ad.then === "function"
+            typeof ad.then ===
+            "function"
         ) {
 
             ad.then(() => {
@@ -1039,4 +1087,187 @@ function playChannel(channel) {
 
 
     currentChannelName.textContent =
-       
+        channel.name || "Live TV";
+
+
+    playerContainer.classList.remove(
+        "hidden"
+    );
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+
+    if (hls) {
+
+        hls.destroy();
+
+        hls = null;
+
+    }
+
+
+    video.pause();
+
+    video.removeAttribute("src");
+
+    video.load();
+
+
+    const url =
+        String(
+            channel.url
+        ).trim();
+
+
+    // ======================================
+    // HLS
+    // ======================================
+
+    if (
+        typeof Hls !== "undefined" &&
+        Hls.isSupported() &&
+        (
+            url.includes(".m3u8") ||
+            url.includes("m3u8")
+        )
+    ) {
+
+        hls =
+            new Hls({
+                enableWorker: true
+            });
+
+
+        hls.loadSource(url);
+
+        hls.attachMedia(video);
+
+
+        hls.on(
+            Hls.Events.MANIFEST_PARSED,
+            () => {
+
+                video.play()
+                    .catch(error => {
+
+                        console.log(
+                            "Autoplay blocked:",
+                            error
+                        );
+
+                    });
+
+            }
+        );
+
+
+        hls.on(
+            Hls.Events.ERROR,
+            (event, data) => {
+
+                console.error(
+                    "HLS error:",
+                    data
+                );
+
+            }
+        );
+
+    }
+
+
+    // ======================================
+    // NATIVE HLS
+    // ======================================
+
+    else if (
+        video.canPlayType(
+            "application/vnd.apple.mpegurl"
+        )
+    ) {
+
+        video.src = url;
+
+
+        video.play()
+            .catch(error => {
+
+                console.log(
+                    "Autoplay blocked:",
+                    error
+                );
+
+            });
+
+    }
+
+
+    // ======================================
+    // NORMAL VIDEO
+    // ======================================
+
+    else {
+
+        video.src = url;
+
+
+        video.play()
+            .catch(error => {
+
+                console.log(
+                    "Autoplay blocked:",
+                    error
+                );
+
+            });
+
+    }
+
+
+    localStorage.setItem(
+        "lastChannel",
+        JSON.stringify(channel)
+    );
+
+}
+
+
+// ==========================================
+// CLOSE PLAYER
+// ==========================================
+
+function closePlayer() {
+
+    if (hls) {
+
+        hls.destroy();
+
+        hls = null;
+
+    }
+
+
+    if (video) {
+
+        video.pause();
+
+        video.removeAttribute("src");
+
+        video.load();
+
+    }
+
+
+    if (playerContainer) {
+
+        playerContainer.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
