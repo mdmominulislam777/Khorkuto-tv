@@ -212,61 +212,69 @@ function setupEventListeners() {
     }
 
 
-    // ======================================
-    // Categories
-    // ======================================
+ // ==========================================
+// Categories
+// ==========================================
 
-    document
-        .querySelectorAll(".cat")
-        .forEach(cat => {
+document.querySelectorAll(".categories-folder .cat").forEach(cat => {
 
-            cat.addEventListener(
-                "click",
-                e => {
+    cat.addEventListener("click", (e) => {
 
-                    document
-                        .querySelectorAll(".cat")
-                        .forEach(c => {
-                            c.classList.remove("active");
-                        });
+        document
+            .querySelectorAll(".categories-folder .cat")
+            .forEach(c => {
+                c.classList.remove("active");
+            });
 
+        const target = e.currentTarget;
 
-                    const target =
-                        e.currentTarget;
+        target.classList.add("active");
 
+        currentCategory =
+            target.getAttribute("data-category");
 
-                    target.classList.add("active");
+        if (currentCategory === "Sports") {
 
+            mainSectionTitle.textContent =
+                "⚽ Sports Channels";
 
-                    currentCategory =
-                        target.getAttribute(
-                            "data-category"
-                        );
+        } else if (currentCategory === "Entertainment") {
 
+            mainSectionTitle.textContent =
+                "🎬 Entertainment Channels";
 
-                    if (
-                        currentCategory ===
-                        "Sports"
-                    ) {
+        } else if (currentCategory === "News") {
 
-                        mainSectionTitle.textContent =
-                            "⚽ Sports Channels";
+            mainSectionTitle.textContent =
+                "📰 News Channels";
 
-                    } else {
+        } else if (currentCategory === "Movies") {
 
-                        mainSectionTitle.textContent =
-                            `📺 ${currentCategory} Channels`;
+            mainSectionTitle.textContent =
+                "🎬 Movies Channels";
 
-                    }
+        } else if (currentCategory === "Islamic") {
 
+            mainSectionTitle.textContent =
+                "🕌 Islamic Channels";
 
-                    renderChannels();
+        } else if (currentCategory === "Kids") {
 
-                }
-            );
+            mainSectionTitle.textContent =
+                "🧒 Kids Channels";
 
-        });
+        } else if (currentCategory === "Music") {
 
+            mainSectionTitle.textContent =
+                "🎵 Music Channels";
+
+        }
+
+        renderChannels();
+
+    });
+
+});
 
     // ======================================
     // Close Player
