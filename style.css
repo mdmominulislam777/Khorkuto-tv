@@ -768,46 +768,46 @@ video {
     }
 }
 /* ==========================================
-   BOTTOM NAVIGATION
-   StreamZX - 3 Navigation Buttons
+   STREAMZX - BOTTOM NAVIGATION
+   3 BUTTONS ONLY
 ========================================== */
 
 .bottom-navigation {
     position: fixed;
 
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
-    height: 64px;
+    width: 100%;
+    height: 72px;
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 
-    align-items: stretch;
+    background: #111827;
 
-    background: rgba(17, 24, 39, 0.97);
-
-    border: 1px solid var(--border-color);
-
-    border-radius: 18px;
-
-    padding: 5px;
+    border-top: 1px solid var(--border-color);
 
     z-index: 99998;
 
+    padding-bottom: env(safe-area-inset-bottom);
+
     box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.45);
+        0 -5px 20px rgba(0, 0, 0, 0.35);
 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
 
 
-/* Navigation Button */
+/* ==========================================
+   NAVIGATION BUTTON
+========================================== */
 
 .bottom-nav-btn {
-    position: relative;
+    width: 100%;
+    height: 72px;
 
     border: none;
     outline: none;
@@ -816,164 +816,44 @@ video {
 
     color: var(--text-muted);
 
-    border-radius: 14px;
-
     display: flex;
     flex-direction: column;
 
     align-items: center;
     justify-content: center;
 
-    gap: 4px;
+    gap: 5px;
 
     font-family: inherit;
 
     cursor: pointer;
 
     transition:
-        background 0.2s ease,
         color 0.2s ease,
+        background 0.2s ease,
         transform 0.15s ease;
 }
 
 
-/* Icon */
+/* ==========================================
+   NAV ICON
+========================================== */
 
 .bottom-nav-btn i {
-    font-size: 19px;
+    font-size: 23px;
 }
 
 
-/* Text */
+/* ==========================================
+   NAV TEXT
+========================================== */
 
 .bottom-nav-btn span {
-    font-size: 10px;
+    font-size: 11px;
 
     font-weight: 600;
 
     white-space: nowrap;
-}
-
-
-/* Active Button */
-
-.bottom-nav-btn.active {
-    background: var(--primary);
-
-    color: #ffffff;
-}
-
-
-/* Press Animation */
-
-.bottom-nav-btn:active {
-    transform: scale(0.94);
-}
-
-
-/* Mobile */
-
-@media (max-width: 480px) {
-
-    .bottom-navigation {
-        left: 8px;
-        right: 8px;
-        bottom: 8px;
-
-        height: 62px;
-
-        border-radius: 17px;
-    }
-
-    .bottom-nav-btn i {
-        font-size: 18px;
-    }
-
-    .bottom-nav-btn span {
-        font-size: 10px;
-    }
-
-}
-
-
-/* Prevent bottom navigation
-   from covering channel content */
-
-body {
-    padding-bottom: 90px;
-}
-/* ==========================================
-   BOTTOM NAVIGATION
-   3 BUTTONS ONLY
-========================================== */
-
-.bottom-nav {
-    position: fixed;
-
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 74px;
-
-    display: flex;
-    align-items: stretch;
-    justify-content: space-around;
-
-    background: #202124;
-
-    border-top: 1px solid #30343b;
-
-    z-index: 99998;
-
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
-
-/* ==========================================
-   NAV BUTTON
-========================================== */
-
-.bottom-nav-btn {
-    flex: 1;
-
-    height: 74px;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-
-    color: #ffffff;
-
-    display: flex;
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 6px;
-
-    font-size: 13px;
-
-    cursor: pointer;
-
-    transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        transform 0.15s ease;
-}
-
-
-.bottom-nav-btn i {
-    font-size: 28px;
-}
-
-
-.bottom-nav-btn span {
-    font-size: 14px;
-    font-weight: 500;
 }
 
 
@@ -983,8 +863,14 @@ body {
 
 .bottom-nav-btn.active {
     color: #4f8cff;
+
+    background: rgba(79, 140, 255, 0.10);
 }
 
+
+/* ==========================================
+   PRESS EFFECT
+========================================== */
 
 .bottom-nav-btn:active {
     transform: scale(0.94);
@@ -992,34 +878,33 @@ body {
 
 
 /* ==========================================
-   BODY SPACE FOR BOTTOM NAV
+   BODY BOTTOM SPACE
 ========================================== */
 
 body {
-    padding-bottom: 100px;
+    padding-bottom: 90px;
 }
 
 
 /* ==========================================
-   MOBILE
+   SMALL MOBILE
 ========================================== */
 
 @media (max-width: 480px) {
 
-    .bottom-nav {
-        height: 72px;
+    .bottom-navigation {
+        height: 68px;
     }
 
     .bottom-nav-btn {
-        height: 72px;
+        height: 68px;
     }
 
     .bottom-nav-btn i {
-        font-size: 25px;
+        font-size: 21px;
     }
 
     .bottom-nav-btn span {
-        font-size: 13px;
+        font-size: 10px;
     }
-
 }
