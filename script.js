@@ -1,9 +1,8 @@
 // ==========================================
-// StreamZX - Complete Script
+// StreamZX - Complete Consolidated Script
 // ==========================================
 
 let channels = [];
-
 let currentCategory = "Sports";
 
 let favorites =
@@ -11,15 +10,12 @@ let favorites =
 
 let hls = null;
 
-
 // ==========================================
-// MONETAG
+// Monetag
 // ==========================================
 
 let firstChannelAdShown = false;
-
 let isAdShowing = false;
-
 
 // ==========================================
 // DOM
@@ -28,86 +24,54 @@ let isAdShowing = false;
 let channelList;
 let featuredList;
 let featuredSection;
-
 let video;
 let search;
 let searchArea;
-
 let playerContainer;
 let currentChannelName;
-
 let mainSectionTitle;
-
-let categoryPage;
 
 
 // ==========================================
 // APP START
 // ==========================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-        channelList =
-            document.getElementById(
-                "channelList"
-            );
+    channelList =
+        document.getElementById("channelList");
 
-        featuredList =
-            document.getElementById(
-                "featuredList"
-            );
+    featuredList =
+        document.getElementById("featuredList");
 
-        featuredSection =
-            document.getElementById(
-                "featuredSection"
-            );
+    featuredSection =
+        document.getElementById("featuredSection");
 
-        video =
-            document.getElementById(
-                "video"
-            );
+    video =
+        document.getElementById("video");
 
-        search =
-            document.getElementById(
-                "search"
-            );
+    search =
+        document.getElementById("search");
 
-        searchArea =
-            document.getElementById(
-                "searchArea"
-            );
+    searchArea =
+        document.getElementById("searchArea");
 
-        playerContainer =
-            document.getElementById(
-                "playerContainer"
-            );
+    playerContainer =
+        document.getElementById("playerContainer");
 
-        currentChannelName =
-            document.getElementById(
-                "currentChannelName"
-            );
+    currentChannelName =
+        document.getElementById("currentChannelName");
 
-        mainSectionTitle =
-            document.getElementById(
-                "mainSectionTitle"
-            );
+    mainSectionTitle =
+        document.getElementById("mainSectionTitle");
 
-        categoryPage =
-            document.getElementById(
-                "categoryPage"
-            );
+    initApp();
 
-
-        initApp();
-
-    }
-);
+});
 
 
 // ==========================================
-// INIT
+// INIT APP
 // ==========================================
 
 function initApp() {
@@ -120,21 +84,17 @@ function initApp() {
 
 
 // ==========================================
-// SPLASH
+// HIDE SPLASH
 // ==========================================
 
 function hideSplash() {
 
     const splash =
-        document.getElementById(
-            "splash"
-        );
+        document.getElementById("splash");
 
     if (!splash) return;
 
-    splash.classList.add(
-        "hidden"
-    );
+    splash.classList.add("hidden");
 
 }
 
@@ -145,116 +105,84 @@ function hideSplash() {
 
 function setupEventListeners() {
 
-
     // ======================================
     // SEARCH BUTTON
     // ======================================
 
     const searchBtn =
-        document.getElementById(
-            "searchBtn"
-        );
-
+        document.getElementById("searchBtn");
 
     if (searchBtn) {
 
-        searchBtn.addEventListener(
-            "click",
-            () => {
+        searchBtn.addEventListener("click", () => {
 
-                // যদি Category Page খোলা থাকে
-                if (
-                    categoryPage &&
-                    !categoryPage.classList.contains(
-                        "hidden"
-                    )
-                ) {
+            if (!searchArea) return;
 
-                    return;
+            searchArea.classList.toggle("active");
 
-                }
+            if (searchArea.classList.contains("active")) {
 
-
-                searchArea.classList.toggle(
-                    "active"
-                );
-
-
-                if (
-                    searchArea.classList.contains(
-                        "active"
-                    )
-                ) {
-
+                if (search) {
                     search.focus();
-
-                } else {
-
-                    search.value = "";
-
-                    renderChannels();
-
                 }
 
-            }
-        );
+            } else {
 
-    }
-
-
-    // ======================================
-    // FAVORITES
-    // ======================================
-
-    const favHeaderBtn =
-        document.getElementById(
-            "favHeaderBtn"
-        );
-
-
-    if (favHeaderBtn) {
-
-        favHeaderBtn.addEventListener(
-            "click",
-            () => {
-
-                showNormalContent();
-
-                currentCategory =
-                    "Favorites";
-
-                updateSectionTitle();
+                if (search) {
+                    search.value = "";
+                }
 
                 renderChannels();
 
-                setActiveBottomNav(null);
-
             }
-        );
+
+        });
 
     }
 
 
     // ======================================
-    // REFRESH
+    // FAVORITES BUTTON
+    // ======================================
+
+    const favHeaderBtn =
+        document.getElementById("favHeaderBtn");
+
+    if (favHeaderBtn) {
+
+        favHeaderBtn.addEventListener("click", () => {
+
+            currentCategory = "Favorites";
+
+            document
+                .querySelectorAll(".categories-folder .cat")
+                .forEach(cat => {
+                    cat.classList.remove("active");
+                });
+
+            updateSectionTitle();
+
+            showCategoryContent();
+
+        });
+
+    }
+
+
+    // ======================================
+    // REFRESH BUTTON
     // ======================================
 
     const refreshBtn =
-        document.getElementById(
-            "refreshBtn"
-        );
-
+        document.getElementById("refreshBtn");
 
     if (refreshBtn) {
 
-        refreshBtn.addEventListener(
-            "click",
-            () => {
+        refreshBtn.addEventListener("click", () => {
 
-                loadChannels();
+            loadChannels();
 
-            }
-        );
+        });
 
     }
 
@@ -265,16 +193,48 @@ function setupEventListeners() {
 
     if (search) {
 
-        search.addEventListener(
-            "input",
-            () => {
+        search.addEventListener("input", () => {
+
+            renderChannels();
+
+        });
+
+    }
+
+
+    // ======================================
+    // CATEGORY BUTTONS
+    // ======================================
+
+    document
+        .querySelectorAll(".categories-folder .cat")
+        .forEach(cat => {
+
+            cat.addEventListener("click", event => {
+
+                document
+                    .querySelectorAll(
+                        ".categories-folder .cat"
+                    )
+                    .forEach(c => {
+                        c.classList.remove("active");
+                    });
+
+                const target =
+                    event.currentTarget;
+
+                target.classList.add("active");
+
+                currentCategory =
+                    target.dataset.category;
+
+                updateSectionTitle();
 
                 renderChannels();
 
-            }
-        );
+            });
 
-    }
+        });
 
 
     // ======================================
@@ -282,10 +242,7 @@ function setupEventListeners() {
     // ======================================
 
     const closePlayerBtn =
-        document.getElementById(
-            "closePlayerBtn"
-        );
-
+        document.getElementById("closePlayerBtn");
 
     if (closePlayerBtn) {
 
@@ -298,25 +255,19 @@ function setupEventListeners() {
 
 
     // ======================================
-    // BOTTOM NAV
+    // BOTTOM NAVIGATION
+    // IMPORTANT:
+    // IDs match your HTML
     // ======================================
 
     const liveEventBtn =
-        document.getElementById(
-            "liveEventNav"
-        );
-
+        document.getElementById("liveEventNav");
 
     const categoryNavBtn =
-        document.getElementById(
-            "categoryNav"
-        );
-
+        document.getElementById("categoryNav");
 
     const sportsNavBtn =
-        document.getElementById(
-            "sportsNav"
-        );
+        document.getElementById("sportsNav");
 
 
     // ======================================
@@ -325,303 +276,76 @@ function setupEventListeners() {
 
     if (liveEventBtn) {
 
-        liveEventBtn.addEventListener(
-            "click",
-            () => {
+        liveEventBtn.addEventListener("click", () => {
 
-                setActiveBottomNav(
-                    liveEventBtn
-                );
+            setActiveBottomNav(liveEventBtn);
 
+            showLiveEventPage();
 
-                hideCategoryPage();
-
-
-                if (featuredSection) {
-
-                    featuredSection.style.display =
-                        "none";
-
-                }
-
-
-                if (
-                    document.querySelector(
-                        ".main-content"
-                    )
-                ) {
-
-                    document.querySelector(
-                        ".main-content"
-                    ).style.display =
-                        "block";
-
-                }
-
-
-                mainSectionTitle.textContent =
-                    "🔴 Live Events";
-
-
-                channelList.innerHTML = `
-
-                    <div style="
-                        grid-column:1/-1;
-                        text-align:center;
-                        padding:40px 20px;
-                        color:var(--text-muted);
-                    ">
-
-                        <i
-                            class="fa-solid fa-tower-broadcast"
-                            style="
-                                font-size:40px;
-                                margin-bottom:15px;
-                                display:block;
-                            "
-                        ></i>
-
-                        <div>
-                            Live Events
-                        </div>
-
-                        <small>
-                            Live event system will appear here.
-                        </small>
-
-                    </div>
-
-                `;
-
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-
-            }
-        );
+        });
 
     }
 
 
     // ======================================
-    // CATEGORY BUTTON
+    // CATEGORY
     // ======================================
 
     if (categoryNavBtn) {
 
-        categoryNavBtn.addEventListener(
-            "click",
-            () => {
+        categoryNavBtn.addEventListener("click", () => {
 
-                setActiveBottomNav(
-                    categoryNavBtn
-                );
+            setActiveBottomNav(categoryNavBtn);
 
+            showCategoryContent();
 
-                showCategoryPage();
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
 
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-
-            }
-        );
+        });
 
     }
 
 
     // ======================================
-    // SPORTS BUTTON
+    // SPORTS
     // ======================================
 
     if (sportsNavBtn) {
 
-        sportsNavBtn.addEventListener(
-            "click",
-            () => {
+        sportsNavBtn.addEventListener("click", () => {
 
-                setActiveBottomNav(
-                    sportsNavBtn
-                );
+            setActiveBottomNav(sportsNavBtn);
 
+            currentCategory = "Sports";
 
-                hideCategoryPage();
+            document
+                .querySelectorAll(
+                    ".categories-folder .cat"
+                )
+                .forEach(cat => {
 
-                showNormalContent();
-
-
-                currentCategory =
-                    "Sports";
-
-
-                updateSectionTitle();
-
-                renderFeaturedChannels();
-
-                renderChannels();
-
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-
-            }
-        );
-
-    }
-
-
-    // ======================================
-    // CATEGORY ITEMS
-    // ======================================
-
-    document
-        .querySelectorAll(
-            ".category-item"
-        )
-        .forEach(item => {
-
-            item.addEventListener(
-                "click",
-                () => {
-
-                    const selectedCategory =
-                        item.dataset.category;
-
-
-                    currentCategory =
-                        selectedCategory;
-
-
-                    hideCategoryPage();
-
-                    showNormalContent();
-
-
-                    updateSectionTitle();
-
-                    renderFeaturedChannels();
-
-                    renderChannels();
-
-
-                    setActiveBottomNav(
-                        document.getElementById(
-                            "sportsNav"
-                        )
+                    cat.classList.toggle(
+                        "active",
+                        cat.dataset.category === "Sports"
                     );
 
+                });
 
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
+            showCategoryContent();
 
-                }
-            );
+            updateSectionTitle();
+
+            renderChannels();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
 
         });
-
-}
-
-
-// ==========================================
-// SHOW CATEGORY PAGE
-// ==========================================
-
-function showCategoryPage() {
-
-    if (categoryPage) {
-
-        categoryPage.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    if (featuredSection) {
-
-        featuredSection.style.display =
-            "none";
-
-    }
-
-
-    const mainContent =
-        document.querySelector(
-            ".main-content"
-        );
-
-
-    if (mainContent) {
-
-        mainContent.style.display =
-            "none";
-
-    }
-
-
-    if (searchArea) {
-
-        searchArea.classList.remove(
-            "active"
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// HIDE CATEGORY PAGE
-// ==========================================
-
-function hideCategoryPage() {
-
-    if (categoryPage) {
-
-        categoryPage.classList.add(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// SHOW NORMAL CONTENT
-// ==========================================
-
-function showNormalContent() {
-
-    hideCategoryPage();
-
-
-    if (featuredSection) {
-
-        featuredSection.style.display =
-            "block";
-
-    }
-
-
-    const mainContent =
-        document.querySelector(
-            ".main-content"
-        );
-
-
-    if (mainContent) {
-
-        mainContent.style.display =
-            "block";
 
     }
 
@@ -632,30 +356,140 @@ function showNormalContent() {
 // BOTTOM NAV ACTIVE
 // ==========================================
 
-function setActiveBottomNav(
-    activeButton
-) {
+function setActiveBottomNav(activeButton) {
 
     document
-        .querySelectorAll(
-            ".bottom-nav-btn"
-        )
+        .querySelectorAll(".bottom-nav-btn")
         .forEach(button => {
 
-            button.classList.remove(
-                "active"
-            );
+            button.classList.remove("active");
 
         });
 
-
     if (activeButton) {
 
-        activeButton.classList.add(
-            "active"
-        );
+        activeButton.classList.add("active");
 
     }
+
+}
+
+
+// ==========================================
+// SHOW LIVE EVENT PAGE
+// ==========================================
+
+function showLiveEventPage() {
+
+    // Hide categories
+    const categoryFolder =
+        document.querySelector(".categories-folder");
+
+    if (categoryFolder) {
+        categoryFolder.style.display = "none";
+    }
+
+
+    // Hide featured
+    if (featuredSection) {
+        featuredSection.style.display = "none";
+    }
+
+
+    // Hide search
+    if (searchArea) {
+        searchArea.classList.remove("active");
+    }
+
+
+    if (search) {
+        search.value = "";
+    }
+
+
+    // Title
+    if (mainSectionTitle) {
+
+        mainSectionTitle.textContent =
+            "🔴 Live Events";
+
+    }
+
+
+    // Live Event page
+    if (channelList) {
+
+        channelList.innerHTML = `
+
+            <div class="live-event-page">
+
+                <div class="live-event-icon">
+
+                    <i class="fa-solid fa-tower-broadcast"></i>
+
+                </div>
+
+                <h2>
+                    Live Events
+                </h2>
+
+                <p>
+                    Live matches and events will appear here.
+                </p>
+
+                <div class="event-loading">
+
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+
+                    Checking live events...
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================
+// SHOW CATEGORY CONTENT
+// ==========================================
+
+function showCategoryContent() {
+
+    // Show categories
+    const categoryFolder =
+        document.querySelector(".categories-folder");
+
+    if (categoryFolder) {
+        categoryFolder.style.display = "block";
+    }
+
+
+    // Show featured
+    if (featuredSection) {
+
+        renderFeaturedChannels();
+
+        const hasFeatured =
+            channels.some(
+                channel =>
+                    channel.featured === true
+            );
+
+        featuredSection.style.display =
+            hasFeatured ? "block" : "none";
+
+    }
+
+
+    // Search remains available
+    updateSectionTitle();
+
+    renderChannels();
 
 }
 
@@ -702,6 +536,45 @@ function updateSectionTitle() {
             "📺 Channels";
 
     }
+
+}
+
+
+// ==========================================
+// FAVORITES
+// ==========================================
+
+function toggleFavorite(channelId, event) {
+
+    if (event) {
+        event.stopPropagation();
+    }
+
+
+    const index =
+        favorites.indexOf(channelId);
+
+
+    if (index === -1) {
+
+        favorites.push(channelId);
+
+    } else {
+
+        favorites.splice(index, 1);
+
+    }
+
+
+    localStorage.setItem(
+        "favChannels",
+        JSON.stringify(favorites)
+    );
+
+
+    renderChannels();
+
+    renderFeaturedChannels();
 
 }
 
@@ -757,34 +630,17 @@ async function loadChannels() {
             await response.json();
 
 
-        if (Array.isArray(data)) {
+        channels =
+            Array.isArray(data)
+                ? data
+                : Array.isArray(data.channels)
+                    ? data.channels
+                    : [];
 
-            channels = data;
 
-        }
-
-        else if (
-            data &&
-            Array.isArray(
-                data.channels
-            )
-        ) {
-
-            channels =
-                data.channels;
-
-        }
-
-        else {
-
+        if (!Array.isArray(channels)) {
             channels = [];
-
         }
-
-
-        renderFeaturedChannels();
-
-        renderChannels();
 
 
         console.log(
@@ -793,7 +649,15 @@ async function loadChannels() {
         );
 
 
+        // ==================================
+        // IMPORTANT
+        // APP STARTS WITH LIVE EVENT PAGE
+        // ==================================
+
+        showLiveEventPage();
+
     }
+
 
     catch (error) {
 
@@ -822,9 +686,7 @@ async function loadChannels() {
                     margin-top:8px;
                 ">
 
-                    ${escapeHTML(
-                        error.message
-                    )}
+                    ${escapeHTML(error.message)}
 
                 </small>
 
@@ -834,10 +696,10 @@ async function loadChannels() {
 
     }
 
+
     finally {
 
-        // JSON fail হলেও splash বন্ধ হবে
-
+        // Splash কখনো আটকে থাকবে না
         hideSplash();
 
     }
@@ -846,7 +708,7 @@ async function loadChannels() {
 
 
 // ==========================================
-// FEATURED
+// FEATURED CHANNELS
 // ==========================================
 
 function renderFeaturedChannels() {
@@ -881,84 +743,72 @@ function renderFeaturedChannels() {
     featuredList.innerHTML = "";
 
 
-    featured.forEach(
-        channel => {
+    featured.forEach(channel => {
 
-            const isFav =
-                favorites.includes(
-                    channel.id
-                );
+        const isFav =
+            favorites.includes(channel.id);
 
 
-            const card =
-                document.createElement(
-                    "div"
-                );
+        const card =
+            document.createElement("div");
 
 
-            card.className =
-                "featured-card";
+        card.className =
+            "featured-card";
 
 
-            card.innerHTML = `
+        card.innerHTML = `
 
-                <button
-                    class="fav-btn ${
-                        isFav
-                            ? "active"
-                            : ""
-                    }"
-                    title="Favorite"
-                >
+            <button
+                class="fav-btn ${
+                    isFav ? "active" : ""
+                }"
+                title="Favorite">
 
-                    <i class="${
-                        isFav
-                            ? "fa-solid"
-                            : "fa-regular"
-                    } fa-star"></i>
+                <i class="${
+                    isFav
+                        ? "fa-solid"
+                        : "fa-regular"
+                } fa-star"></i>
 
-                </button>
+            </button>
 
 
-                <img
-                    src="${escapeHTML(
-                        channel.logo ||
-                        "logo.png"
-                    )}"
-                    alt="${escapeHTML(
-                        channel.name ||
-                        "TV"
-                    )}"
-                    onerror="
-                        this.onerror=null;
-                        this.src='https://via.placeholder.com/80?text=TV';
-                    "
-                >
+            <img
+                src="${escapeHTML(
+                    channel.logo || "logo.png"
+                )}"
+                alt="${escapeHTML(
+                    channel.name || "TV"
+                )}"
+                onerror="
+                    this.onerror=null;
+                    this.src='logo.png';
+                "
+            >
 
 
-                <h4>
-                    ${escapeHTML(
-                        channel.name ||
-                        "Unknown"
-                    )}
-                </h4>
+            <h4>
+                ${escapeHTML(
+                    channel.name || "Unknown"
+                )}
+            </h4>
 
 
-                <p>
-                    ${escapeHTML(
-                        channel.category ||
-                        "General"
-                    )}
-                </p>
+            <p>
+                ${escapeHTML(
+                    channel.category || "General"
+                )}
+            </p>
 
-            `;
+        `;
 
 
-            const favBtn =
-                card.querySelector(
-                    ".fav-btn"
-                );
+        const favBtn =
+            card.querySelector(".fav-btn");
 
+
+        if (favBtn) {
 
             favBtn.addEventListener(
                 "click",
@@ -972,31 +822,28 @@ function renderFeaturedChannels() {
                 }
             );
 
-
-            card.addEventListener(
-                "click",
-                () => {
-
-                    playChannelWithAd(
-                        channel
-                    );
-
-                }
-            );
-
-
-            featuredList.appendChild(
-                card
-            );
-
         }
-    );
+
+
+        card.addEventListener(
+            "click",
+            () => {
+
+                playChannelWithAd(channel);
+
+            }
+        );
+
+
+        featuredList.appendChild(card);
+
+    });
 
 }
 
 
 // ==========================================
-// RENDER CHANNELS
+// MAIN CHANNELS
 // ==========================================
 
 function renderChannels() {
@@ -1016,61 +863,47 @@ function renderChannels() {
 
 
     const filtered =
-        channels.filter(
-            channel => {
+        channels.filter(channel => {
 
-                const name =
-                    String(
-                        channel.name || ""
-                    )
-                        .toLowerCase();
+            const nameMatch =
+                String(channel.name || "")
+                    .toLowerCase()
+                    .includes(keyword);
 
 
-                const nameMatch =
-                    name.includes(
-                        keyword
+            let categoryMatch = false;
+
+
+            if (
+                currentCategory ===
+                "Favorites"
+            ) {
+
+                categoryMatch =
+                    favorites.includes(
+                        channel.id
                     );
 
+            } else {
 
-                let categoryMatch =
-                    false;
-
-
-                if (
-                    currentCategory ===
-                    "Favorites"
-                ) {
-
-                    categoryMatch =
-                        favorites.includes(
-                            channel.id
+                categoryMatch =
+                    String(
+                        channel.category || ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            currentCategory.toLowerCase()
                         );
 
-                }
-
-                else {
-
-                    categoryMatch =
-                        String(
-                            channel.category ||
-                            ""
-                        )
-                            .toLowerCase()
-                            .includes(
-                                currentCategory
-                                    .toLowerCase()
-                            );
-
-                }
-
-
-                return (
-                    nameMatch &&
-                    categoryMatch
-                );
-
             }
-        );
+
+
+            return (
+                nameMatch &&
+                categoryMatch
+            );
+
+        });
 
 
     if (!filtered.length) {
@@ -1095,76 +928,65 @@ function renderChannels() {
     }
 
 
-    filtered.forEach(
-        channel => {
+    filtered.forEach(channel => {
 
-            const isFav =
-                favorites.includes(
-                    channel.id
-                );
+        const isFav =
+            favorites.includes(channel.id);
 
 
-            const card =
-                document.createElement(
-                    "div"
-                );
+        const card =
+            document.createElement("div");
 
 
-            card.className =
-                "channel-card";
+        card.className =
+            "channel-card";
 
 
-            card.innerHTML = `
+        card.innerHTML = `
 
-                <button
-                    class="fav-btn ${
-                        isFav
-                            ? "active"
-                            : ""
-                    }"
-                    title="Favorite"
-                >
+            <button
+                class="fav-btn ${
+                    isFav ? "active" : ""
+                }"
+                title="Favorite">
 
-                    <i class="${
-                        isFav
-                            ? "fa-solid"
-                            : "fa-regular"
-                    } fa-star"></i>
+                <i class="${
+                    isFav
+                        ? "fa-solid"
+                        : "fa-regular"
+                } fa-star"></i>
 
-                </button>
+            </button>
 
 
-                <img
-                    src="${escapeHTML(
-                        channel.logo ||
-                        "logo.png"
-                    )}"
-                    alt="${escapeHTML(
-                        channel.name ||
-                        "TV"
-                    )}"
-                    onerror="
-                        this.onerror=null;
-                        this.src='https://via.placeholder.com/80?text=TV';
-                    "
-                >
+            <img
+                src="${escapeHTML(
+                    channel.logo || "logo.png"
+                )}"
+                alt="${escapeHTML(
+                    channel.name || "TV"
+                )}"
+                onerror="
+                    this.onerror=null;
+                    this.src='logo.png';
+                "
+            >
 
 
-                <h4>
-                    ${escapeHTML(
-                        channel.name ||
-                        "Unknown"
-                    )}
-                </h4>
+            <h4>
+                ${escapeHTML(
+                    channel.name || "Unknown"
+                )}
+            </h4>
 
-            `;
+        `;
 
 
-            const favBtn =
-                card.querySelector(
-                    ".fav-btn"
-                );
+        const favBtn =
+            card.querySelector(".fav-btn");
 
+
+        if (favBtn) {
 
             favBtn.addEventListener(
                 "click",
@@ -1178,80 +1000,22 @@ function renderChannels() {
                 }
             );
 
-
-            card.addEventListener(
-                "click",
-                () => {
-
-                    playChannelWithAd(
-                        channel
-                    );
-
-                }
-            );
-
-
-            channelList.appendChild(
-                card
-            );
-
         }
-    );
-
-}
 
 
-// ==========================================
-// FAVORITE
-// ==========================================
+        card.addEventListener(
+            "click",
+            () => {
 
-function toggleFavorite(
-    channelId,
-    event
-) {
+                playChannelWithAd(channel);
 
-    if (event) {
-
-        event.stopPropagation();
-
-    }
-
-
-    const index =
-        favorites.indexOf(
-            channelId
+            }
         );
 
 
-    if (index === -1) {
+        channelList.appendChild(card);
 
-        favorites.push(
-            channelId
-        );
-
-    }
-
-    else {
-
-        favorites.splice(
-            index,
-            1
-        );
-
-    }
-
-
-    localStorage.setItem(
-        "favChannels",
-        JSON.stringify(
-            favorites
-        )
-    );
-
-
-    renderChannels();
-
-    renderFeaturedChannels();
+    });
 
 }
 
@@ -1263,31 +1027,11 @@ function toggleFavorite(
 function escapeHTML(value) {
 
     return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
@@ -1296,14 +1040,14 @@ function escapeHTML(value) {
 // MONETAG
 // ==========================================
 
-function playChannelWithAd(
-    channel
-) {
+function playChannelWithAd(channel) {
 
     if (
         !channel ||
         !channel.url
-    ) return;
+    ) {
+        return;
+    }
 
 
     if (firstChannelAdShown) {
@@ -1320,8 +1064,7 @@ function playChannelWithAd(
         "function"
     ) {
 
-        firstChannelAdShown =
-            true;
+        firstChannelAdShown = true;
 
         playChannel(channel);
 
@@ -1339,9 +1082,7 @@ function playChannelWithAd(
     try {
 
         const ad =
-            show_11580289(
-                "pop"
-            );
+            show_11580289("pop");
 
 
         if (
@@ -1350,72 +1091,42 @@ function playChannelWithAd(
             "function"
         ) {
 
-            ad.then(
-                () => {
+            ad.then(() => {
 
-                    firstChannelAdShown =
-                        true;
+                firstChannelAdShown = true;
+                isAdShowing = false;
 
-                    isAdShowing =
-                        false;
+                playChannel(channel);
 
-                    playChannel(
-                        channel
-                    );
+            }).catch(() => {
 
-                }
-            )
-            .catch(
-                () => {
+                firstChannelAdShown = true;
+                isAdShowing = false;
 
-                    firstChannelAdShown =
-                        true;
+                playChannel(channel);
 
-                    isAdShowing =
-                        false;
+            });
 
-                    playChannel(
-                        channel
-                    );
+        } else {
 
-                }
-            );
+            firstChannelAdShown = true;
+            isAdShowing = false;
+
+            playChannel(channel);
 
         }
 
-        else {
-
-            firstChannelAdShown =
-                true;
-
-            isAdShowing =
-                false;
-
-            playChannel(
-                channel
-            );
-
-        }
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Monetag error:",
             error
         );
 
+        firstChannelAdShown = true;
+        isAdShowing = false;
 
-        firstChannelAdShown =
-            true;
-
-        isAdShowing =
-            false;
-
-        playChannel(
-            channel
-        );
+        playChannel(channel);
 
     }
 
@@ -1426,19 +1137,20 @@ function playChannelWithAd(
 // PLAY CHANNEL
 // ==========================================
 
-function playChannel(
-    channel
-) {
+function playChannel(channel) {
 
     if (
         !channel ||
-        !channel.url
-    ) return;
+        !channel.url ||
+        !video ||
+        !playerContainer
+    ) {
+        return;
+    }
 
 
     currentChannelName.textContent =
-        channel.name ||
-        "Live TV";
+        channel.name || "Live TV";
 
 
     playerContainer.classList.remove(
@@ -1452,6 +1164,7 @@ function playChannel(
     });
 
 
+    // Destroy previous HLS
     if (hls) {
 
         hls.destroy();
@@ -1461,19 +1174,16 @@ function playChannel(
     }
 
 
+    // Reset player
     video.pause();
 
-    video.removeAttribute(
-        "src"
-    );
+    video.removeAttribute("src");
 
     video.load();
 
 
     const url =
-        String(
-            channel.url
-        ).trim();
+        String(channel.url).trim();
 
 
     // ======================================
@@ -1481,17 +1191,9 @@ function playChannel(
     // ======================================
 
     if (
-        typeof Hls !==
-        "undefined" &&
+        typeof Hls !== "undefined" &&
         Hls.isSupported() &&
-        (
-            url.includes(
-                ".m3u8"
-            ) ||
-            url.includes(
-                "m3u8"
-            )
-        )
+        url.toLowerCase().includes("m3u8")
     ) {
 
         hls =
@@ -1500,14 +1202,9 @@ function playChannel(
             });
 
 
-        hls.loadSource(
-            url
-        );
+        hls.loadSource(url);
 
-
-        hls.attachMedia(
-            video
-        );
+        hls.attachMedia(video);
 
 
         hls.on(
@@ -1515,16 +1212,14 @@ function playChannel(
             () => {
 
                 video.play()
-                    .catch(
-                        error => {
+                    .catch(error => {
 
-                            console.log(
-                                "Autoplay blocked:",
-                                error
-                            );
+                        console.log(
+                            "Autoplay blocked:",
+                            error
+                        );
 
-                        }
-                    );
+                    });
 
             }
         );
@@ -1532,15 +1227,53 @@ function playChannel(
 
         hls.on(
             Hls.Events.ERROR,
-            (
-                event,
-                data
-            ) => {
+            (event, data) => {
 
                 console.error(
                     "HLS error:",
                     data
                 );
+
+                if (
+                    data.fatal &&
+                    hls
+                ) {
+
+                    switch (data.type) {
+
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+
+                            console.log(
+                                "Trying to recover network..."
+                            );
+
+                            hls.startLoad();
+
+                            break;
+
+
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+
+                            console.log(
+                                "Trying to recover media..."
+                            );
+
+                            hls.recoverMediaError();
+
+                            break;
+
+
+                        default:
+
+                            hls.destroy();
+
+                            hls = null;
+
+                            break;
+
+                    }
+
+                }
 
             }
         );
@@ -1558,21 +1291,17 @@ function playChannel(
         )
     ) {
 
-        video.src =
-            url;
-
+        video.src = url;
 
         video.play()
-            .catch(
-                error => {
+            .catch(error => {
 
-                    console.log(
-                        "Autoplay blocked:",
-                        error
-                    );
+                console.log(
+                    "Autoplay blocked:",
+                    error
+                );
 
-                }
-            );
+            });
 
     }
 
@@ -1583,30 +1312,25 @@ function playChannel(
 
     else {
 
-        video.src =
-            url;
-
+        video.src = url;
 
         video.play()
-            .catch(
-                error => {
+            .catch(error => {
 
-                    console.log(
-                        "Autoplay blocked:",
-                        error
-                    );
+                console.log(
+                    "Autoplay blocked:",
+                    error
+                );
 
-                }
-            );
+            });
 
     }
 
 
+    // Save last channel
     localStorage.setItem(
         "lastChannel",
-        JSON.stringify(
-            channel
-        )
+        JSON.stringify(channel)
     );
 
 }
@@ -1631,9 +1355,7 @@ function closePlayer() {
 
         video.pause();
 
-        video.removeAttribute(
-            "src"
-        );
+        video.removeAttribute("src");
 
         video.load();
 
