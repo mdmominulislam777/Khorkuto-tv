@@ -2,12 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    >
 
     <title>StreamZX - Live TV</title>
 
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
 
     <!-- HLS.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -16,7 +23,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <!-- Monetag -->
-    <script src='//libtl.com/sdk.js' data-zone='11580289' data-sdk='show_11580289'></script>
+    <script
+        src="//libtl.com/sdk.js"
+        data-zone="11580289"
+        data-sdk="show_11580289">
+    </script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
@@ -24,14 +35,17 @@
 
 <body>
 
-    <!-- Splash Screen -->
+    <!-- ==============================
+         SPLASH
+    ============================== -->
+
     <div id="splash">
 
         <img
             src="logo.png"
             alt="StreamZX"
             class="splash-logo"
-            onerror="this.src='https://via.placeholder.com/120?text=StreamZX'"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=ZX';"
         >
 
         <h2>StreamZX</h2>
@@ -41,46 +55,9 @@
     </div>
 
 
-    <!-- Video Player -->
-    <div id="playerContainer" class="player-container hidden">
-
-        <div class="player-header">
-
-            <span id="currentChannelName">
-                Channel Name
-            </span>
-
-            <button id="closePlayerBtn">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-        </div>
-
-        <video
-            id="video"
-            controls
-            autoplay
-            playsinline>
-        </video>
-
-    </div>
-
-
-    <!-- Search -->
-    <div class="search-area" id="searchArea">
-
-        <input
-            type="text"
-            id="search"
-            placeholder="Search channel name..."
-        >
-
-    </div>
-
-
     <!-- ==============================
          TOP HEADER
-    =============================== -->
+    ============================== -->
 
     <header class="top-header">
 
@@ -90,7 +67,7 @@
                 src="logo.png"
                 alt="StreamZX"
                 class="header-app-icon"
-                onerror="this.src='https://via.placeholder.com/38?text=ZX'"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/38?text=ZX';"
             >
 
             <span class="brand-title">
@@ -118,68 +95,160 @@
 
     </header>
 
-<!-- এখানে Categories Folder -->
-
-<section class="categories-folder">
 
     <!-- ==============================
-     CATEGORIES FOLDER
-============================== -->
+         VIDEO PLAYER
+    ============================== -->
 
-<section class="categories-folder">
+    <div
+        id="playerContainer"
+        class="player-container hidden">
 
-    <div class="categories-header">
-        <div class="categories-title">
-            <i class="fa-solid fa-folder-open"></i>
-            <span>Categories</span>
-        </div>
-    </div>
+        <div class="player-header">
 
-    <div class="category-slider">
+            <span id="currentChannelName">
+                Channel Name
+            </span>
 
-        <div class="cat active" data-category="Sports">
-            <i class="fa-solid fa-trophy"></i>
-            <span>Sports</span>
-        </div>
+            <button id="closePlayerBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-        <div class="cat" data-category="Entertainment">
-            <i class="fa-solid fa-film"></i>
-            <span>Entertainment</span>
         </div>
 
-        <div class="cat" data-category="News">
-            <i class="fa-solid fa-newspaper"></i>
-            <span>News</span>
-        </div>
-
-        <div class="cat" data-category="Movies">
-            <i class="fa-solid fa-clapperboard"></i>
-            <span>Movies</span>
-        </div>
-
-        <div class="cat" data-category="Islamic">
-            <i class="fa-solid fa-kaaba"></i>
-            <span>Islamic</span>
-        </div>
-
-        <div class="cat" data-category="Kids">
-            <i class="fa-solid fa-child"></i>
-            <span>Kids</span>
-        </div>
-
-        <div class="cat" data-category="Music">
-            <i class="fa-solid fa-music"></i>
-            <span>Music</span>
-        </div>
+        <video
+            id="video"
+            controls
+            autoplay
+            playsinline>
+        </video>
 
     </div>
 
-</section>
+
+    <!-- ==============================
+         SEARCH
+    ============================== -->
+
+    <div
+        class="search-area"
+        id="searchArea">
+
+        <input
+            type="text"
+            id="search"
+            placeholder="Search channel name..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <!-- ==============================
+         CATEGORIES
+    ============================== -->
+
+    <section class="categories-folder">
+
+        <div class="categories-header">
+
+            <div class="categories-title">
+
+                <i class="fa-solid fa-folder-open"></i>
+
+                <span>Categories</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="category-slider">
+
+            <div
+                class="cat active"
+                data-category="Sports">
+
+                <i class="fa-solid fa-trophy"></i>
+
+                <span>Sports</span>
+
+            </div>
+
+
+            <div
+                class="cat"
+                data-category="Entertainment">
+
+                <i class="fa-solid fa-film"></i>
+
+                <span>Entertainment</span>
+
+            </div>
+
+
+            <div
+                class="cat"
+                data-category="News">
+
+                <i class="fa-solid fa-newspaper"></i>
+
+                <span>News</span>
+
+            </div>
+
+
+            <div
+                class="cat"
+                data-category="Movies">
+
+                <i class="fa-solid fa-clapperboard"></i>
+
+                <span>Movies</span>
+
+            </div>
+
+
+            <div
+                class="cat"
+                data-category="Islamic">
+
+                <i class="fa-solid fa-kaaba"></i>
+
+                <span>Islamic</span>
+
+            </div>
+
+
+            <div
+                class="cat"
+                data-category="Kids">
+
+                <i class="fa-solid fa-child"></i>
+
+                <span>Kids</span>
+
+            </div>
+
+
+            <div
+                class="cat"
+                data-category="Music">
+
+                <i class="fa-solid fa-music"></i>
+
+                <span>Music</span>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
     <!-- ==============================
          FEATURED CHANNELS
-    =============================== -->
+    ============================== -->
 
     <section
         id="featuredSection"
@@ -199,7 +268,7 @@
 
     <!-- ==============================
          MAIN CHANNELS
-    =============================== -->
+    ============================== -->
 
     <main class="main-content">
 
