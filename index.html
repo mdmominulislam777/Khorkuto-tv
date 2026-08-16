@@ -287,9 +287,50 @@
 
     </main>
 
+<!-- ==========================================
+     BOTTOM NAVIGATION
+     Only 3 Buttons
+========================================== -->
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+<nav class="bottom-navigation" id="bottomNavigation">
+
+    <!-- Live Event -->
+    <button
+        class="bottom-nav-btn active"
+        id="liveEventNav"
+        data-page="live-event"
+    >
+        <i class="fa-solid fa-tower-broadcast"></i>
+        <span>Live Event</span>
+    </button>
+
+
+    <!-- Category -->
+    <button
+        class="bottom-nav-btn"
+        id="categoryNav"
+        data-page="category"
+    >
+        <i class="fa-solid fa-layer-group"></i>
+        <span>Category</span>
+    </button>
+
+
+    <!-- Sports -->
+    <button
+        class="bottom-nav-btn"
+        id="sportsNav"
+        data-page="sports"
+    >
+        <i class="fa-solid fa-futbol"></i>
+        <span>Sports</span>
+    </button>
+
+</nav>
+
+
+<!-- JavaScript -->
+<script src="script.js"></script>
 
 </body>
 </html>
