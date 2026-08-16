@@ -25,8 +25,15 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+html {
+    width: 100%;
+    overflow-x: hidden;
+}
 
 body {
+    width: 100%;
+    min-height: 100vh;
+
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -47,7 +54,7 @@ body {
 
 
 /* ==========================================
-   SPLASH
+   SPLASH SCREEN
 ========================================== */
 
 #splash {
@@ -69,22 +76,18 @@ body {
         visibility 0.5s ease;
 }
 
-
 #splash.hidden {
     opacity: 0;
     visibility: hidden;
 }
-
 
 .splash-logo {
     width: 100px;
     height: 100px;
 
     border-radius: 50%;
-
     object-fit: cover;
 }
-
 
 .loader {
     margin-top: 20px;
@@ -100,13 +103,10 @@ body {
     animation: spin 0.8s linear infinite;
 }
 
-
 @keyframes spin {
-
     to {
         transform: rotate(360deg);
     }
-
 }
 
 
@@ -115,15 +115,6 @@ body {
 ========================================== */
 
 .top-header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 10px 12px;
-
-    background: var(--bg-header);
-
     position: fixed !important;
 
     top: 0;
@@ -133,28 +124,36 @@ body {
     width: 100%;
     min-height: 70px;
 
-    z-index: 99999 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 12px;
+
+    background: var(--bg-header);
 
     border-bottom: 1px solid var(--border-color);
-}
 
+    z-index: 99999 !important;
+}
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 10px;
-}
 
+    min-width: 0;
+}
 
 .header-app-icon {
     width: 38px;
     height: 38px;
 
-    border-radius: 10px;
+    flex-shrink: 0;
 
+    border-radius: 10px;
     object-fit: cover;
 }
-
 
 .brand-title {
     font-size: 20px;
@@ -163,14 +162,17 @@ body {
     color: var(--text-primary);
 
     letter-spacing: 0.5px;
-}
 
+    white-space: nowrap;
+}
 
 .header-right {
     display: flex;
+    align-items: center;
     gap: 6px;
-}
 
+    flex-shrink: 0;
+}
 
 .header-right button {
     width: 38px;
@@ -188,12 +190,13 @@ body {
     cursor: pointer;
 
     transition:
-        background 0.2s,
-        color 0.2s;
+        background 0.2s ease,
+        transform 0.15s ease;
 }
 
-
-/* Favorite Header = Search-এর মতো সাদা */
+.header-right button:active {
+    transform: scale(0.92);
+}
 
 .header-right button#favHeaderBtn {
     color: var(--text-primary) !important;
@@ -205,6 +208,8 @@ body {
 ========================================== */
 
 .search-area {
+    width: 100%;
+
     padding: 10px 12px;
 
     display: none;
@@ -214,30 +219,25 @@ body {
     z-index: 9998;
 }
 
-
 .search-area.active {
     display: block;
 }
 
-
 .search-area input {
     width: 100%;
 
-    padding: 12px;
+    padding: 12px 14px;
 
     border: 1px solid var(--border-color);
-
     outline: none;
 
     border-radius: 10px;
 
     background: var(--bg-surface);
-
     color: var(--text-primary);
 
     font-size: 14px;
 }
-
 
 .search-area input::placeholder {
     color: var(--text-muted);
@@ -249,8 +249,9 @@ body {
 ========================================== */
 
 .categories-folder {
+    width: calc(100% - 24px);
 
-    margin: 12px 12px 16px;
+    margin: 12px 12px 18px;
 
     background: var(--bg-card);
 
@@ -263,7 +264,6 @@ body {
     position: relative;
 
     z-index: 10;
-
 }
 
 
@@ -272,43 +272,33 @@ body {
 ========================================== */
 
 .categories-header {
-
-    height: 58px;
-
-    padding: 0 15px;
+    width: 100%;
+    height: 76px;
 
     display: flex;
-
     align-items: center;
+
+    padding: 0 24px;
 
     background: var(--bg-surface);
 
     border-bottom: 1px solid var(--border-color);
-
 }
 
-
 .categories-title {
-
     display: flex;
-
     align-items: center;
 
-    gap: 10px;
+    gap: 12px;
 
     color: var(--text-primary);
 
-    font-size: 18px;
-
+    font-size: 25px;
     font-weight: 600;
-
 }
 
-
 .categories-title i {
-
-    font-size: 20px;
-
+    font-size: 30px;
 }
 
 
@@ -317,26 +307,25 @@ body {
 ========================================== */
 
 .categories-folder .category-slider {
+    width: 100%;
 
     display: flex;
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 20px;
 
     overflow-x: auto;
-
-    gap: 10px;
-
-    padding: 12px;
+    overflow-y: hidden;
 
     scrollbar-width: none;
 
     -webkit-overflow-scrolling: touch;
-
 }
 
-
 .categories-folder .category-slider::-webkit-scrollbar {
-
     display: none;
-
 }
 
 
@@ -345,72 +334,61 @@ body {
 ========================================== */
 
 .categories-folder .cat {
+    flex: 0 0 174px;
 
-    flex: 0 0 auto;
-
-    min-width: 100px;
-
-    min-height: 90px;
-
-    padding: 12px 10px;
+    width: 174px;
+    height: 155px;
 
     background: var(--bg-surface);
 
-    border-radius: 15px;
+    border: 1px solid transparent;
+
+    border-radius: 20px;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
-
-    cursor: pointer;
-
-    user-select: none;
-
-    font-size: 20px;
 
     color: var(--text-primary);
 
-    border: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
 
     transition:
         transform 0.15s ease,
-        background 0.2s ease;
-
+        background 0.2s ease,
+        border-color 0.2s ease;
 }
 
+.categories-folder .cat i {
+    font-size: 34px;
 
-.categories-folder .cat:active {
-
-    transform: scale(0.96);
-
+    margin-bottom: 12px;
 }
-
-
-/* ACTIVE CATEGORY */
-
-.categories-folder .cat.active {
-
-    background: var(--primary);
-
-    border-color: rgba(255,255,255,0.25);
-
-}
-
 
 .categories-folder .cat span {
-
-    margin-top: 7px;
-
-    font-size: 13px;
+    font-size: 21px;
 
     font-weight: 500;
 
     white-space: nowrap;
+}
 
+
+/* ==========================================
+   ACTIVE CATEGORY
+========================================== */
+
+.categories-folder .cat.active {
+    background: var(--primary);
+
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.categories-folder .cat:active {
+    transform: scale(0.95);
 }
 
 
@@ -419,21 +397,20 @@ body {
 ========================================== */
 
 .section-title {
-
     font-size: 16px;
 
     font-weight: 600;
 
     margin: 12px 12px 10px;
-
 }
 
 
 /* ==========================================
-   FEATURED SLIDER
+   FEATURED CHANNELS
 ========================================== */
 
 .featured-slider {
+    width: 100%;
 
     display: flex;
 
@@ -445,19 +422,17 @@ body {
 
     scrollbar-width: none;
 
+    -webkit-overflow-scrolling: touch;
 }
-
 
 .featured-slider::-webkit-scrollbar {
-
     display: none;
-
 }
 
-
 .featured-card {
-
     position: relative;
+
+    flex: 0 0 230px;
 
     min-width: 230px;
 
@@ -474,16 +449,11 @@ body {
     cursor: pointer;
 
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
 }
 
-
 .featured-card img {
-
     width: 110px !important;
     height: 110px !important;
 
@@ -498,11 +468,10 @@ body {
     padding: 3px;
 
     margin-bottom: 10px;
-
 }
 
-
 .featured-card h4 {
+    width: 100%;
 
     font-size: 12px;
 
@@ -511,18 +480,12 @@ body {
     overflow: hidden;
 
     text-overflow: ellipsis;
-
-    width: 100%;
-
 }
 
-
 .featured-card p {
-
     font-size: 10px;
 
     color: var(--text-muted);
-
 }
 
 
@@ -531,33 +494,27 @@ body {
 ========================================== */
 
 .main-content {
+    width: 100%;
 
     padding: 0 10px;
-
 }
 
-
 .channel-grid {
+    width: 100%;
 
     display: grid;
 
     grid-template-columns:
-        repeat(3, 1fr);
+        repeat(3, minmax(0, 1fr));
 
     gap: 10px;
-
 }
 
-
 @media (min-width: 600px) {
-
     .channel-grid {
-
         grid-template-columns:
             repeat(auto-fill, minmax(130px, 1fr));
-
     }
-
 }
 
 
@@ -566,8 +523,9 @@ body {
 ========================================== */
 
 .channel-card {
-
     position: relative;
+
+    width: 100%;
 
     background: var(--bg-card);
 
@@ -576,7 +534,6 @@ body {
     padding: 12px 6px;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
@@ -587,24 +544,18 @@ body {
 
     cursor: pointer;
 
-    transition: transform 0.2s;
-
-    width: 100%;
-
+    transition: transform 0.2s ease;
 }
-
 
 .channel-card:active {
-
     transform: scale(0.95);
-
 }
 
-
 .channel-card img {
-
     width: 110px !important;
     height: 110px !important;
+
+    max-width: 100%;
 
     border-radius: 50% !important;
 
@@ -617,11 +568,10 @@ body {
     padding: 3px;
 
     margin-bottom: 10px;
-
 }
 
-
 .channel-card h4 {
+    width: 100%;
 
     font-size: 12px;
 
@@ -638,36 +588,32 @@ body {
     overflow: hidden;
 
     word-break: break-word;
-
 }
 
 
 /* ==========================================
-   FAVORITE
+   FAVORITE BUTTON
 ========================================== */
 
 .fav-btn {
-
     position: absolute;
 
     top: 6px;
     right: 6px;
 
-    background: rgba(0,0,0,0.6);
-
-    border: none;
-
-    color: var(--text-primary) !important;
-
     width: 24px;
     height: 24px;
 
-    border-radius: 50%;
-
     display: flex;
-
     align-items: center;
     justify-content: center;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    border: none;
+    border-radius: 50%;
+
+    color: var(--text-primary) !important;
 
     font-size: 11px;
 
@@ -676,58 +622,43 @@ body {
     z-index: 5;
 
     transition:
-        color 0.2s,
-        transform 0.2s;
-
+        color 0.2s ease,
+        transform 0.2s ease;
 }
-
 
 .fav-btn.active {
-
     color: var(--text-primary) !important;
-
 }
 
-
 .fav-btn:active {
-
     transform: scale(1.2);
-
 }
 
 
 /* ==========================================
-   PLAYER
+   VIDEO PLAYER
 ========================================== */
 
 .player-container {
-
     position: sticky;
 
     top: 0;
 
     z-index: 1000 !important;
 
-    background: #000;
-
     width: 100%;
 
+    background: #000;
 }
-
 
 .player-container.hidden {
-
     display: none;
-
 }
 
-
 .player-header {
-
     display: flex;
 
     justify-content: space-between;
-
     align-items: center;
 
     padding: 8px 12px;
@@ -737,12 +668,9 @@ body {
     color: #fff;
 
     font-size: 14px;
-
 }
 
-
 .player-header button {
-
     background: none;
 
     border: none;
@@ -752,12 +680,9 @@ body {
     font-size: 18px;
 
     cursor: pointer;
-
 }
 
-
 video {
-
     width: 100%;
 
     max-height: 240px;
@@ -765,7 +690,6 @@ video {
     background: #000;
 
     display: block;
-
 }
 
 
@@ -783,8 +707,38 @@ video {
         margin-top: 12px;
     }
 
-    .categories-folder .cat {
-        min-width: 100px;
+    .categories-header {
+        height: 76px;
+
+        padding: 0 24px;
     }
 
+    .categories-title {
+        font-size: 25px;
+    }
+
+    .categories-title i {
+        font-size: 30px;
+    }
+
+    .categories-folder .category-slider {
+        gap: 16px;
+
+        padding: 20px;
+    }
+
+    .categories-folder .cat {
+        flex: 0 0 174px;
+
+        width: 174px;
+        height: 155px;
+    }
+
+    .categories-folder .cat i {
+        font-size: 34px;
+    }
+
+    .categories-folder .cat span {
+        font-size: 21px;
+    }
 }
