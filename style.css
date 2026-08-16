@@ -1,16 +1,21 @@
 /* ==========================================
-   StreamZX - Clean Modern Dark Theme
+   StreamZX - Modern Dark Theme
 ========================================== */
 
 :root {
+
     --bg-main: #0d1117;
     --bg-card: #161b22;
     --bg-surface: #1f2937;
     --bg-header: #111827;
+
     --primary: #e50914;
+
     --text-primary: #ffffff;
     --text-muted: #9ca3af;
+
     --border-color: #2b3442;
+
 }
 
 
@@ -19,20 +24,30 @@
 ========================================== */
 
 * {
+
     margin: 0;
     padding: 0;
+
     box-sizing: border-box;
+
     -webkit-tap-highlight-color: transparent;
+
 }
+
 
 html {
+
     width: 100%;
+
     overflow-x: hidden;
-    scroll-behavior: smooth;
+
 }
 
+
 body {
+
     width: 100%;
+
     min-height: 100vh;
 
     font-family:
@@ -45,21 +60,26 @@ body {
         sans-serif;
 
     background: var(--bg-main);
+
     color: var(--text-primary);
 
     padding-top: 70px;
-    padding-bottom: 95px;
+
+    padding-bottom: 100px;
 
     overflow-x: hidden;
+
 }
 
 
 /* ==========================================
-   SPLASH SCREEN
+   SPLASH
 ========================================== */
 
 #splash {
+
     position: fixed;
+
     inset: 0;
 
     background: var(--bg-main);
@@ -67,73 +87,107 @@ body {
     z-index: 999999;
 
     display: flex;
+
     flex-direction: column;
+
     justify-content: center;
+
     align-items: center;
 
     transition:
-        opacity 0.5s ease,
-        visibility 0.5s ease;
+        opacity .5s ease,
+        visibility .5s ease;
+
 }
+
 
 #splash.hidden {
+
     opacity: 0;
+
     visibility: hidden;
+
     pointer-events: none;
+
 }
 
+
 .splash-logo {
+
     width: 100px;
+
     height: 100px;
 
     border-radius: 50%;
+
     object-fit: cover;
+
 }
 
+
 #splash h2 {
+
     margin-top: 12px;
 
     font-size: 22px;
+
     font-weight: 700;
+
 }
 
+
 .loader {
+
     margin-top: 20px;
 
     width: 35px;
+
     height: 35px;
 
     border: 3px solid var(--border-color);
+
     border-top-color: var(--primary);
 
     border-radius: 50%;
 
-    animation: spin 0.8s linear infinite;
+    animation: spin .8s linear infinite;
+
 }
 
+
 @keyframes spin {
+
     to {
+
         transform: rotate(360deg);
+
     }
+
 }
 
 
 /* ==========================================
-   TOP HEADER
+   HEADER
 ========================================== */
 
 .top-header {
+
     position: fixed;
 
     top: 0;
+
     left: 0;
+
     right: 0;
 
     width: 100%;
+
     height: 70px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     padding: 10px 12px;
@@ -143,18 +197,27 @@ body {
     border-bottom: 1px solid var(--border-color);
 
     z-index: 99999;
+
 }
 
+
 .header-left {
+
     display: flex;
+
     align-items: center;
+
     gap: 10px;
 
     min-width: 0;
+
 }
 
+
 .header-app-icon {
+
     width: 38px;
+
     height: 38px;
 
     flex-shrink: 0;
@@ -162,49 +225,59 @@ body {
     border-radius: 10px;
 
     object-fit: cover;
+
 }
+
 
 .brand-title {
+
     font-size: 20px;
+
     font-weight: 700;
 
-    color: var(--text-primary);
-
-    letter-spacing: 0.5px;
+    letter-spacing: .5px;
 
     white-space: nowrap;
+
 }
+
 
 .header-right {
+
     display: flex;
+
     align-items: center;
+
     gap: 6px;
 
-    flex-shrink: 0;
 }
 
+
 .header-right button {
+
     width: 38px;
+
     height: 38px;
 
     border: none;
+
     border-radius: 10px;
 
     background: var(--bg-surface);
 
-    color: var(--text-primary);
+    color: #fff;
 
     font-size: 15px;
 
     cursor: pointer;
 
-    transition:
-        background 0.2s ease,
-        transform 0.15s ease;
 }
 
+
 .header-right button:active {
-    transform: scale(0.92);
+
+    transform: scale(.92);
+
 }
 
 
@@ -213,22 +286,25 @@ body {
 ========================================== */
 
 .search-area {
+
     width: 100%;
 
     padding: 10px 12px;
 
     display: none;
 
-    position: relative;
-
-    z-index: 100;
 }
+
 
 .search-area.active {
+
     display: block;
+
 }
 
+
 .search-area input {
+
     width: 100%;
 
     padding: 12px 14px;
@@ -241,189 +317,17 @@ body {
 
     background: var(--bg-surface);
 
-    color: var(--text-primary);
+    color: #fff;
 
     font-size: 14px;
+
 }
+
 
 .search-area input::placeholder {
+
     color: var(--text-muted);
-}
 
-
-/* ==========================================
-   LIVE EVENT PAGE
-========================================== */
-
-#liveEventPage {
-    width: 100%;
-    padding: 12px;
-}
-
-.live-event-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 14px;
-}
-
-.live-event-title {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.live-event-title i {
-    color: #ff304f;
-}
-
-.live-event-refresh {
-    width: 38px;
-    height: 38px;
-
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-
-    background: var(--bg-card);
-    color: var(--text-primary);
-
-    cursor: pointer;
-}
-
-
-/* ==========================================
-   EVENT CARD
-========================================== */
-
-.event-card {
-    width: 100%;
-
-    background: var(--bg-card);
-
-    border: 1px solid var(--border-color);
-
-    border-radius: 16px;
-
-    padding: 14px;
-
-    margin-bottom: 10px;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.15s ease,
-        border-color 0.2s ease;
-}
-
-.event-card:active {
-    transform: scale(0.98);
-}
-
-.event-card.live {
-    border-color: rgba(229, 9, 20, 0.7);
-}
-
-.event-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 12px;
-}
-
-.event-sport {
-    font-size: 11px;
-    color: var(--text-muted);
-}
-
-.live-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-
-    padding: 4px 8px;
-
-    border-radius: 20px;
-
-    background: rgba(229, 9, 20, 0.15);
-
-    color: #ff4050;
-
-    font-size: 10px;
-    font-weight: 700;
-}
-
-.live-badge::before {
-    content: "";
-
-    width: 6px;
-    height: 6px;
-
-    border-radius: 50%;
-
-    background: #ff304f;
-
-    animation: livePulse 1s infinite;
-}
-
-@keyframes livePulse {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.3;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-.event-teams {
-    display: grid;
-
-    grid-template-columns: 1fr 50px 1fr;
-
-    align-items: center;
-
-    text-align: center;
-
-    gap: 8px;
-}
-
-.event-team {
-    min-width: 0;
-}
-
-.event-team img {
-    width: 48px;
-    height: 48px;
-
-    object-fit: contain;
-
-    margin-bottom: 6px;
-}
-
-.event-team-name {
-    font-size: 12px;
-    font-weight: 600;
-
-    line-height: 1.3;
-}
-
-.event-score {
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.event-vs {
-    font-size: 11px;
-    color: var(--text-muted);
 }
 
 
@@ -431,33 +335,23 @@ body {
    CATEGORY PAGE
 ========================================== */
 
-#categoryPage {
+.category-page {
+
     width: 100%;
-    padding: 12px;
-}
 
-.category-page-title {
-    display: flex;
-    align-items: center;
-    gap: 9px;
+    padding: 15px 12px 30px;
 
-    font-size: 18px;
-    font-weight: 700;
-
-    margin-bottom: 12px;
-}
-
-.category-page-title i {
-    color: var(--primary);
 }
 
 
-/* ==========================================
-   CATEGORY GRID
-========================================== */
+.category-page.hidden {
 
-.category-slider {
-    width: 100%;
+    display: none;
+
+}
+
+
+.category-page-header {
 
     display: flex;
 
@@ -465,50 +359,43 @@ body {
 
     gap: 10px;
 
-    overflow-x: auto;
+    margin: 5px 4px 18px;
 
-    overflow-y: hidden;
+    font-size: 22px;
 
-    padding: 2px 0 12px;
+    font-weight: 700;
 
-    scrollbar-width: none;
-
-    -webkit-overflow-scrolling: touch;
 }
 
-.category-slider::-webkit-scrollbar {
-    display: none;
+
+.category-page-header i {
+
+    font-size: 24px;
+
 }
 
-.categories-folder {
-    width: 100%;
 
-    margin: 0;
+.category-grid {
 
-    background: transparent;
+    display: grid;
 
-    border: none;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
 
-    border-radius: 0;
+    gap: 10px;
 
-    overflow: visible;
 }
 
-.categories-header {
-    display: none;
-}
 
-.categories-folder .cat {
-    flex: 0 0 100px;
+.category-item {
 
-    width: 100px;
-    height: 90px;
+    min-height: 105px;
 
     background: var(--bg-card);
 
     border: 1px solid var(--border-color);
 
-    border-radius: 15px;
+    border-radius: 17px;
 
     display: flex;
 
@@ -518,40 +405,46 @@ body {
 
     justify-content: center;
 
-    color: var(--text-primary);
+    gap: 9px;
+
+    color: #fff;
 
     cursor: pointer;
 
-    user-select: none;
-
     transition:
-        transform 0.15s ease,
-        background 0.2s ease,
-        border-color 0.2s ease;
+        transform .15s ease,
+        background .2s ease;
+
 }
 
-.categories-folder .cat i {
-    font-size: 25px;
 
-    margin-bottom: 7px;
+.category-item i {
+
+    font-size: 27px;
+
 }
 
-.categories-folder .cat span {
+
+.category-item span {
+
     font-size: 13px;
 
-    font-weight: 500;
+    font-weight: 600;
 
-    white-space: nowrap;
 }
 
-.categories-folder .cat.active {
-    background: var(--primary);
 
-    border-color: rgba(255, 255, 255, 0.25);
+.category-item:active {
+
+    transform: scale(.94);
+
 }
 
-.categories-folder .cat:active {
-    transform: scale(0.95);
+
+.category-item:hover {
+
+    background: var(--bg-surface);
+
 }
 
 
@@ -560,23 +453,22 @@ body {
 ========================================== */
 
 .section-title {
-    font-size: 16px;
 
-    font-weight: 600;
+    font-size: 17px;
 
-    margin: 12px 12px 10px;
+    font-weight: 700;
+
+    margin: 14px 12px 10px;
+
 }
 
 
 /* ==========================================
-   FEATURED CHANNELS
+   FEATURED
 ========================================== */
 
-.featured-section {
-    width: 100%;
-}
-
 .featured-slider {
+
     width: 100%;
 
     display: flex;
@@ -589,17 +481,22 @@ body {
 
     scrollbar-width: none;
 
-    -webkit-overflow-scrolling: touch;
 }
+
 
 .featured-slider::-webkit-scrollbar {
+
     display: none;
+
 }
 
+
 .featured-card {
+
     position: relative;
 
     flex: 0 0 150px;
+
     min-width: 150px;
 
     background: var(--bg-card);
@@ -619,10 +516,14 @@ body {
     flex-direction: column;
 
     align-items: center;
+
 }
 
+
 .featured-card img {
+
     width: 80px !important;
+
     height: 80px !important;
 
     border-radius: 50% !important;
@@ -636,9 +537,12 @@ body {
     padding: 3px;
 
     margin-bottom: 8px;
+
 }
 
+
 .featured-card h4 {
+
     width: 100%;
 
     font-size: 12px;
@@ -648,28 +552,36 @@ body {
     overflow: hidden;
 
     text-overflow: ellipsis;
+
 }
 
+
 .featured-card p {
+
     font-size: 10px;
 
     color: var(--text-muted);
 
     margin-top: 3px;
+
 }
 
 
 /* ==========================================
-   MAIN CHANNELS
+   MAIN CONTENT
 ========================================== */
 
 .main-content {
+
     width: 100%;
 
     padding: 0 10px;
+
 }
 
+
 .channel-grid {
+
     width: 100%;
 
     display: grid;
@@ -678,6 +590,7 @@ body {
         repeat(3, minmax(0, 1fr));
 
     gap: 10px;
+
 }
 
 
@@ -686,6 +599,7 @@ body {
 ========================================== */
 
 .channel-card {
+
     position: relative;
 
     width: 100%;
@@ -710,15 +624,20 @@ body {
 
     cursor: pointer;
 
-    transition: transform 0.2s ease;
 }
+
 
 .channel-card:active {
-    transform: scale(0.95);
+
+    transform: scale(.95);
+
 }
 
+
 .channel-card img {
+
     width: 80px !important;
+
     height: 80px !important;
 
     max-width: 100%;
@@ -734,9 +653,12 @@ body {
     padding: 3px;
 
     margin-bottom: 8px;
+
 }
 
+
 .channel-card h4 {
+
     width: 100%;
 
     font-size: 12px;
@@ -754,6 +676,7 @@ body {
     overflow: hidden;
 
     word-break: break-word;
+
 }
 
 
@@ -762,20 +685,24 @@ body {
 ========================================== */
 
 .fav-btn {
+
     position: absolute;
 
     top: 6px;
+
     right: 6px;
 
-    width: 24px;
-    height: 24px;
+    width: 30px;
+
+    height: 30px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0,0,0,.6);
 
     border: none;
 
@@ -783,15 +710,19 @@ body {
 
     color: #fff;
 
-    font-size: 11px;
+    font-size: 13px;
 
     cursor: pointer;
 
     z-index: 5;
+
 }
 
+
 .fav-btn.active {
+
     color: #ffd700;
+
 }
 
 
@@ -800,6 +731,7 @@ body {
 ========================================== */
 
 .player-container {
+
     position: sticky;
 
     top: 70px;
@@ -809,16 +741,23 @@ body {
     width: 100%;
 
     background: #000;
+
 }
+
 
 .player-container.hidden {
+
     display: none;
+
 }
 
+
 .player-header {
+
     display: flex;
 
     justify-content: space-between;
+
     align-items: center;
 
     padding: 8px 12px;
@@ -828,9 +767,12 @@ body {
     color: #fff;
 
     font-size: 14px;
+
 }
 
+
 .player-header button {
+
     background: none;
 
     border: none;
@@ -839,10 +781,11 @@ body {
 
     font-size: 18px;
 
-    cursor: pointer;
 }
 
+
 video {
+
     width: 100%;
 
     max-height: 240px;
@@ -850,20 +793,23 @@ video {
     background: #000;
 
     display: block;
+
 }
 
 
 /* ==========================================
    BOTTOM NAVIGATION
-   ONLY 3 BUTTONS
 ========================================== */
 
 .bottom-navigation {
+
     position: fixed;
 
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
+    left: 10px;
+
+    right: 10px;
+
+    bottom: 10px;
 
     height: 64px;
 
@@ -872,7 +818,7 @@ video {
     grid-template-columns:
         repeat(3, 1fr);
 
-    background: rgba(17, 24, 39, 0.97);
+    background: rgba(17,24,39,.97);
 
     border: 1px solid var(--border-color);
 
@@ -883,21 +829,19 @@ video {
     z-index: 99998;
 
     box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.45);
+        0 8px 30px rgba(0,0,0,.45);
 
     backdrop-filter: blur(12px);
+
     -webkit-backdrop-filter: blur(12px);
+
 }
 
 
-/* ==========================================
-   BOTTOM NAV BUTTON
-========================================== */
-
-.bottom-navigation .bottom-nav-btn {
-    position: relative;
+.bottom-nav-btn {
 
     border: none;
+
     outline: none;
 
     background: transparent;
@@ -920,71 +864,87 @@ video {
 
     cursor: pointer;
 
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.15s ease;
 }
 
-.bottom-navigation .bottom-nav-btn i {
+
+.bottom-nav-btn i {
+
     font-size: 19px;
+
 }
 
-.bottom-navigation .bottom-nav-btn span {
+
+.bottom-nav-btn span {
+
     font-size: 10px;
 
     font-weight: 600;
 
-    white-space: nowrap;
 }
 
 
-/* ==========================================
-   ACTIVE NAV
-========================================== */
+.bottom-nav-btn.active {
 
-.bottom-navigation .bottom-nav-btn.active {
     background: var(--primary);
 
     color: #fff;
-}
 
-.bottom-navigation .bottom-nav-btn:active {
-    transform: scale(0.94);
 }
 
 
-/* ==========================================
-   HIDE OLD BOTTOM NAV
-========================================== */
+.bottom-nav-btn:active {
 
-.bottom-nav {
-    display: none !important;
+    transform: scale(.94);
+
 }
 
 
 /* ==========================================
-   TABLET / DESKTOP
+   MOBILE
 ========================================== */
 
-@media (min-width: 600px) {
+@media (max-width: 480px) {
 
-    .channel-grid {
-        grid-template-columns:
-            repeat(auto-fill, minmax(130px, 1fr));
+    .bottom-navigation {
+
+        left: 8px;
+
+        right: 8px;
+
+        bottom: 8px;
+
+        height: 62px;
+
     }
 
-    .categories-folder .cat {
-        flex-basis: 110px;
 
-        width: 110px;
-        height: 95px;
+    .category-grid {
+
+        gap: 8px;
+
     }
 
-    .channel-card img {
-        width: 90px !important;
-        height: 90px !important;
+
+    .category-item {
+
+        min-height: 95px;
+
     }
+
+
+    .category-item i {
+
+        font-size: 23px;
+
+    }
+
+
+    .category-item span {
+
+        font-size: 12px;
+
+    }
+
 }
 
 
@@ -995,44 +955,41 @@ video {
 @media (max-width: 360px) {
 
     .brand-title {
+
         font-size: 18px;
+
     }
+
 
     .header-right {
+
         gap: 4px;
+
     }
+
 
     .header-right button {
+
         width: 34px;
+
         height: 34px;
+
     }
 
-    .categories-folder .cat {
-        flex-basis: 92px;
-
-        width: 92px;
-        height: 84px;
-    }
-
-    .categories-folder .cat i {
-        font-size: 22px;
-    }
-
-    .categories-folder .cat span {
-        font-size: 12px;
-    }
 
     .channel-grid {
+
         gap: 7px;
+
     }
+
 
     .channel-card img {
+
         width: 70px !important;
+
         height: 70px !important;
+
     }
 
-    .event-team img {
-        width: 42px;
-        height: 42px;
-    }
 }
