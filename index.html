@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -31,306 +33,375 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
-    <!-- ==============================
-         SPLASH
-    ============================== -->
 
-    <div id="splash">
+<!-- ==========================================
+     SPLASH
+========================================== -->
+
+<div id="splash">
+
+    <img
+        src="logo.png"
+        alt="StreamZX"
+        class="splash-logo"
+        onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=ZX';"
+    >
+
+    <h2>StreamZX</h2>
+
+    <div class="loader"></div>
+
+</div>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<header class="top-header">
+
+    <div class="header-left">
 
         <img
             src="logo.png"
             alt="StreamZX"
-            class="splash-logo"
-            onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=ZX';"
+            class="header-app-icon"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/38?text=ZX';"
         >
 
-        <h2>StreamZX</h2>
-
-        <div class="loader"></div>
+        <span class="brand-title">
+            StreamZX
+        </span>
 
     </div>
 
 
-    <!-- ==============================
-         TOP HEADER
-    ============================== -->
+    <div class="header-right">
 
-    <header class="top-header">
+        <button
+            id="favHeaderBtn"
+            title="Favorites"
+        >
+            <i class="fa-solid fa-star"></i>
+        </button>
 
-        <div class="header-left">
 
-            <img
-                src="logo.png"
-                alt="StreamZX"
-                class="header-app-icon"
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/38?text=ZX';"
-            >
+        <button
+            id="refreshBtn"
+            title="Refresh"
+        >
+            <i class="fa-solid fa-rotate-right"></i>
+        </button>
 
-            <span class="brand-title">
-                StreamZX
+
+        <button
+            id="searchBtn"
+            title="Search"
+        >
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ==========================================
+     PLAYER
+========================================== -->
+
+<div
+    id="playerContainer"
+    class="player-container hidden"
+>
+
+    <div class="player-header">
+
+        <span id="currentChannelName">
+            Channel Name
+        </span>
+
+        <button id="closePlayerBtn">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+    </div>
+
+
+    <video
+        id="video"
+        controls
+        autoplay
+        playsinline>
+    </video>
+
+</div>
+
+
+<!-- ==========================================
+     SEARCH
+========================================== -->
+
+<div
+    class="search-area"
+    id="searchArea"
+>
+
+    <input
+        type="text"
+        id="search"
+        placeholder="Search channel name..."
+        autocomplete="off"
+    >
+
+</div>
+
+
+<!-- ==========================================
+     CATEGORY PAGE
+========================================== -->
+
+<section
+    id="categoryPage"
+    class="category-page hidden"
+>
+
+    <div class="category-page-header">
+
+        <i class="fa-solid fa-layer-group"></i>
+
+        <span>
+            Categories
+        </span>
+
+    </div>
+
+
+    <div class="category-grid">
+
+
+        <div
+            class="category-item"
+            data-category="Sports"
+        >
+
+            <i class="fa-solid fa-trophy"></i>
+
+            <span>
+                Sports
             </span>
 
         </div>
 
 
-        <div class="header-right">
-
-            <button id="favHeaderBtn" title="Favorites">
-                <i class="fa-solid fa-star"></i>
-            </button>
-
-            <button id="refreshBtn" title="Refresh">
-                <i class="fa-solid fa-rotate-right"></i>
-            </button>
-
-            <button id="searchBtn" title="Search">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-
-        </div>
-
-    </header>
-
-
-    <!-- ==============================
-         VIDEO PLAYER
-    ============================== -->
-
-    <div
-        id="playerContainer"
-        class="player-container hidden">
-
-        <div class="player-header">
-
-            <span id="currentChannelName">
-                Channel Name
-            </span>
-
-            <button id="closePlayerBtn">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-        </div>
-
-        <video
-            id="video"
-            controls
-            autoplay
-            playsinline>
-        </video>
-
-    </div>
-
-
-    <!-- ==============================
-         SEARCH
-    ============================== -->
-
-    <div
-        class="search-area"
-        id="searchArea">
-
-        <input
-            type="text"
-            id="search"
-            placeholder="Search channel name..."
-            autocomplete="off"
+        <div
+            class="category-item"
+            data-category="Entertainment"
         >
 
+            <i class="fa-solid fa-film"></i>
+
+            <span>
+                Entertainment
+            </span>
+
+        </div>
+
+
+        <div
+            class="category-item"
+            data-category="News"
+        >
+
+            <i class="fa-solid fa-newspaper"></i>
+
+            <span>
+                News
+            </span>
+
+        </div>
+
+
+        <div
+            class="category-item"
+            data-category="Movies"
+        >
+
+            <i class="fa-solid fa-clapperboard"></i>
+
+            <span>
+                Movies
+            </span>
+
+        </div>
+
+
+        <div
+            class="category-item"
+            data-category="Islamic"
+        >
+
+            <i class="fa-solid fa-kaaba"></i>
+
+            <span>
+                Islamic
+            </span>
+
+        </div>
+
+
+        <div
+            class="category-item"
+            data-category="Kids"
+        >
+
+            <i class="fa-solid fa-child"></i>
+
+            <span>
+                Kids
+            </span>
+
+        </div>
+
+
+        <div
+            class="category-item"
+            data-category="Music"
+        >
+
+            <i class="fa-solid fa-music"></i>
+
+            <span>
+                Music
+            </span>
+
+        </div>
+
+
     </div>
 
-
-    <!-- ==============================
-         CATEGORIES
-    ============================== -->
-
-    <section class="categories-folder">
-
-        <div class="categories-header">
-
-            <div class="categories-title">
-
-                <i class="fa-solid fa-folder-open"></i>
-
-                <span>Categories</span>
-
-            </div>
-
-        </div>
+</section>
 
 
-        <div class="category-slider">
+<!-- ==========================================
+     FEATURED CHANNELS
+========================================== -->
 
-            <div
-                class="cat active"
-                data-category="Sports">
+<section
+    id="featuredSection"
+    class="featured-section"
+>
 
-                <i class="fa-solid fa-trophy"></i>
-
-                <span>Sports</span>
-
-            </div>
-
-
-            <div
-                class="cat"
-                data-category="Entertainment">
-
-                <i class="fa-solid fa-film"></i>
-
-                <span>Entertainment</span>
-
-            </div>
+    <h3 class="section-title">
+        🔥 Featured Channels
+    </h3>
 
 
-            <div
-                class="cat"
-                data-category="News">
+    <div
+        id="featuredList"
+        class="featured-slider">
+    </div>
 
-                <i class="fa-solid fa-newspaper"></i>
-
-                <span>News</span>
-
-            </div>
+</section>
 
 
-            <div
-                class="cat"
-                data-category="Movies">
+<!-- ==========================================
+     MAIN CHANNELS
+========================================== -->
 
-                <i class="fa-solid fa-clapperboard"></i>
+<main class="main-content">
 
-                <span>Movies</span>
-
-            </div>
-
-
-            <div
-                class="cat"
-                data-category="Islamic">
-
-                <i class="fa-solid fa-kaaba"></i>
-
-                <span>Islamic</span>
-
-            </div>
+    <h3
+        class="section-title"
+        id="mainSectionTitle"
+    >
+        ⚽ Sports Channels
+    </h3>
 
 
-            <div
-                class="cat"
-                data-category="Kids">
+    <div
+        id="channelList"
+        class="channel-grid">
+    </div>
 
-                <i class="fa-solid fa-child"></i>
+</main>
 
-                <span>Kids</span>
-
-            </div>
-
-
-            <div
-                class="cat"
-                data-category="Music">
-
-                <i class="fa-solid fa-music"></i>
-
-                <span>Music</span>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ==============================
-         FEATURED CHANNELS
-    ============================== -->
-
-    <section
-        id="featuredSection"
-        class="featured-section">
-
-        <h3 class="section-title">
-            🔥 Featured Channels
-        </h3>
-
-        <div
-            id="featuredList"
-            class="featured-slider">
-        </div>
-
-    </section>
-
-
-    <!-- ==============================
-         MAIN CHANNELS
-    ============================== -->
-
-    <main class="main-content">
-
-        <h3
-            class="section-title"
-            id="mainSectionTitle">
-
-            ⚽ Sports Channels
-
-        </h3>
-
-        <div
-            id="channelList"
-            class="channel-grid">
-        </div>
-
-    </main>
 
 <!-- ==========================================
      BOTTOM NAVIGATION
-     Only 3 Buttons
 ========================================== -->
 
-<nav class="bottom-navigation" id="bottomNavigation">
+<nav
+    class="bottom-navigation"
+    id="bottomNavigation"
+>
 
-    <!-- Live Event -->
+
+    <!-- LIVE EVENT -->
+
     <button
-        class="bottom-nav-btn active"
+        class="bottom-nav-btn"
         id="liveEventNav"
-        data-page="live-event"
     >
+
         <i class="fa-solid fa-tower-broadcast"></i>
-        <span>Live Event</span>
+
+        <span>
+            Live Event
+        </span>
+
     </button>
 
 
-    <!-- Category -->
+    <!-- CATEGORY -->
+
     <button
         class="bottom-nav-btn"
         id="categoryNav"
-        data-page="category"
     >
+
         <i class="fa-solid fa-layer-group"></i>
-        <span>Category</span>
+
+        <span>
+            Category
+        </span>
+
     </button>
 
 
-    <!-- Sports -->
+    <!-- SPORTS -->
+
     <button
-        class="bottom-nav-btn"
+        class="bottom-nav-btn active"
         id="sportsNav"
-        data-page="sports"
     >
+
         <i class="fa-solid fa-futbol"></i>
-        <span>Sports</span>
+
+        <span>
+            Sports
+        </span>
+
     </button>
+
 
 </nav>
 
 
-<!-- JavaScript -->
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+
 <script src="script.js"></script>
 
 </body>
+
 </html>
