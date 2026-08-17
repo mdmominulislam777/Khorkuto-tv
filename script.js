@@ -144,6 +144,53 @@ function hideSplash() {
 // ==========================================
 
 function setupEventListeners() {
+    // ======================================
+    // SIDEBAR HOME BUTTON
+    // ======================================
+    const sidebarHomeBtn = document.getElementById("sidebarHomeBtn");
+
+    if (sidebarHomeBtn) {
+        sidebarHomeBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeSidebar();
+            
+            hideCategoryPage();
+            showNormalContent();
+
+            currentCategory = "Sports";
+            updateSectionTitle();
+            renderFeaturedChannels();
+            renderChannels();
+
+            setActiveBottomNav(document.getElementById("sportsNav"));
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    // ======================================
+    // SIDEBAR NETWORK STREAM (CUSTOM URL)
+    // ======================================
+    const sidebarNetworkStreamBtn = document.getElementById("sidebarNetworkStreamBtn");
+
+    if (sidebarNetworkStreamBtn) {
+        sidebarNetworkStreamBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeSidebar();
+
+            const streamUrl = prompt("Enter Video or HLS (.m3u8) Stream URL:");
+
+            if (streamUrl && streamUrl.trim() !== "") {
+                const customChannel = {
+                    name: "Network Stream",
+                    url: streamUrl.trim(),
+                    logo: "https://via.placeholder.com/80?text=Stream"
+                };
+
+                // সরাসরি প্লেয়ারে কাস্টম লিংক প্লে করবে
+                playChannel(customChannel);
+            }
+        });
+    }
 
 
     // ======================================
