@@ -1,1200 +1,396 @@
 /* ==========================================
-   StreamZX - Crimson Red Theme
+   StreamZX - Crimson & Neon Blue Theme
 ========================================== */
 
 :root {
-
     --bg-main: #0d0d11;
     --bg-card: #18181f;
     --bg-surface: #272732;
     --bg-header: #18181f;
-
     --primary: #ff2a4b;
-
     --text-primary: #ffffff;
     --text-muted: #71717a;
-
     --border-color: #272732;
-
 }
-
 
 /* ==========================================
-   RESET
+   RESET & GLOBAL
 ========================================== */
-
 * {
-
     margin: 0;
-
     padding: 0;
-
     box-sizing: border-box;
-
     -webkit-tap-highlight-color: transparent;
-
+    transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease, opacity 0.3s ease;
 }
-
 
 html {
-
     width: 100%;
-
     overflow-x: hidden;
-
 }
-
 
 body {
-
     width: 100%;
-
     min-height: 100vh;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
-
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg-main);
-
     color: var(--text-primary);
-
-    padding-top: 70px;
-
-    padding-bottom: 100px;
-
     overflow-x: hidden;
-
 }
 
+.hidden {
+    display: none !important;
+}
 
 /* ==========================================
-   SPLASH
+   SPLASH SCREEN
 ========================================== */
-
 #splash {
-
     position: fixed;
-
     inset: 0;
-
     background: var(--bg-main);
-
     z-index: 999999;
-
     display: flex;
-
     flex-direction: column;
-
     justify-content: center;
-
     align-items: center;
-
-    transition:
-        opacity .5s ease,
-        visibility .5s ease;
-
+    transition: opacity .5s ease, visibility .5s ease;
 }
-
 
 #splash.hidden {
-
     opacity: 0;
-
     visibility: hidden;
-
     pointer-events: none;
-
 }
-
 
 .splash-logo {
-
     width: 100px;
-
     height: 100px;
-
     border-radius: 50%;
-
     object-fit: cover;
-
 }
-
 
 #splash h2 {
-
     margin-top: 12px;
-
     font-size: 22px;
-
     font-weight: 700;
-
 }
-
 
 .loader {
-
     margin-top: 20px;
-
     width: 35px;
-
     height: 35px;
-
     border: 3px solid var(--border-color);
-
     border-top-color: var(--primary);
-
     border-radius: 50%;
-
     animation: spin .8s linear infinite;
-
 }
-
 
 @keyframes spin {
-
-    to {
-
-        transform: rotate(360deg);
-
-    }
-
+    to { transform: rotate(360deg); }
 }
-
 
 /* ==========================================
-   HEADER
+   HEADER & STYLISH BRAND
 ========================================== */
-
 .top-header {
-
     position: fixed;
-
     top: 0;
-
     left: 0;
-
     right: 0;
-
     width: 100%;
-
-    height: 70px;
-
+    height: 65px;
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
-    padding: 10px 12px;
-
+    padding: 0 16px;
     background: var(--bg-header);
-
     border-bottom: 1px solid var(--border-color);
-
     z-index: 99999;
-
 }
-
 
 .header-left {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
-    min-width: 0;
-
 }
-
-
-.header-app-icon {
-
-    width: 38px;
-
-    height: 38px;
-
-    flex-shrink: 0;
-
-    border-radius: 10px;
-
-    object-fit: cover;
-
-}
-
 
 .brand-title {
-
-    font-size: 20px;
-
-    font-weight: 700;
-
-    letter-spacing: .5px;
-
-    white-space: nowrap;
-
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
+.brand-title .zx-text {
+    background: linear-gradient(135deg, #60a5fa, #2563eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0px 0px 8px rgba(37, 99, 235, 0.8));
+    font-weight: 900;
+}
 
 .header-right {
-
     display: flex;
-
     align-items: center;
-
     gap: 6px;
-
 }
-
 
 .header-right button {
-
     width: 38px;
-
     height: 38px;
-
     border: none;
-
     border-radius: 10px;
-
     background: var(--bg-surface);
-
     color: #fff;
-
     font-size: 15px;
-
     cursor: pointer;
-
 }
-
 
 .header-right button:active {
-
     transform: scale(.92);
-
 }
-
 
 /* ==========================================
-   SEARCH
+   PAGE LAYOUT & CONTAINER SPACING
 ========================================== */
-
-.search-area {
-
-    width: 100%;
-
-    padding: 10px 12px;
-
-    display: none;
-
+.main-content,
+.category-page,
+.settings-page {
+    margin-top: 65px;
+    padding: 16px;
+    padding-bottom: 90px;
 }
 
+.category-page:not(.hidden),
+.settings-page:not(.hidden) {
+    display: block !important;
+}
+
+/* ==========================================
+   SEARCH AREA
+========================================== */
+.search-area {
+    width: 100%;
+    padding: 10px 16px;
+    margin-top: 65px;
+    display: none;
+}
 
 .search-area.active {
-
     display: block;
-
 }
-
 
 .search-area input {
-
     width: 100%;
-
     padding: 12px 14px;
-
     border: 1px solid var(--border-color);
-
     outline: none;
-
     border-radius: 10px;
-
     background: var(--bg-surface);
-
     color: #fff;
-
     font-size: 14px;
-
 }
-
 
 .search-area input::placeholder {
-
     color: var(--text-muted);
-
 }
-
 
 /* ==========================================
    CATEGORY PAGE
 ========================================== */
-
-.category-page {
-
-    width: 100%;
-
-    padding: 15px 12px 30px;
-
-}
-
-
-.category-page.hidden {
-
-    display: none;
-
-}
-
-
 .category-page-header {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
-    margin: 5px 4px 18px;
-
+    margin-bottom: 18px;
     font-size: 22px;
-
     font-weight: 700;
-
 }
-
 
 .category-page-header i {
-
     font-size: 24px;
-
     color: var(--primary);
-
 }
-
 
 .category-grid {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
-
 }
-
 
 .category-item {
-
-    min-height: 105px;
-
+    min-height: 100px;
     background: var(--bg-card);
-
     border: 1px solid var(--border-color);
-
-    border-radius: 17px;
-
+    border-radius: 16px;
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     justify-content: center;
-
-    gap: 9px;
-
+    gap: 8px;
     color: #fff;
-
     cursor: pointer;
-
-    transition:
-        transform .15s ease,
-        background .2s ease;
-
 }
-
 
 .category-item i {
-
-    font-size: 27px;
-
+    font-size: 26px;
     color: var(--primary);
-
 }
-
 
 .category-item span {
-
     font-size: 13px;
-
     font-weight: 600;
-
 }
-
 
 .category-item:active {
-
     transform: scale(.94);
-
 }
-
-
-.category-item:hover {
-
-    background: var(--bg-surface);
-
-}
-
 
 /* ==========================================
-   SECTION TITLE
+   MAIN CONTENT & CHANNEL GRID
 ========================================== */
-
 .section-title {
-
     font-size: 17px;
-
     font-weight: 700;
-
-    margin: 14px 12px 10px;
-
+    margin-bottom: 14px;
 }
-
-
-/* ==========================================
-   FEATURED
-========================================== */
-
-.featured-slider {
-
-    width: 100%;
-
-    display: flex;
-
-    overflow-x: auto;
-
-    gap: 10px;
-
-    padding: 0 12px 10px;
-
-    scrollbar-width: none;
-
-}
-
-
-.featured-slider::-webkit-scrollbar {
-
-    display: none;
-
-}
-
-
-.featured-card {
-
-    position: relative;
-
-    flex: 0 0 150px;
-
-    min-width: 150px;
-
-    background: var(--bg-card);
-
-    border-radius: 16px;
-
-    padding: 10px;
-
-    text-align: center;
-
-    border: 1px solid var(--border-color);
-
-    cursor: pointer;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-}
-
-
-.featured-card img {
-
-    width: 80px !important;
-
-    height: 80px !important;
-
-    border-radius: 50% !important;
-
-    object-fit: cover !important;
-
-    background: var(--bg-main);
-
-    border: 2px solid var(--border-color);
-
-    padding: 3px;
-
-    margin-bottom: 8px;
-
-}
-
-
-.featured-card h4 {
-
-    width: 100%;
-
-    font-size: 12px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-}
-
-
-.featured-card p {
-
-    font-size: 10px;
-
-    color: var(--text-muted);
-
-    margin-top: 3px;
-
-}
-
-
-/* ==========================================
-   MAIN CONTENT
-========================================== */
-
-.main-content {
-
-    width: 100%;
-
-    padding: 0 10px;
-
-}
-
 
 .channel-grid {
-
     width: 100%;
-
     display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
-
 }
-
-
-/* ==========================================
-   CHANNEL CARD
-========================================== */
 
 .channel-card {
-
     position: relative;
-
     width: 100%;
-
-    min-width: 0;
-
     background: var(--bg-card);
-
     border-radius: 16px;
-
     padding: 10px 6px;
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     text-align: center;
-
     border: 1px solid var(--border-color);
-
     cursor: pointer;
-
 }
-
 
 .channel-card:active {
-
     transform: scale(.95);
-
 }
-
 
 .channel-card img {
-
-    width: 80px !important;
-
-    height: 80px !important;
-
-    max-width: 100%;
-
+    width: 75px !important;
+    height: 75px !important;
     border-radius: 50% !important;
-
     object-fit: cover !important;
-
     background: var(--bg-main);
-
     border: 2px solid var(--border-color);
-
     padding: 3px;
-
     margin-bottom: 8px;
-
 }
-
 
 .channel-card h4 {
-
     width: 100%;
-
     font-size: 12px;
-
     font-weight: 500;
-
     line-height: 1.25;
-
     display: -webkit-box;
-
     -webkit-line-clamp: 2;
-
     -webkit-box-orient: vertical;
-
     overflow: hidden;
-
     word-break: break-word;
-
 }
-
-
-/* ==========================================
-   FAVORITE
-========================================== */
 
 .fav-btn {
-
     position: absolute;
-
     top: 6px;
-
     right: 6px;
-
-    width: 30px;
-
-    height: 30px;
-
+    width: 28px;
+    height: 28px;
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     background: rgba(0,0,0,.6);
-
     border: none;
-
     border-radius: 50%;
-
     color: #fff;
-
-    font-size: 13px;
-
+    font-size: 12px;
     cursor: pointer;
-
     z-index: 5;
-
 }
-
 
 .fav-btn.active {
-
-    color: var(--primary);
-
+    color: #f59e0b;
 }
-
 
 /* ==========================================
    VIDEO PLAYER
 ========================================== */
-
 .player-container {
-
     position: sticky;
-
-    top: 70px;
-
+    top: 65px;
     z-index: 1000;
-
     width: 100%;
-
     background: #000;
-
 }
-
-
-.player-container.hidden {
-
-    display: none;
-
-}
-
 
 .player-header {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     padding: 8px 12px;
-
     background: var(--bg-header);
-
     color: #fff;
-
     font-size: 14px;
-
 }
-
 
 .player-header button {
-
     background: none;
-
     border: none;
-
     color: #fff;
-
     font-size: 18px;
-
+    cursor: pointer;
 }
-
 
 video {
-
     width: 100%;
-
     max-height: 240px;
-
     background: #000;
-
     display: block;
-
 }
-
 
 /* ==========================================
-   BOTTOM NAVIGATION
-========================================== */
-
-.bottom-navigation {
-
-    position: fixed;
-
-    left: 10px;
-
-    right: 10px;
-
-    bottom: 10px;
-
-    height: 64px;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    background: rgba(24, 24, 31, .97);
-
-    border: 1px solid var(--border-color);
-
-    border-radius: 18px;
-
-    padding: 5px;
-
-    z-index: 99998;
-
-    box-shadow:
-        0 8px 30px rgba(0,0,0,.5);
-
-    backdrop-filter: blur(12px);
-
-    -webkit-backdrop-filter: blur(12px);
-
-}
-
-
-.bottom-nav-btn {
-
-    border: none;
-
-    outline: none;
-
-    background: transparent;
-
-    color: var(--text-muted);
-
-    border-radius: 14px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 4px;
-
-    font-family: inherit;
-
-    cursor: pointer;
-
-}
-
-
-.bottom-nav-btn i {
-
-    font-size: 19px;
-
-}
-
-
-.bottom-nav-btn span {
-
-    font-size: 10px;
-
-    font-weight: 600;
-
-}
-
-
-.bottom-nav-btn.active {
-
-    background: var(--primary);
-
-    color: #fff;
-
-}
-
-
-.bottom-nav-btn:active {
-
-    transform: scale(.94);
-
-}
-
-
-/* ==========================================
-   MOBILE
-========================================== */
-
-@media (max-width: 480px) {
-
-    .bottom-navigation {
-
-        left: 8px;
-
-        right: 8px;
-
-        bottom: 8px;
-
-        height: 62px;
-
-    }
-
-
-    .category-grid {
-
-        gap: 8px;
-
-    }
-
-
-    .category-item {
-
-        min-height: 95px;
-
-    }
-
-
-    .category-item i {
-
-        font-size: 23px;
-
-    }
-
-
-    .category-item span {
-
-        font-size: 12px;
-
-    }
-
-}
-
-
-/* ==========================================
-   SMALL MOBILE
-========================================== */
-
-@media (max-width: 360px) {
-
-    .brand-title {
-
-        font-size: 18px;
-
-    }
-
-
-    .header-right {
-
-        gap: 4px;
-
-    }
-
-
-    .header-right button {
-
-        width: 34px;
-
-        height: 34px;
-
-    }
-
-
-    .channel-grid {
-
-        gap: 7px;
-
-    }
-
-
-    .channel-card img {
-
-        width: 70px !important;
-
-        height: 70px !important;
-
-    }
-
-}
-/* ==========================================
-   BUTTON TRANSITION SPEED (0.40s)
-========================================== */
-
-button,
-.bottom-nav-btn,
-.category-item,
-.channel-card,
-.featured-card,
-.header-right button,
-.fav-btn {
-    transition: transform 0.4s ease, background 0.4s ease, color 0.4s ease, opacity 0.4s ease !important;
-}
-/* ==========================================
-   SIDEBAR & OVERLAY
-========================================== */
-
-/* মেনু টগল বাটন স্টাইল */
-.menu-btn {
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 10px;
-    background: var(--bg-surface);
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.4s ease, background 0.4s ease;
-}
-
-.menu-btn:active {
-    transform: scale(.92);
-}
-
-/* ওভারলে (ব্যাকগ্রাউন্ড ডার্ক ইফেক্ট) */
-.sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 999990;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-
-.sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* সাইডবার মেনু পাত্র */
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 270px;
-    height: 100%;
-    background: var(--bg-card);
-    border-right: 1px solid var(--border-color);
-    z-index: 999995;
-    transform: translateX(-100%);
-    transition: transform 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 10px 0 25px rgba(0, 0, 0, 0.5);
-}
-
-.sidebar.active {
-    transform: translateX(0);
-}
-
-/* সাইডবার হেডার */
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    background: var(--bg-header);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    font-size: 18px;
-}
-
-.sidebar-brand img {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.close-sidebar-btn {
-    background: var(--bg-surface);
-    border: none;
-    color: var(--text-primary);
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: transform 0.4s ease, background 0.4s ease;
-}
-
-.close-sidebar-btn:active {
-    transform: scale(.92);
-}
-
-/* সাইডবার কনটেন্ট ও লিস্ট */
-.sidebar-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px 10px;
-}
-
-.sidebar-menu {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.sidebar-menu a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    color: var(--text-primary);
-    text-decoration: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background 0.4s ease, color 0.4s ease;
-}
-
-.sidebar-menu a i {
-    font-size: 18px;
-    width: 22px;
-    text-align: center;
-    color: var(--primary);
-}
-
-.sidebar-menu a:hover, 
-.sidebar-menu a:active {
-    background: var(--bg-surface);
-}
-
-.menu-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 8px 0;
-}
-/* ==========================================
-   SETTINGS PAGE STYLES
+   SETTINGS PAGE
 ========================================== */
 .settings-page {
-    padding: 16px;
-    padding-bottom: 90px; /* Bottom nav bar overlapping বন্ধ রাখতে */
     max-width: 600px;
-    margin: 0 auto;
-    color: #ffffff;
-}
-
-.settings-title-bar {
-    margin-bottom: 20px;
+    margin: 65px auto 0;
 }
 
 .settings-title-bar h2 {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
-    color: #ffffff;
+    margin-bottom: 16px;
 }
 
 .settings-group {
-    background: #1e293b; /* Dark Card Background */
+    background: var(--bg-card);
     border-radius: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
 }
 
 .settings-group-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: #94a3b8;
-    padding: 14px 16px 6px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 12px 16px 4px 16px;
     letter-spacing: 0.8px;
-    text-transform: uppercase;
 }
 
 .settings-item {
@@ -1202,183 +398,56 @@ button,
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    color: #e2e8f0;
+    color: var(--text-primary);
     text-decoration: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-color);
     cursor: pointer;
-    transition: background 0.2s ease;
 }
 
 .settings-item:last-child {
     border-bottom: none;
 }
 
-.settings-item:active {
-    background: rgba(255, 255, 255, 0.08);
-}
-
 .item-left {
     display: flex;
     align-items: center;
     gap: 14px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
 }
 
 .item-left i {
     font-size: 18px;
-    color: #3b82f6; /* Blue Accent Icon Color */
-    width: 22px;
+    color: #3b82f6;
+    width: 20px;
     text-align: center;
 }
 
 .settings-item > .fa-chevron-right {
-    font-size: 13px;
-    color: #64748b;
+    font-size: 12px;
+    color: var(--text-muted);
 }
 
-/* Badge Style */
 .badge-new {
     background: #06b6d4;
     color: #ffffff;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     padding: 2px 6px;
     border-radius: 6px;
     margin-left: 6px;
-    text-transform: uppercase;
 }
 
-/* Red Highlight for Danger Actions */
 .danger-item .item-left i,
 .danger-item .item-left span {
     color: #ef4444;
 }
-/* ==========================================
-   FIX: BOTTOM NAV & SETTINGS OVERLAP
-========================================== */
-
-/* ১. বটম নেভ ১ লাইনে ৪টি বাটন সমানভাবে ফিট করতে */
-.bottom-navigation {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-}
-
-.bottom-nav-btn {
-    flex: 1 !important;
-    min-width: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 6px 2px !important;
-}
-
-.bottom-nav-btn span {
-    font-size: 11px !important;
-    white-space: nowrap !important;
-}
-
-/* ২. Settings পেজ টপ-হেডারের নিচে ঢাকা পড়া বন্ধ করতে */
-.settings-page {
-    margin-top: 65px; /* হেডারের নিচে ফাকা জায়গা তৈরি করবে */
-    padding: 16px;
-    padding-bottom: 90px;
-}
-/* ==========================================
-   FIX: PAGE OVERLAY & BOTTOM NAV GRID
-========================================== */
-
-/* ১. হিডেন পেজ যেন কোনোভাবেই দেখা না যায় */
-.hidden {
-    display: none !important;
-}
-
-/* ২. বটম নেভিগেশনকে সমান ৪ ভাগে ভাগ করা (Grid System) */
-.bottom-navigation {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    width: 100% !important;
-    align-items: center !important;
-    justify-items: center !important;
-    box-sizing: border-box !important;
-}
-
-.bottom-nav-btn {
-    width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 6px 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.bottom-nav-btn span {
-    font-size: 10px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-}
-/* ==========================================
-   FIX: SUBTLE BOTTOM NAV ACTIVE STATE
-========================================== */
-
-/* এক্টিভ বাটনের গাঢ় লাল ব্যাকগ্রাউন্ড হালকা ও সফট করা */
-.bottom-nav-btn.active {
-    background: rgba(239, 68, 68, 0.15) !important; /* হালকা ট্রান্সপারেন্ট লাল শেড */
-    border-radius: 12px !important;
-}
-
-/* এক্টিভ আইকন ও টেক্সট কালার */
-.bottom-nav-btn.active i,
-.bottom-nav-btn.active span {
-    color: #f87171 !important; /* সফট রেড কালার */
-}
-/* ==========================================
-   FIX: FULL WIDTH BOTTOM NAVIGATION (SCREEN FIT)
-========================================== */
-.bottom-navigation {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    border-radius: 0 !important; /* চারপাশের কর্ভ তুলে একদম ফুল স্ক্রিন ফিট করতে */
-    padding: 8px 0 !important;
-    box-sizing: border-box !important;
-    background: #111827 !important; /* আপনার ডার্ক থিম কালার matching */
-    z-index: 9999 !important;
-}
-/* ==========================================
-   ১. STYLISH HEADER BRAND TITLE
-========================================== */
-.brand-title {
-    font-size: 26px !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.5px !important;
-    color: #ffffff !important;
-    font-family: 'Segoe UI', Roboto, sans-serif !important;
-}
-
-/* "ZX" অংশ নীল ও স্টাইলিশ গ্লো ইফেক্ট */
-.brand-title .zx-text {
-    background: linear-gradient(135deg, #60a5fa, #2563eb) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    filter: drop-shadow(0px 0px 8px rgba(37, 99, 235, 0.8)) !important;
-    font-weight: 900 !important;
-}
 
 /* ==========================================
-   ২. FULL SCREEN FIT BOTTOM NAVIGATION BAR
+   FULL SCREEN FIT BOTTOM NAVIGATION BAR
 ========================================== */
-nav.bottom-navigation, 
-.bottom-navigation, 
+nav.bottom-navigation,
+.bottom-navigation,
 #bottomNavigation {
     position: fixed !important;
     bottom: 0 !important;
@@ -1386,18 +455,49 @@ nav.bottom-navigation,
     right: 0 !important;
     width: 100% !important;
     margin: 0 !important;
-    border-radius: 0 !important; /* ভাসমান রাউন্ডেড কর্নার তুলে একদম ফুল স্ক্রিন ফিট */
-    padding: 8px 0 !important;
+    border-radius: 0 !important;
+    padding: 6px 0 !important;
     box-sizing: border-box !important;
-    background: #0f172a !important; /* ডার্ক থিম ব্যাকগ্রাউন্ড */
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: #0f172a !important;
+    border-top: 1px solid var(--border-color) !important;
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     z-index: 99999 !important;
 }
 
 .bottom-nav-btn {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 0 !important;
+    color: var(--text-muted) !important;
+    cursor: pointer !important;
     width: 100% !important;
     border-radius: 0 !important;
-    margin: 0 !important;
+}
+
+.bottom-nav-btn i {
+    font-size: 18px !important;
+    margin-bottom: 3px !important;
+}
+
+.bottom-nav-btn span {
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+}
+
+/* SOFT & SUBTLE RED ACTIVE STATE */
+.bottom-nav-btn.active {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-radius: 12px !important;
+}
+
+.bottom-nav-btn.active i,
+.bottom-nav-btn.active span {
+    color: #f87171 !important;
 }
