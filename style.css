@@ -628,3 +628,30 @@ nav.bottom-navigation,
 .bottom-nav-btn.active span {
     color: #f87171 !important;
 }
+/* Category Logo Styles */
+.category-item img.cat-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background: var(--card-bg, #1e1e2d);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.category-item:hover {
+    transform: translateY(-3px);
+    background: var(--card-hover, #2a2a3c);
+}
