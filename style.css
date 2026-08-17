@@ -21,7 +21,6 @@
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-    transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease, opacity 0.3s ease;
 }
 
 html {
@@ -54,13 +53,21 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: opacity .5s ease, visibility .5s ease;
+    transition: opacity .4s ease, visibility .4s ease;
 }
 
 #splash.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    display: none !important;
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .splash-logo {
@@ -68,10 +75,11 @@ body {
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
+    border: 3px solid var(--border-color);
 }
 
 #splash h2 {
-    margin-top: 12px;
+    margin-top: 14px;
     font-size: 22px;
     font-weight: 700;
 }
@@ -91,6 +99,102 @@ body {
 }
 
 /* ==========================================
+   SIDEBAR & DRAWER MENU
+========================================== */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 999998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100%;
+    background: var(--bg-header);
+    border-right: 1px solid var(--border-color);
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.close-sidebar-btn {
+    background: var(--bg-surface);
+    border: none;
+    color: #fff;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-sidebar-btn:active {
+    transform: scale(0.92);
+}
+
+.sidebar-content {
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-item i {
+    color: var(--primary);
+    font-size: 18px;
+    width: 22px;
+    text-align: center;
+}
+
+.sidebar-item:active {
+    transform: scale(0.96);
+}
+
+/* ==========================================
    HEADER & STYLISH BRAND
 ========================================== */
 .top-header {
@@ -106,13 +210,31 @@ body {
     padding: 0 16px;
     background: var(--bg-header);
     border-bottom: 1px solid var(--border-color);
-    z-index: 99999;
+    z-index: 99997;
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+}
+
+.menu-btn {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    background: var(--bg-surface);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-btn:active {
+    transform: scale(.92);
 }
 
 .brand-title {
@@ -146,6 +268,9 @@ body {
     color: #fff;
     font-size: 15px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .header-right button:active {
@@ -232,6 +357,7 @@ body {
     gap: 8px;
     color: #fff;
     cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 .category-item i {
@@ -276,6 +402,7 @@ body {
     text-align: center;
     border: 1px solid var(--border-color);
     cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 .channel-card:active {
@@ -444,7 +571,7 @@ video {
 }
 
 /* ==========================================
-   FULL SCREEN FIT BOTTOM NAVIGATION BAR
+   BOTTOM NAVIGATION BAR
 ========================================== */
 nav.bottom-navigation,
 .bottom-navigation,
@@ -462,7 +589,7 @@ nav.bottom-navigation,
     border-top: 1px solid var(--border-color) !important;
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    z-index: 99999 !important;
+    z-index: 99997 !important;
 }
 
 .bottom-nav-btn {
@@ -491,7 +618,7 @@ nav.bottom-navigation,
     white-space: nowrap !important;
 }
 
-/* SOFT & SUBTLE RED ACTIVE STATE */
+/* ACTIVE BOTTOM NAV STATE */
 .bottom-nav-btn.active {
     background: rgba(239, 68, 68, 0.15) !important;
     border-radius: 12px !important;
