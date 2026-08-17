@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Complete Script with Fixed Splash Screen
+// StreamZX - Complete Script with Fixed Splash & Sidebar
 // ==========================================
 
 let channels = [];
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar = document.getElementById("sidebar");
     sidebarOverlay = document.getElementById("sidebarOverlay");
 
-    // 🚀 2 সেকেন্ডের মধ্যে Splash Screen অবশ্যই হাইড হবে (Auto-Timeout Safety)
+    // Splash Screen Auto-Timeout Safety
     setTimeout(() => {
         hideSplash();
     }, 2000);
@@ -137,6 +137,7 @@ function setupEventListeners() {
             updateSectionTitle();
             renderChannels();
             setActiveBottomNav(null);
+            closeSidebar();
         });
     }
 
@@ -185,7 +186,7 @@ function setupEventListeners() {
             if (channelList) {
                 channelList.innerHTML = `
                     <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #e50914);"></i>
+                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
                         <div>Live Events</div>
                         <small>Live event schedule and channels will appear here.</small>
                     </div>
@@ -229,12 +230,13 @@ function setupEventListeners() {
         });
     }
 
-    // --- CATEGORY GRID ITEMS ---
+    // --- CATEGORY ITEMS (GRID & SIDEBAR) ---
     document.querySelectorAll(".category-item").forEach(item => {
         item.addEventListener("click", () => {
             const selectedCategory = item.dataset.category;
             currentCategory = selectedCategory;
 
+            closeSidebar();
             hideCategoryPage();
             hideSettingsPage();
             showNormalContent();
@@ -435,7 +437,7 @@ async function loadChannels() {
             </div>
         `;
     } finally {
-        hideSplash(); // ডাটা লোড শেষ হলেও স্প্ল্যাশ স্ক্রিন হাইড হবে
+        hideSplash();
     }
 }
 
