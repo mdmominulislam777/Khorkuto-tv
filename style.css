@@ -1254,3 +1254,36 @@ button,
 .danger-item .item-left span {
     color: #ef4444;
 }
+/* ==========================================
+   FIX: BOTTOM NAV & SETTINGS OVERLAP
+========================================== */
+
+/* ১. বটম নেভ ১ লাইনে ৪টি বাটন সমানভাবে ফিট করতে */
+.bottom-navigation {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.bottom-nav-btn {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 2px !important;
+}
+
+.bottom-nav-btn span {
+    font-size: 11px !important;
+    white-space: nowrap !important;
+}
+
+/* ২. Settings পেজ টপ-হেডারের নিচে ঢাকা পড়া বন্ধ করতে */
+.settings-page {
+    margin-top: 65px; /* হেডারের নিচে ফাকা জায়গা তৈরি করবে */
+    padding: 16px;
+    padding-bottom: 90px;
+}
