@@ -782,9 +782,15 @@ async function loadChannels() {
         }
 
 
-        renderFeaturedChannels();
+                // অ্যাপ ওপেন হলেই যেন ডিফল্টভাবে Live Event বাটনে ক্লিক হয়ে যায়
+        const liveEventBtn = document.getElementById("liveEventNav");
+        if (liveEventBtn) {
+            liveEventBtn.click();
+        } else {
+            renderFeaturedChannels();
+            renderChannels();
+        }
 
-        renderChannels();
 
 
         console.log(
