@@ -998,3 +998,16 @@ video {
     }
 
 }
+/* ==========================================
+   BUTTON TRANSITION SPEED (0.40s)
+========================================== */
+
+button,
+.bottom-nav-btn,
+.category-item,
+.channel-card,
+.featured-card,
+.header-right button,
+.fav-btn {
+    transition: transform 0.4s ease, background 0.4s ease, color 0.4s ease, opacity 0.4s ease !important;
+}
