@@ -1354,3 +1354,50 @@ button,
     background: #111827 !important; /* আপনার ডার্ক থিম কালার matching */
     z-index: 9999 !important;
 }
+/* ==========================================
+   ১. STYLISH HEADER BRAND TITLE
+========================================== */
+.brand-title {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    color: #ffffff !important;
+    font-family: 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* "ZX" অংশ নীল ও স্টাইলিশ গ্লো ইফেক্ট */
+.brand-title .zx-text {
+    background: linear-gradient(135deg, #60a5fa, #2563eb) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0px 0px 8px rgba(37, 99, 235, 0.8)) !important;
+    font-weight: 900 !important;
+}
+
+/* ==========================================
+   ২. FULL SCREEN FIT BOTTOM NAVIGATION BAR
+========================================== */
+nav.bottom-navigation, 
+.bottom-navigation, 
+#bottomNavigation {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important; /* ভাসমান রাউন্ডেড কর্নার তুলে একদম ফুল স্ক্রিন ফিট */
+    padding: 8px 0 !important;
+    box-sizing: border-box !important;
+    background: #0f172a !important; /* ডার্ক থিম ব্যাকগ্রাউন্ড */
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    z-index: 99999 !important;
+}
+
+.bottom-nav-btn {
+    width: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
