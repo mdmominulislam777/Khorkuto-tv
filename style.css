@@ -559,3 +559,34 @@ nav.bottom-navigation,
     transform: translateY(-3px);
     background: var(--card-hover, #2a2a3c);
 }
+/* ==========================================
+   STREAMZX LOGO ANIMATION
+   ========================================== */
+.logo-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    background: linear-gradient(90deg, #ffffff, #00d2ff, #ff0055, #ffffff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: streamZxGlow 4s ease-in-out infinite;
+    text-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+}
+
+/* শাইনিং ও গ্রেডিয়েন্ট অ্যানিমেশন */
+@keyframes streamZxGlow {
+    0% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.8));
+    }
+    100% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+    }
+}
