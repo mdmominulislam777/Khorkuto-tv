@@ -1011,3 +1011,151 @@ button,
 .fav-btn {
     transition: transform 0.4s ease, background 0.4s ease, color 0.4s ease, opacity 0.4s ease !important;
 }
+/* ==========================================
+   SIDEBAR & OVERLAY
+========================================== */
+
+/* মেনু টগল বাটন স্টাইল */
+.menu-btn {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    background: var(--bg-surface);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s ease, background 0.4s ease;
+}
+
+.menu-btn:active {
+    transform: scale(.92);
+}
+
+/* ওভারলে (ব্যাকগ্রাউন্ড ডার্ক ইফেক্ট) */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999990;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* সাইডবার মেনু পাত্র */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 270px;
+    height: 100%;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+    z-index: 999995;
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 10px 0 25px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+/* সাইডবার হেডার */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.sidebar-brand img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.close-sidebar-btn {
+    background: var(--bg-surface);
+    border: none;
+    color: var(--text-primary);
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.4s ease, background 0.4s ease;
+}
+
+.close-sidebar-btn:active {
+    transform: scale(.92);
+}
+
+/* সাইডবার কনটেন্ট ও লিস্ট */
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px 10px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.4s ease, color 0.4s ease;
+}
+
+.sidebar-menu a i {
+    font-size: 18px;
+    width: 22px;
+    text-align: center;
+    color: var(--primary);
+}
+
+.sidebar-menu a:hover, 
+.sidebar-menu a:active {
+    background: var(--bg-surface);
+}
+
+.menu-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 8px 0;
+}
