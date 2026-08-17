@@ -2,21 +2,12 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>StreamZX - Live TV</title>
 
     <!-- FontAwesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- HLS.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -25,350 +16,149 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <!-- Monetag -->
-    <script
-        src="//libtl.com/sdk.js"
-        data-zone="11580289"
-        data-sdk="show_11580289">
-    </script>
+    <script src="//libtl.com/sdk.js" data-zone="11580289" data-sdk="show_11580289"></script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
-
 </head>
 
-
 <body>
-
 
 <!-- ==========================================
      SPLASH
 ========================================== -->
-
 <div id="splash">
-
-    <img
-        src="logo.png"
-        alt="StreamZX"
-        class="splash-logo"
-        onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=ZX';"
-    >
-
+    <img src="logo.png" alt="StreamZX" class="splash-logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/120?text=ZX';">
     <h2>StreamZX</h2>
-
     <div class="loader"></div>
-
 </div>
-
 
 <!-- ==========================================
      HEADER
 ========================================== -->
-
 <header class="top-header">
-
     <div class="header-left">
-
-        <img
-            src="logo.png"
-            alt="StreamZX"
-            class="header-app-icon"
-            onerror="this.onerror=null;this.src='https://via.placeholder.com/38?text=ZX';"
-        >
-
-        <span class="brand-title">
-            StreamZX
-        </span>
-
+        <img src="logo.png" alt="StreamZX" class="header-app-icon" onerror="this.onerror=null;this.src='https://via.placeholder.com/38?text=ZX';">
+        <span class="brand-title">StreamZX</span>
     </div>
-
 
     <div class="header-right">
-
-        <button
-            id="favHeaderBtn"
-            title="Favorites"
-        >
+        <button id="favHeaderBtn" title="Favorites">
             <i class="fa-solid fa-star"></i>
         </button>
-
-
-        <button
-            id="refreshBtn"
-            title="Refresh"
-        >
+        <button id="refreshBtn" title="Refresh">
             <i class="fa-solid fa-rotate-right"></i>
         </button>
-
-
-        <button
-            id="searchBtn"
-            title="Search"
-        >
+        <button id="searchBtn" title="Search">
             <i class="fa-solid fa-magnifying-glass"></i>
         </button>
-
     </div>
-
 </header>
-
 
 <!-- ==========================================
      PLAYER
 ========================================== -->
-
-<div
-    id="playerContainer"
-    class="player-container hidden"
->
-
+<div id="playerContainer" class="player-container hidden">
     <div class="player-header">
-
-        <span id="currentChannelName">
-            Channel Name
-        </span>
-
+        <span id="currentChannelName">Channel Name</span>
         <button id="closePlayerBtn">
-
             <i class="fa-solid fa-xmark"></i>
-
         </button>
-
     </div>
-
-
-    <video
-        id="video"
-        controls
-        autoplay
-        playsinline>
-    </video>
-
+    <video id="video" controls autoplay playsinline></video>
 </div>
-
 
 <!-- ==========================================
      SEARCH
 ========================================== -->
-
-<div
-    class="search-area"
-    id="searchArea"
->
-
-    <input
-        type="text"
-        id="search"
-        placeholder="Search channel name..."
-        autocomplete="off"
-    >
-
+<div class="search-area" id="searchArea">
+    <input type="text" id="search" placeholder="Search channel name..." autocomplete="off">
 </div>
-
 
 <!-- ==========================================
      CATEGORY PAGE
 ========================================== -->
-
-<section
-    id="categoryPage"
-    class="category-page hidden"
->
-
+<section id="categoryPage" class="category-page hidden">
     <div class="category-page-header">
-
         <i class="fa-solid fa-layer-group"></i>
-
-        <span>
-            Categories
-        </span>
-
+        <span>Categories</span>
     </div>
-
 
     <div class="category-grid">
-
-
-        <div
-            class="category-item"
-            data-category="Sports"
-        >
-
+        <div class="category-item" data-category="Sports">
             <i class="fa-solid fa-trophy"></i>
-
-            <span>
-                Sports
-            </span>
-
+            <span>Sports</span>
         </div>
-
-
-        <div
-            class="category-item"
-            data-category="Entertainment"
-        >
-
+        <div class="category-item" data-category="Entertainment">
             <i class="fa-solid fa-film"></i>
-
-            <span>
-                Entertainment
-            </span>
-
+            <span>Entertainment</span>
         </div>
-
-
-        <div
-            class="category-item"
-            data-category="News"
-        >
-
+        <div class="category-item" data-category="News">
             <i class="fa-solid fa-newspaper"></i>
-
-            <span>
-                News
-            </span>
-
+            <span>News</span>
         </div>
-
-
-        <div
-            class="category-item"
-            data-category="Movies"
-        >
-
+        <div class="category-item" data-category="Movies">
             <i class="fa-solid fa-clapperboard"></i>
-
-            <span>
-                Movies
-            </span>
-
+            <span>Movies</span>
         </div>
-
-
-        <div
-            class="category-item"
-            data-category="Islamic"
-        >
-
+        <div class="category-item" data-category="Islamic">
             <i class="fa-solid fa-kaaba"></i>
-
-            <span>
-                Islamic
-            </span>
-
+            <span>Islamic</span>
         </div>
-
-
-        <div
-            class="category-item"
-            data-category="Kids"
-        >
-
+        <div class="category-item" data-category="Kids">
             <i class="fa-solid fa-child"></i>
-
-            <span>
-                Kids
-            </span>
-
+            <span>Kids</span>
         </div>
-
-
-        <div
-            class="category-item"
-            data-category="Music"
-        >
-
+        <div class="category-item" data-category="Music">
             <i class="fa-solid fa-music"></i>
-
-            <span>
-                Music
-            </span>
-
+            <span>Music</span>
         </div>
-
-
     </div>
-
 </section>
-
 
 <!-- ==========================================
      FEATURED CHANNELS
 ========================================== -->
-
-<section
-    id="featuredSection"
-    class="featured-section"
->
-
-    <h3 class="section-title">
-        🔥 Featured Channels
-    </h3>
-
-
-    <div
-        id="featuredList"
-        class="featured-slider">
-    </div>
-
+<section id="featuredSection" class="featured-section">
+    <h3 class="section-title">🔥 Featured Channels</h3>
+    <div id="featuredList" class="featured-slider"></div>
 </section>
 
-        <!-- LIVE EVENT -->
-    <button
-        class="bottom-nav-btn active" 
-        id="liveEventNav"
-    >
+<!-- ==========================================
+     MAIN CHANNELS
+========================================== -->
+<main class="main-content">
+    <h3 class="section-title" id="mainSectionTitle">⚽ Sports Channels</h3>
+    <div id="channelList" class="channel-grid"></div>
+</main>
+
+<!-- ==========================================
+     BOTTOM NAVIGATION
+========================================== -->
+<nav class="bottom-navigation" id="bottomNavigation">
+    <!-- LIVE EVENT -->
+    <button class="bottom-nav-btn active" id="liveEventNav">
         <i class="fa-solid fa-tower-broadcast"></i>
         <span>Live Event</span>
     </button>
 
     <!-- CATEGORY -->
-    <button
-        class="bottom-nav-btn"
-        id="categoryNav"
-    >
+    <button class="bottom-nav-btn" id="categoryNav">
         <i class="fa-solid fa-layer-group"></i>
         <span>Category</span>
     </button>
 
     <!-- SPORTS -->
-    <button
-        class="bottom-nav-btn" 
-        id="sportsNav"
-    >
+    <button class="bottom-nav-btn" id="sportsNav">
         <i class="fa-solid fa-futbol"></i>
         <span>Sports</span>
     </button>
-
-<!-- ==========================================
-     MAIN CHANNELS
-========================================== -->
-
-<main class="main-content">
-
-    <h3
-        class="section-title"
-        id="mainSectionTitle"
-    >
-        ⚽ Sports Channels
-    </h3>
-
-
-    <div
-        id="channelList"
-        class="channel-grid">
-    </div>
-
-</main>
-
-
-
+</nav>
 
 <!-- ==========================================
      JAVASCRIPT
 ========================================== -->
-
 <script src="script.js"></script>
 
 </body>
-
 </html>
