@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Complete Script (Featured Removed)
+// StreamZX - Complete Script (Settings Tab)
 // ==========================================
 
 let channels = [];
@@ -34,10 +34,7 @@ let playerContainer;
 let currentChannelName;
 let mainSectionTitle;
 let categoryPage;
-let menuToggleBtn;
-let closeSidebarBtn;
-let sidebar;
-let sidebarOverlay;
+let settingsPage;
 
 // ==========================================
 // APP START
@@ -59,11 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mainSectionTitle = document.getElementById("mainSectionTitle");
     categoryPage = document.getElementById("categoryPage");
-
-    menuToggleBtn = document.getElementById("menuToggleBtn");
-    closeSidebarBtn = document.getElementById("closeSidebarBtn");
-    sidebar = document.getElementById("sidebar");
-    sidebarOverlay = document.getElementById("sidebarOverlay");
+    settingsPage = document.getElementById("settingsPage");
 
     initApp();
 });
@@ -91,78 +84,12 @@ function hideSplash() {
 // ==========================================
 function setupEventListeners() {
 
-    // --- SIDEBAR TOGGLE ---
-    if (menuToggleBtn) menuToggleBtn.addEventListener("click", openSidebar);
-    if (closeSidebarBtn) closeSidebarBtn.addEventListener("click", closeSidebar);
-    if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
-
-    // Auto close sidebar on menu link click
-    document.querySelectorAll(".sidebar-menu a").forEach(link => {
-        link.addEventListener("click", () => {
-            if (link.getAttribute("target") !== "_blank") {
-                closeSidebar();
-            }
-        });
-    });
-
-    // --- SIDEBAR NETWORK STREAM ---
-    const sidebarNetworkStreamBtn = document.getElementById("sidebarNetworkStreamBtn");
-    if (sidebarNetworkStreamBtn) {
-        sidebarNetworkStreamBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            closeSidebar();
-
-            const streamUrl = prompt("Enter Video or HLS (.m3u8) Stream URL:");
-            if (streamUrl && streamUrl.trim() !== "") {
-                const customChannel = {
-                    name: "Network Stream",
-                    url: streamUrl.trim(),
-                    logo: "https://via.placeholder.com/80?text=Stream"
-                };
-                playChannel(customChannel);
-            }
-        });
-    }
-
-    // --- SIDEBAR FAVORITES ---
-    const sidebarFavBtn = document.getElementById("sidebarFavBtn");
-    if (sidebarFavBtn) {
-        sidebarFavBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            closeSidebar();
-
-            showNormalContent();
-            currentCategory = "Favorites";
-            updateSectionTitle();
-            renderChannels();
-            setActiveBottomNav(null);
-        });
-    }
-
-    // --- SIDEBAR EXIT ---
-    const sidebarExitBtn = document.getElementById("sidebarExitBtn");
-    if (sidebarExitBtn) {
-        sidebarExitBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            closeSidebar();
-
-            if (confirm("Are you sure you want to exit?")) {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.close();
-                } else if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
-                    window.navigator.app.exitApp();
-                } else {
-                    window.close();
-                }
-            }
-        });
-    }
-
     // --- SEARCH BUTTON TOGGLE ---
     const searchBtn = document.getElementById("searchBtn");
     if (searchBtn) {
         searchBtn.addEventListener("click", () => {
-            if (categoryPage && !categoryPage.classList.contains("hidden")) {
+            if ((categoryPage && !categoryPage.classList.contains("hidden")) || 
+                (settingsPage && !settingsPage.classList.contains("hidden"))) {
                 return;
             }
 
@@ -210,16 +137,20 @@ function setupEventListeners() {
         closePlayerBtn.addEventListener("click", closePlayer);
     }
 
-    // --- BOTTOM NAVIGATION ---
+    // ==========================================
+    // BOTTOM NAVIGATION LISTENERS
+    // ==========================================
     const liveEventBtn = document.getElementById("liveEventNav");
     const categoryNavBtn = document.getElementById("categoryNav");
     const sportsNavBtn = document.getElementById("sportsNav");
+    const settingsNavBtn = document.getElementById("settingsNav");
 
     // LIVE EVENT NAV
     if (liveEventBtn) {
         liveEventBtn.addEventListener("click", () => {
             setActiveBottomNav(liveEventBtn);
             hideCategoryPage();
+            hideSettingsPage();
             currentCategory = "Live Event";
 
             const mainContent = document.querySelector(".main-content");
@@ -254,12 +185,22 @@ function setupEventListeners() {
         sportsNavBtn.addEventListener("click", () => {
             setActiveBottomNav(sportsNavBtn);
             hideCategoryPage();
+            hideSettingsPage();
             showNormalContent();
 
             currentCategory = "Sports";
             updateSectionTitle();
             renderChannels();
 
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    // SETTINGS NAV
+    if (settingsNavBtn) {
+        settingsNavBtn.addEventListener("click", () => {
+            setActiveBottomNav(settingsNavBtn);
+            showSettingsPage();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
@@ -271,6 +212,7 @@ function setupEventListeners() {
             currentCategory = selectedCategory;
 
             hideCategoryPage();
+            hideSettingsPage();
             showNormalContent();
 
             updateSectionTitle();
@@ -285,22 +227,58 @@ function setupEventListeners() {
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     });
+
+    // ==========================================
+    // SETTINGS PAGE ACTIONS
+    // ==========================================
+    setupSettingsActions();
 }
 
 // ==========================================
-// SIDEBAR ACTIONS
+// SETTINGS ACTIONS HANDLER
 // ==========================================
-function openSidebar() {
-    if (sidebar && sidebarOverlay) {
-        sidebar.classList.add("active");
-        sidebarOverlay.classList.add("active");
+function setupSettingsActions() {
+    // Network Stream Option
+    const networkStreamBtn = document.getElementById("settingsNetworkStreamBtn");
+    if (networkStreamBtn) {
+        networkStreamBtn.addEventListener("click", () => {
+            const streamUrl = prompt("Enter Video or HLS (.m3u8) Stream URL:");
+            if (streamUrl && streamUrl.trim() !== "") {
+                const customChannel = {
+                    name: "Network Stream",
+                    url: streamUrl.trim(),
+                    logo: "https://via.placeholder.com/80?text=Stream"
+                };
+                playChannel(customChannel);
+            }
+        });
     }
-}
 
-function closeSidebar() {
-    if (sidebar && sidebarOverlay) {
-        sidebar.classList.remove("active");
-        sidebarOverlay.classList.remove("active");
+    // Clear App Data Option
+    const clearDataBtn = document.getElementById("settingsClearDataBtn");
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to clear app data?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+    }
+
+    // Exit Application Option
+    const exitBtn = document.getElementById("settingsExitBtn");
+    if (exitBtn) {
+        exitBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to exit?")) {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.close();
+                } else if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
+                    window.navigator.app.exitApp();
+                } else {
+                    window.close();
+                }
+            }
+        });
     }
 }
 
@@ -309,6 +287,7 @@ function closeSidebar() {
 // ==========================================
 function showCategoryPage() {
     if (categoryPage) categoryPage.classList.remove("hidden");
+    hideSettingsPage();
 
     const mainContent = document.querySelector(".main-content");
     if (mainContent) mainContent.style.display = "none";
@@ -319,8 +298,22 @@ function hideCategoryPage() {
     if (categoryPage) categoryPage.classList.add("hidden");
 }
 
+function showSettingsPage() {
+    if (settingsPage) settingsPage.classList.remove("hidden");
+    hideCategoryPage();
+
+    const mainContent = document.querySelector(".main-content");
+    if (mainContent) mainContent.style.display = "none";
+    if (searchArea) searchArea.classList.remove("active");
+}
+
+function hideSettingsPage() {
+    if (settingsPage) settingsPage.classList.add("hidden");
+}
+
 function showNormalContent() {
     hideCategoryPage();
+    hideSettingsPage();
 
     const mainContent = document.querySelector(".main-content");
     if (mainContent) mainContent.style.display = "block";
