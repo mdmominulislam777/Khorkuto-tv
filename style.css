@@ -1,20 +1,20 @@
 /* ==========================================
-   StreamZX - Modern Dark Theme
+   StreamZX - Crimson Red Theme
 ========================================== */
 
 :root {
 
-    --bg-main: #0d1117;
-    --bg-card: #161b22;
-    --bg-surface: #1f2937;
-    --bg-header: #111827;
+    --bg-main: #0d0d11;
+    --bg-card: #18181f;
+    --bg-surface: #272732;
+    --bg-header: #18181f;
 
-    --primary: #e50914;
+    --primary: #ff2a4b;
 
     --text-primary: #ffffff;
-    --text-muted: #9ca3af;
+    --text-muted: #71717a;
 
-    --border-color: #2b3442;
+    --border-color: #272732;
 
 }
 
@@ -26,6 +26,7 @@
 * {
 
     margin: 0;
+
     padding: 0;
 
     box-sizing: border-box;
@@ -372,6 +373,8 @@ body {
 
     font-size: 24px;
 
+    color: var(--primary);
+
 }
 
 
@@ -421,6 +424,8 @@ body {
 .category-item i {
 
     font-size: 27px;
+
+    color: var(--primary);
 
 }
 
@@ -721,7 +726,7 @@ body {
 
 .fav-btn.active {
 
-    color: #ffd700;
+    color: var(--primary);
 
 }
 
@@ -818,7 +823,7 @@ video {
     grid-template-columns:
         repeat(3, 1fr);
 
-    background: rgba(17,24,39,.97);
+    background: rgba(24, 24, 31, .97);
 
     border: 1px solid var(--border-color);
 
@@ -829,7 +834,7 @@ video {
     z-index: 99998;
 
     box-shadow:
-        0 8px 30px rgba(0,0,0,.45);
+        0 8px 30px rgba(0,0,0,.5);
 
     backdrop-filter: blur(12px);
 
