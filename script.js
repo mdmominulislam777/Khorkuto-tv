@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Complete Script with Fixed Splash & Sidebar
+// StreamZX - Script (Without Sidebar)
 // ==========================================
 
 let channels = [];
@@ -35,8 +35,6 @@ let currentChannelName;
 let mainSectionTitle;
 let categoryPage;
 let settingsPage;
-let sidebar;
-let sidebarOverlay;
 
 // ==========================================
 // APP START
@@ -58,10 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     mainSectionTitle = document.getElementById("mainSectionTitle");
     categoryPage = document.getElementById("categoryPage");
     settingsPage = document.getElementById("settingsPage");
-
-    // Sidebar Elements
-    sidebar = document.getElementById("sidebar");
-    sidebarOverlay = document.getElementById("sidebarOverlay");
 
     // Splash Screen Auto-Timeout Safety
     setTimeout(() => {
@@ -94,20 +88,6 @@ function hideSplash() {
 // ==========================================
 function setupEventListeners() {
 
-    // --- SIDEBAR & MENU TOGGLE ---
-    const menuBtn = document.getElementById("menuBtn");
-    const closeSidebarBtn = document.getElementById("closeSidebarBtn");
-
-    if (menuBtn) {
-        menuBtn.addEventListener("click", () => openSidebar());
-    }
-    if (closeSidebarBtn) {
-        closeSidebarBtn.addEventListener("click", () => closeSidebar());
-    }
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener("click", () => closeSidebar());
-    }
-
     // --- SEARCH BUTTON TOGGLE ---
     const searchBtn = document.getElementById("searchBtn");
     if (searchBtn) {
@@ -137,7 +117,6 @@ function setupEventListeners() {
             updateSectionTitle();
             renderChannels();
             setActiveBottomNav(null);
-            closeSidebar();
         });
     }
 
@@ -230,13 +209,12 @@ function setupEventListeners() {
         });
     }
 
-    // --- CATEGORY ITEMS (GRID & SIDEBAR) ---
+    // --- CATEGORY GRID ITEMS ---
     document.querySelectorAll(".category-item").forEach(item => {
         item.addEventListener("click", () => {
             const selectedCategory = item.dataset.category;
             currentCategory = selectedCategory;
 
-            closeSidebar();
             hideCategoryPage();
             hideSettingsPage();
             showNormalContent();
@@ -255,19 +233,6 @@ function setupEventListeners() {
     });
 
     setupSettingsActions();
-}
-
-// ==========================================
-// SIDEBAR CONTROLS
-// ==========================================
-function openSidebar() {
-    if (sidebar) sidebar.classList.add("active");
-    if (sidebarOverlay) sidebarOverlay.classList.add("active");
-}
-
-function closeSidebar() {
-    if (sidebar) sidebar.classList.remove("active");
-    if (sidebarOverlay) sidebarOverlay.classList.remove("active");
 }
 
 // ==========================================
