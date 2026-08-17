@@ -1655,3 +1655,31 @@ function closePlayer() {
     }
 
 }
+// ==========================================
+// SIDEBAR TOGGLE LOGIC
+// ==========================================
+const menuToggleBtn = document.getElementById('menuToggleBtn');
+const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+// মেনু ওপেন করার ফাংশন
+function openSidebar() {
+    if (sidebar && sidebarOverlay) {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+    }
+}
+
+// মেনু ক্লোজ করার ফাংশন
+function closeSidebar() {
+    if (sidebar && sidebarOverlay) {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+    }
+}
+
+// ইভেন্ট লিসেনার
+if (menuToggleBtn) menuToggleBtn.addEventListener('click', openSidebar);
+if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
