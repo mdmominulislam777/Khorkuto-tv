@@ -560,33 +560,38 @@ nav.bottom-navigation,
     background: var(--card-hover, #2a2a3c);
 }
 /* ==========================================
-   STREAMZX LOGO ANIMATION
+   STREAMZX ANIMATION FIX (OVERRIDE)
    ========================================== */
-.logo-title {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    display: inline-block;
-    background: linear-gradient(90deg, #ffffff, #00d2ff, #ff0055, #ffffff);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: streamZxGlow 4s ease-in-out infinite;
-    text-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+.top-header .brand-title {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    display: inline-block !important;
 }
 
-/* শাইনিং ও গ্রেডিয়েন্ট অ্যানিমেশন */
-@keyframes streamZxGlow {
+.top-header .brand-title .zx-text {
+    background: linear-gradient(90deg, #00d2ff, #0072ff, #ff0055, #00d2ff) !important;
+    background-size: 300% 100% !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    display: inline-block !important;
+    animation: zxGlow 3s linear infinite !important;
+}
+
+/* Glowing Animation Keyframes */
+@keyframes zxGlow {
     0% {
         background-position: 0% 50%;
-        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+        filter: drop-shadow(0 0 2px rgba(0, 210, 255, 0.7));
     }
     50% {
         background-position: 100% 50%;
-        filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.8));
+        filter: drop-shadow(0 0 10px rgba(0, 210, 255, 1));
     }
     100% {
         background-position: 0% 50%;
-        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+        filter: drop-shadow(0 0 2px rgba(0, 210, 255, 0.7));
     }
 }
+
