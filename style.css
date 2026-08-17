@@ -99,7 +99,7 @@ body {
 }
 
 /* ==========================================
-   HEADER & STYLISH BRAND
+   HEADER & ANIMATED BRAND LOGO
 ========================================== */
 .top-header {
     position: fixed;
@@ -123,38 +123,40 @@ body {
     gap: 12px;
 }
 
-.menu-btn {
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 10px;
-    background: var(--bg-surface);
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.menu-btn:active {
-    transform: scale(.92);
-}
-
 .brand-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
     letter-spacing: 0.5px;
     color: #ffffff;
     font-family: 'Segoe UI', Roboto, sans-serif;
+    display: inline-block;
 }
 
+/* StreamZX Glowing Neon Animation */
 .brand-title .zx-text {
-    background: linear-gradient(135deg, #60a5fa, #2563eb);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0px 0px 8px rgba(37, 99, 235, 0.8));
-    font-weight: 900;
+    background: linear-gradient(90deg, #00d2ff, #0072ff, #ff0055, #00d2ff) !important;
+    background-size: 300% 100% !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+    animation: zxGlow 3s linear infinite !important;
+}
+
+@keyframes zxGlow {
+    0% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 0 2px rgba(0, 210, 255, 0.7));
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: drop-shadow(0 0 10px rgba(0, 210, 255, 1));
+    }
+    100% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 0 2px rgba(0, 210, 255, 0.7));
+    }
 }
 
 .header-right {
@@ -227,7 +229,7 @@ body {
 }
 
 /* ==========================================
-   CATEGORY PAGE
+   CATEGORY PAGE & LOGOS
 ========================================== */
 .category-page-header {
     display: flex;
@@ -258,19 +260,22 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    padding: 12px 8px;
     color: #fff;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.category-item i {
-    font-size: 26px;
-    color: var(--primary);
+.category-item img.cat-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    margin-bottom: 8px;
+    display: block;
 }
 
 .category-item span {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
 }
 
@@ -532,66 +537,3 @@ nav.bottom-navigation,
 .bottom-nav-btn.active span {
     color: #f87171 !important;
 }
-/* Category Logo Styles */
-.category-item img.cat-img {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
-    margin-bottom: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.category-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    background: var(--card-bg, #1e1e2d);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.category-item:hover {
-    transform: translateY(-3px);
-    background: var(--card-hover, #2a2a3c);
-}
-/* ==========================================
-   STREAMZX ANIMATION FIX (OVERRIDE)
-   ========================================== */
-.top-header .brand-title {
-    font-size: 22px !important;
-    font-weight: 800 !important;
-    color: #ffffff !important;
-    display: inline-block !important;
-}
-
-.top-header .brand-title .zx-text {
-    background: linear-gradient(90deg, #00d2ff, #0072ff, #ff0055, #00d2ff) !important;
-    background-size: 300% 100% !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    display: inline-block !important;
-    animation: zxGlow 3s linear infinite !important;
-}
-
-/* Glowing Animation Keyframes */
-@keyframes zxGlow {
-    0% {
-        background-position: 0% 50%;
-        filter: drop-shadow(0 0 2px rgba(0, 210, 255, 0.7));
-    }
-    50% {
-        background-position: 100% 50%;
-        filter: drop-shadow(0 0 10px rgba(0, 210, 255, 1));
-    }
-    100% {
-        background-position: 0% 50%;
-        filter: drop-shadow(0 0 2px rgba(0, 210, 255, 0.7));
-    }
-}
-
