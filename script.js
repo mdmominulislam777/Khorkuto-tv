@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Complete Script (Settings Tab)
+// StreamZX - Complete Optimized Script
 // ==========================================
 
 let channels = [];
@@ -35,6 +35,8 @@ let currentChannelName;
 let mainSectionTitle;
 let categoryPage;
 let settingsPage;
+let sidebar;
+let sidebarOverlay;
 
 // ==========================================
 // APP START
@@ -46,17 +48,20 @@ document.addEventListener("DOMContentLoaded", () => {
         window.Telegram.WebApp.expand();
     }
 
+    // Main Elements
     channelList = document.getElementById("channelList");
     video = document.getElementById("video");
     search = document.getElementById("search");
     searchArea = document.getElementById("searchArea");
-
     playerContainer = document.getElementById("playerContainer");
     currentChannelName = document.getElementById("currentChannelName");
-
     mainSectionTitle = document.getElementById("mainSectionTitle");
     categoryPage = document.getElementById("categoryPage");
     settingsPage = document.getElementById("settingsPage");
+
+    // Sidebar Elements
+    sidebar = document.getElementById("sidebar");
+    sidebarOverlay = document.getElementById("sidebarOverlay");
 
     initApp();
 });
@@ -83,6 +88,20 @@ function hideSplash() {
 // EVENT LISTENERS
 // ==========================================
 function setupEventListeners() {
+
+    // --- SIDEBAR & MENU TOGGLE ---
+    const menuBtn = document.getElementById("menuBtn");
+    const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+
+    if (menuBtn) {
+        menuBtn.addEventListener("click", () => openSidebar());
+    }
+    if (closeSidebarBtn) {
+        closeSidebarBtn.addEventListener("click", () => closeSidebar());
+    }
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", () => closeSidebar());
+    }
 
     // --- SEARCH BUTTON TOGGLE ---
     const searchBtn = document.getElementById("searchBtn");
@@ -161,7 +180,7 @@ function setupEventListeners() {
             if (channelList) {
                 channelList.innerHTML = `
                     <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary);"></i>
                         <div>Live Events</div>
                         <small>Live event schedule and channels will appear here.</small>
                     </div>
@@ -228,17 +247,27 @@ function setupEventListeners() {
         });
     });
 
-    // ==========================================
-    // SETTINGS PAGE ACTIONS
-    // ==========================================
+    // SETTINGS ACTIONS
     setupSettingsActions();
+}
+
+// ==========================================
+// SIDEBAR CONTROLS
+// ==========================================
+function openSidebar() {
+    if (sidebar) sidebar.classList.add("active");
+    if (sidebarOverlay) sidebarOverlay.classList.add("active");
+}
+
+function closeSidebar() {
+    if (sidebar) sidebar.classList.remove("active");
+    if (sidebarOverlay) sidebarOverlay.classList.remove("active");
 }
 
 // ==========================================
 // SETTINGS ACTIONS HANDLER
 // ==========================================
 function setupSettingsActions() {
-    // Network Stream Option
     const networkStreamBtn = document.getElementById("settingsNetworkStreamBtn");
     if (networkStreamBtn) {
         networkStreamBtn.addEventListener("click", () => {
@@ -254,7 +283,6 @@ function setupSettingsActions() {
         });
     }
 
-    // Clear App Data Option
     const clearDataBtn = document.getElementById("settingsClearDataBtn");
     if (clearDataBtn) {
         clearDataBtn.addEventListener("click", () => {
@@ -265,7 +293,6 @@ function setupSettingsActions() {
         });
     }
 
-    // Exit Application Option
     const exitBtn = document.getElementById("settingsExitBtn");
     if (exitBtn) {
         exitBtn.addEventListener("click", () => {
@@ -490,7 +517,7 @@ function escapeHTML(value) {
     return String(value || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
+        .replace/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
@@ -552,7 +579,6 @@ function playChannel(channel) {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Clean up previous HLS instance
     if (hls) {
         hls.destroy();
         hls = null;
