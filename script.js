@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Complete Optimized Script
+// StreamZX - Complete Script with Fixed Splash Screen
 // ==========================================
 
 let channels = [];
@@ -63,6 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar = document.getElementById("sidebar");
     sidebarOverlay = document.getElementById("sidebarOverlay");
 
+    // 🚀 2 সেকেন্ডের মধ্যে Splash Screen অবশ্যই হাইড হবে (Auto-Timeout Safety)
+    setTimeout(() => {
+        hideSplash();
+    }, 2000);
+
     initApp();
 });
 
@@ -75,11 +80,11 @@ function initApp() {
 }
 
 // ==========================================
-// SPLASH SCREEN
+// SPLASH SCREEN CONTROL
 // ==========================================
 function hideSplash() {
     const splash = document.getElementById("splash");
-    if (splash) {
+    if (splash && !splash.classList.contains("hidden")) {
         splash.classList.add("hidden");
     }
 }
@@ -179,8 +184,8 @@ function setupEventListeners() {
 
             if (channelList) {
                 channelList.innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary);"></i>
+                    <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #e50914);"></i>
                         <div>Live Events</div>
                         <small>Live event schedule and channels will appear here.</small>
                     </div>
@@ -247,7 +252,6 @@ function setupEventListeners() {
         });
     });
 
-    // SETTINGS ACTIONS
     setupSettingsActions();
 }
 
@@ -379,7 +383,7 @@ async function loadChannels() {
     if (!channelList) return;
 
     channelList.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted);">
+        <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted, #888);">
             ⏳ Loading channels...
         </div>
     `;
@@ -425,13 +429,13 @@ async function loadChannels() {
             <div style="grid-column:1/-1; text-align:center; padding:30px; color:#ef4444;">
                 ❌ Could not load channels.json
                 <br>
-                <small style="color:var(--text-muted); display:block; margin-top:8px;">
+                <small style="color:var(--text-muted, #888); display:block; margin-top:8px;">
                     ${escapeHTML(error.message)}
                 </small>
             </div>
         `;
     } finally {
-        hideSplash();
+        hideSplash(); // ডাটা লোড শেষ হলেও স্প্ল্যাশ স্ক্রিন হাইড হবে
     }
 }
 
@@ -460,7 +464,7 @@ function renderChannels() {
 
     if (!filtered.length) {
         channelList.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted);">
+            <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted, #888);">
                 🔍 No channels found.
             </div>
         `;
@@ -517,7 +521,7 @@ function escapeHTML(value) {
     return String(value || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
-        .replace/>/g, "&gt;")
+        .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
