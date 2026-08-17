@@ -1287,3 +1287,39 @@ button,
     padding: 16px;
     padding-bottom: 90px;
 }
+/* ==========================================
+   FIX: PAGE OVERLAY & BOTTOM NAV GRID
+========================================== */
+
+/* ১. হিডেন পেজ যেন কোনোভাবেই দেখা না যায় */
+.hidden {
+    display: none !important;
+}
+
+/* ২. বটম নেভিগেশনকে সমান ৪ ভাগে ভাগ করা (Grid System) */
+.bottom-navigation {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    width: 100% !important;
+    align-items: center !important;
+    justify-items: center !important;
+    box-sizing: border-box !important;
+}
+
+.bottom-nav-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 6px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.bottom-nav-btn span {
+    font-size: 10px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
