@@ -1323,3 +1323,18 @@ button,
     overflow: hidden !important;
     text-overflow: ellipsis !important;
 }
+/* ==========================================
+   FIX: SUBTLE BOTTOM NAV ACTIVE STATE
+========================================== */
+
+/* এক্টিভ বাটনের গাঢ় লাল ব্যাকগ্রাউন্ড হালকা ও সফট করা */
+.bottom-nav-btn.active {
+    background: rgba(239, 68, 68, 0.15) !important; /* হালকা ট্রান্সপারেন্ট লাল শেড */
+    border-radius: 12px !important;
+}
+
+/* এক্টিভ আইকন ও টেক্সট কালার */
+.bottom-nav-btn.active i,
+.bottom-nav-btn.active span {
+    color: #f87171 !important; /* সফট রেড কালার */
+}
