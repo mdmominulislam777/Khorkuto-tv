@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Complete Script
+// StreamZX - Complete Script (Bug Fixed)
 // ==========================================
 
 let channels = [];
@@ -284,7 +284,13 @@ function setupEventListeners() {
             renderFeaturedChannels();
             renderChannels();
 
-            setActiveBottomNav(document.getElementById("sportsNav"));
+            // কাস্টম ক্যাটাগরি নির্বাচনের পর বটম নেভিগেশন ঠিক রাখা
+            if (selectedCategory === "Sports") {
+                setActiveBottomNav(sportsNavBtn);
+            } else {
+                setActiveBottomNav(categoryNavBtn);
+            }
+
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     });
