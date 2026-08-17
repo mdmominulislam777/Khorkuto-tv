@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Complete Script (Bug Fixed)
+// StreamZX - Complete Script (Featured Removed)
 // ==========================================
 
 let channels = [];
@@ -27,8 +27,6 @@ let isAdShowing = false;
 // DOM ELEMENTS
 // ==========================================
 let channelList;
-let featuredList;
-let featuredSection;
 let video;
 let search;
 let searchArea;
@@ -52,9 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     channelList = document.getElementById("channelList");
-    featuredList = document.getElementById("featuredList");
-    featuredSection = document.getElementById("featuredSection");
-
     video = document.getElementById("video");
     search = document.getElementById("search");
     searchArea = document.getElementById("searchArea");
@@ -227,7 +222,6 @@ function setupEventListeners() {
             hideCategoryPage();
             currentCategory = "Live Event";
 
-            if (featuredSection) featuredSection.style.display = "none";
             const mainContent = document.querySelector(".main-content");
             if (mainContent) mainContent.style.display = "block";
 
@@ -264,7 +258,6 @@ function setupEventListeners() {
 
             currentCategory = "Sports";
             updateSectionTitle();
-            renderFeaturedChannels();
             renderChannels();
 
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -281,10 +274,8 @@ function setupEventListeners() {
             showNormalContent();
 
             updateSectionTitle();
-            renderFeaturedChannels();
             renderChannels();
 
-            // কাস্টম ক্যাটাগরি নির্বাচনের পর বটম নেভিগেশন ঠিক রাখা
             if (selectedCategory === "Sports") {
                 setActiveBottomNav(sportsNavBtn);
             } else {
@@ -318,7 +309,6 @@ function closeSidebar() {
 // ==========================================
 function showCategoryPage() {
     if (categoryPage) categoryPage.classList.remove("hidden");
-    if (featuredSection) featuredSection.style.display = "none";
 
     const mainContent = document.querySelector(".main-content");
     if (mainContent) mainContent.style.display = "none";
@@ -331,7 +321,6 @@ function hideCategoryPage() {
 
 function showNormalContent() {
     hideCategoryPage();
-    if (featuredSection) featuredSection.style.display = "block";
 
     const mainContent = document.querySelector(".main-content");
     if (mainContent) mainContent.style.display = "block";
@@ -398,7 +387,6 @@ async function loadChannels() {
             if (liveEventBtn) {
                 liveEventBtn.click();
             } else {
-                renderFeaturedChannels();
                 renderChannels();
             }
         } else {
@@ -406,7 +394,6 @@ async function loadChannels() {
                 const liveEventBtn = document.getElementById("liveEventNav");
                 if (liveEventBtn) liveEventBtn.click();
             } else {
-                renderFeaturedChannels();
                 renderChannels();
             }
         }
@@ -426,49 +413,6 @@ async function loadChannels() {
     } finally {
         hideSplash();
     }
-}
-
-// ==========================================
-// RENDER FEATURED CHANNELS
-// ==========================================
-function renderFeaturedChannels() {
-    if (!featuredList || !featuredSection) return;
-
-    const featured = channels.filter(channel => channel.featured === true);
-
-    if (!featured.length) {
-        featuredSection.style.display = "none";
-        return;
-    }
-
-    featuredSection.style.display = "block";
-    featuredList.innerHTML = "";
-
-    featured.forEach(channel => {
-        const isFav = favorites.includes(channel.id);
-        const card = document.createElement("div");
-        card.className = "featured-card";
-
-        card.innerHTML = `
-            <button class="fav-btn ${isFav ? "active" : ""}" title="Favorite">
-                <i class="${isFav ? "fa-solid" : "fa-regular"} fa-star"></i>
-            </button>
-            <img src="${escapeHTML(channel.logo || "logo.png")}" alt="${escapeHTML(channel.name || "TV")}" onerror="this.onerror=null;this.src='https://via.placeholder.com/80?text=TV';">
-            <h4>${escapeHTML(channel.name || "Unknown")}</h4>
-            <p>${escapeHTML(channel.category || "General")}</p>
-        `;
-
-        const favBtn = card.querySelector(".fav-btn");
-        favBtn.addEventListener("click", event => {
-            toggleFavorite(channel.id, event);
-        });
-
-        card.addEventListener("click", () => {
-            playChannelWithAd(channel);
-        });
-
-        featuredList.appendChild(card);
-    });
 }
 
 // ==========================================
@@ -544,7 +488,6 @@ function toggleFavorite(channelId, event) {
 
     localStorage.setItem("favChannels", JSON.stringify(favorites));
     renderChannels();
-    renderFeaturedChannels();
 }
 
 // ==========================================
