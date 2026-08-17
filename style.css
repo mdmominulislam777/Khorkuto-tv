@@ -1159,3 +1159,98 @@ button,
     background: var(--border-color);
     margin: 8px 0;
 }
+/* ==========================================
+   SETTINGS PAGE STYLES
+========================================== */
+.settings-page {
+    padding: 16px;
+    padding-bottom: 90px; /* Bottom nav bar overlapping বন্ধ রাখতে */
+    max-width: 600px;
+    margin: 0 auto;
+    color: #ffffff;
+}
+
+.settings-title-bar {
+    margin-bottom: 20px;
+}
+
+.settings-title-bar h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.settings-group {
+    background: #1e293b; /* Dark Card Background */
+    border-radius: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-group-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 14px 16px 6px 16px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    color: #e2e8f0;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.item-left i {
+    font-size: 18px;
+    color: #3b82f6; /* Blue Accent Icon Color */
+    width: 22px;
+    text-align: center;
+}
+
+.settings-item > .fa-chevron-right {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* Badge Style */
+.badge-new {
+    background: #06b6d4;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+    text-transform: uppercase;
+}
+
+/* Red Highlight for Danger Actions */
+.danger-item .item-left i,
+.danger-item .item-left span {
+    color: #ef4444;
+}
