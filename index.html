@@ -25,50 +25,6 @@
 <body>
 
 <!-- ==========================================
-     SIDEBAR & OVERLAY
-========================================== -->
-<div id="sidebarOverlay" class="sidebar-overlay"></div>
-
-<aside id="sidebar" class="sidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-brand">
-            <img src="logo.png" alt="StreamZX" onerror="this.onerror=null;this.src='https://via.placeholder.com/32?text=ZX';">
-            <span>StreamZX</span>
-        </div>
-        <button id="closeSidebarBtn" class="close-sidebar-btn">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    </div>
-
-    <div class="sidebar-content">
-        <ul class="sidebar-menu">
-            <li><a href="#" id="sidebarNetworkStreamBtn"><i class="fa-solid fa-globe"></i> <span>Network Stream</span></a></li>
-            
-            <li class="menu-divider"></li>
-            
-            <li><a href="#" id="sidebarFavBtn"><i class="fa-solid fa-star"></i> <span>Favorites</span></a></li>
-            <li><a href="#" id="sidebarMatchScheduleBtn"><i class="fa-solid fa-calendar-days"></i> <span>Match Schedule</span></a></li>
-            
-            <li class="menu-divider"></li>
-            
-            <li><a href="https://t.me/your_channel" target="_blank" id="sidebarTelegramBtn"><i class="fa-brands fa-telegram"></i> <span>Join Telegram</span></a></li>
-            <li><a href="#" id="sidebarRequestBtn"><i class="fa-solid fa-paper-plane"></i> <span>Request Channel</span></a></li>
-            <li><a href="#" id="sidebarReportBtn"><i class="fa-solid fa-triangle-exclamation"></i> <span>Report Issue</span></a></li>
-            
-            <li class="menu-divider"></li>
-            
-            <li><a href="#" id="sidebarShareBtn"><i class="fa-solid fa-share-nodes"></i> <span>Share App</span></a></li>
-            <li><a href="#" id="sidebarAboutBtn"><i class="fa-solid fa-circle-info"></i> <span>About Us</span></a></li>
-
-            <li class="menu-divider"></li>
-
-            <!-- Exit Button -->
-            <li><a href="#" id="sidebarExitBtn"><i class="fa-solid fa-right-from-bracket"></i> <span>Exit</span></a></li>
-        </ul>
-    </div>
-</aside>
-
-<!-- ==========================================
      SPLASH
 ========================================== -->
 <div id="splash">
@@ -82,9 +38,6 @@
 ========================================== -->
 <header class="top-header">
     <div class="header-left">
-        <button id="menuToggleBtn" class="menu-btn" title="Menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
         <img src="logo.png" alt="StreamZX" class="header-app-icon" onerror="this.onerror=null;this.src='https://via.placeholder.com/38?text=ZX';">
         <span class="brand-title">StreamZX</span>
     </div>
@@ -164,6 +117,103 @@
 </section>
 
 <!-- ==========================================
+     SETTINGS PAGE
+========================================== -->
+<section id="settingsPage" class="settings-page hidden">
+    <div class="settings-title-bar">
+        <h2>Settings</h2>
+    </div>
+
+    <!-- GENERAL SECTION -->
+    <div class="settings-group">
+        <div class="settings-group-title">GENERAL</div>
+        
+        <div class="settings-item" id="settingsNetworkStreamBtn">
+            <div class="item-left">
+                <i class="fa-solid fa-globe"></i>
+                <span>Network Stream</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-bars-staggered"></i>
+                <span>Playlists</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-globe"></i>
+                <span>Web Version</span>
+                <span class="badge-new">New</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-cricket-bat-ball"></i>
+                <span>Cricket Score</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-futbol"></i>
+                <span>Football Score</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+    </div>
+
+    <!-- COMMUNITY SECTION -->
+    <div class="settings-group">
+        <div class="settings-group-title">COMMUNITY</div>
+
+        <a href="https://t.me/your_channel" target="_blank" class="settings-item">
+            <div class="item-left">
+                <i class="fa-brands fa-telegram"></i>
+                <span>Join Channel</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+        
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>Contact Us</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+    </div>
+
+    <!-- APP SECTION -->
+    <div class="settings-group">
+        <div class="settings-group-title">APP</div>
+
+        <div class="settings-item" id="settingsClearDataBtn">
+            <div class="item-left">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>Clear App Data</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item danger-item" id="settingsExitBtn">
+            <div class="item-left">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Exit Application</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
      MAIN CHANNELS
 ========================================== -->
 <main class="main-content">
@@ -191,6 +241,12 @@
     <button class="bottom-nav-btn" id="sportsNav">
         <i class="fa-solid fa-futbol"></i>
         <span>Sports</span>
+    </button>
+
+    <!-- SETTINGS -->
+    <button class="bottom-nav-btn" id="settingsNav">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
     </button>
 </nav>
 
