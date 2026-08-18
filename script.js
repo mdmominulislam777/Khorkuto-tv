@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Script (With Modern Custom Overlay Controls)
+// StreamZX - Script (With Modern Custom Overlay Controls & Auto-Hide PiP Space)
 // ==========================================
 
 let channels = [];
@@ -89,7 +89,7 @@ function initApp() {
 }
 
 // ==========================================
-// CUSTOM PLAYER CONTROLS LOGIC
+// CUSTOM PLAYER CONTROLS & PIP LISTENERS
 // ==========================================
 function initPlayerControls() {
     playerOverlay = document.getElementById("playerOverlay");
@@ -107,6 +107,21 @@ function initPlayerControls() {
     const seekBar = document.getElementById("seekBar");
     const currentTimeEl = document.getElementById("currentTime");
     const durationEl = document.getElementById("duration");
+
+    // PIP ENTRANCE & EXIT LISTENERS (Hides player area when PiP is active)
+    if (video) {
+        video.addEventListener("enterpictureinpicture", () => {
+            if (playerContainer) {
+                playerContainer.classList.add("hidden");
+            }
+        });
+
+        video.addEventListener("leavepictureinpicture", () => {
+            if (playerContainer) {
+                playerContainer.classList.remove("hidden");
+            }
+        });
+    }
 
     // Play / Pause Toggle
     if (playPauseBtn && video) {
@@ -164,7 +179,7 @@ function initPlayerControls() {
         });
     }
 
-    // Aspect Ratio Cycle (Contain / Cover / Fill)
+    // Aspect Ratio Cycle
     if (aspectRatioBtn && video) {
         aspectRatioBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -174,7 +189,7 @@ function initPlayerControls() {
         });
     }
 
-    // Floating Picture-in-Picture
+    // Floating Picture-in-Picture Button
     if (pipBtn) {
         pipBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -192,7 +207,7 @@ function initPlayerControls() {
         });
     }
 
-    // Progress / Seek Bar Updates
+    // Progress Bar & Time Updates
     if (video) {
         video.addEventListener("timeupdate", () => {
             if (!video.duration) return;
