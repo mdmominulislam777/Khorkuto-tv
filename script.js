@@ -759,14 +759,14 @@ function setActiveBottomNav(activeButton) {
 
 function updateSectionTitle() {
     const titles = {
-        Sports: "⚽ Sports Channels",
-        Entertainment: "🎬 Entertainment Channels",
-        News: "📰 News Channels",
-        Movies: "🎬 Movies Channels",
-        Islamic: "🕌 Islamic Channels",
-        Kids: "🧒 Kids Channels",
-        Music: "🎵 Music Channels",
-        Favorites: "⭐ Favorite Channels"
+        Sports: " Sports Channels",
+        Entertainment: " Entertainment Channels",
+        News: " News Channels",
+        Movies: " Movies Channels",
+        Islamic: " Islamic Channels",
+        Kids: " Kids Channels",
+        Music: " Music Channels",
+        Favorites: " Favorite Channels"
     };
 
     if (mainSectionTitle) {
