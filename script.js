@@ -654,6 +654,72 @@ function setupSettingsActions() {
         });
     }
 }
+// ==========================================
+// 1. COPYRIGHT MODAL HANDLER
+// ==========================================
+const copyrightBtn = document.getElementById("settingsCopyrightBtn") || getSettingsItemByText("Copyright");
+const copyrightModal = document.getElementById("copyrightModal");
+const closeCopyrightModal = document.getElementById("closeCopyrightModal");
+
+if (copyrightBtn && copyrightModal) {
+    copyrightBtn.addEventListener("click", () => {
+        copyrightModal.classList.remove("hidden");
+    });
+}
+
+if (closeCopyrightModal && copyrightModal) {
+    closeCopyrightModal.addEventListener("click", () => {
+        copyrightModal.classList.add("hidden");
+    });
+}
+
+if (copyrightModal) {
+    copyrightModal.addEventListener("click", (e) => {
+        if (e.target === copyrightModal) copyrightModal.classList.add("hidden");
+    });
+}
+
+// ==========================================
+// 2. SHARE OUR APP HANDLER
+// ==========================================
+const shareBtn = document.getElementById("settingsShareBtn") || getSettingsItemByText("Share Our App");
+
+if (shareBtn) {
+    shareBtn.addEventListener("click", async () => {
+        const shareData = {
+            title: "StreamZX - Live TV & Sports",
+            text: "StreamZX অ্যাপ দিয়ে সরাসরি ফ্রিতে দেখুন সকল লাইভ স্পোর্টস ও টিভি চ্যানেল। অ্যাপটি এখনই ডাউনলোড করুন!",
+            url: window.location.href // এখানে আপনার অ্যাপ ডাউনলোড বা টেলিগ্রাম বট লিঙ্কও দিতে পারেন
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log("Sharing cancelled", err);
+            }
+        } else {
+            // ব্রাউজার বা ডিভাইসে Native Share সাপোর্ট না করলে লিঙ্ক কপি হবে
+            navigator.clipboard.writeText(shareData.url);
+            alert("App link copied to clipboard! Share it with your friends.");
+        }
+    });
+}
+
+// ==========================================
+// 3. EMAIL CONTACT HANDLER
+// ==========================================
+const emailBtn = document.getElementById("settingsEmailBtn") || getSettingsItemByText("Email");
+
+if (emailBtn) {
+    emailBtn.addEventListener("click", () => {
+        const adminEmail = "support@streamzx.com"; // আপনার সাপোর্ট ইমেইল এড্রেস
+        const subject = encodeURIComponent("StreamZX App Support / DMCA Request");
+        const body = encodeURIComponent("Hello StreamZX Team,\n\nI want to inform/ask about:\n");
+
+        window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+    });
+}
 
 // ==========================================
 // LOAD NOTICE CONTENT FUNCTION
