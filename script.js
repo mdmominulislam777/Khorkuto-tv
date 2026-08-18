@@ -140,6 +140,10 @@ function setupEventListeners() {
             }
         });
     }
+    const pipPlayerBtn = document.getElementById("pipPlayerBtn");
+    if (pipPlayerBtn) {
+        pipPlayerBtn.addEventListener("click", toggleFloatingPlayer);
+    }
 
     // --- FAVORITES HEADER BTN ---
     const favHeaderBtn = document.getElementById("favHeaderBtn");
