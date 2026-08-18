@@ -252,6 +252,17 @@
 </section>
 
 <main class="main-content">
+    <!-- ক্যাটাগরি বা ফিল্টার বাটন -->
+<div class="sports-tabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
+    <button onclick="loadSportsData('football')" class="tab-btn active">Football</button>
+    <button onclick="loadSportsData('cricket')" class="tab-btn">Cricket</button>
+</div>
+
+<!-- ম্যাচ লিস্ট দেখানোর গ্রিড -->
+<div id="sportsMatchGrid" class="channel-grid">
+    <!-- API থেকে আসা ম্যাচগুলো এখানে লোড হবে -->
+</div>
+
     <h3 class="section-title" id="mainSectionTitle">⚽ Sports Channels</h3>
     <div id="channelList" class="channel-grid"></div>
 </main>
