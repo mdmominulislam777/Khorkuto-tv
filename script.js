@@ -17,6 +17,9 @@ try {
     favorites = [];
 }
 
+// Custom Playlists state
+let customPlaylists = JSON.parse(localStorage.getItem("customPlaylists") || "[]");
+
 // ==========================================
 // MONETAG ADS CONFIG
 // ==========================================
@@ -140,6 +143,8 @@ function setupEventListeners() {
             }
         });
     }
+
+    // --- PIP PLAYER BUTTON (IN PLAYER HEADER) ---
     const pipPlayerBtn = document.getElementById("pipPlayerBtn");
     if (pipPlayerBtn) {
         pipPlayerBtn.addEventListener("click", toggleFloatingPlayer);
@@ -273,10 +278,8 @@ function setupEventListeners() {
 }
 
 // ==========================================
-// PLAYLIST MANAGER & M3U PARSER LOGIC
+// PLAYLIST MANAGER & SETTINGS LOGIC
 // ==========================================
-let customPlaylists = JSON.parse(localStorage.getItem("customPlaylists") || "[]");
-
 function setupSettingsActions() {
 
     // 1. PLAYLISTS MODAL TRIGGER
@@ -344,7 +347,6 @@ function setupSettingsActions() {
                     const text = await res.text();
                     parsedChannels = parseM3UContent(text);
                 } catch (err) {
-                    // Fallback to single stream entry if CORS/fetch fails
                     parsedChannels = [{ id: Date.now(), name: name, category: "Custom", url: url, logo: "logo.png" }];
                 }
             }
@@ -363,7 +365,6 @@ function setupSettingsActions() {
             customPlaylists.push(newPL);
             localStorage.setItem("customPlaylists", JSON.stringify(customPlaylists));
 
-            // Reset inputs & refresh list
             document.getElementById("playlistNameInput").value = "";
             document.getElementById("playlistUrlInput").value = "";
             uploadedFileContent = "";
@@ -405,6 +406,8 @@ function setupSettingsActions() {
             if (confirm("Are you sure you want to exit?")) {
                 if (window.Telegram && window.Telegram.WebApp) {
                     window.Telegram.WebApp.close();
+                } else if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
+                    window.navigator.app.exitApp();
                 } else {
                     window.close();
                 }
@@ -494,7 +497,7 @@ function parseM3UContent(m3uData) {
     return parsedList;
 }
 
-// Helper utility
+// HELPER UTILITY FOR SETTINGS ITEM
 function getSettingsItemByText(text) {
     const items = document.querySelectorAll('.settings-item span');
     for (let span of items) {
@@ -504,27 +507,6 @@ function getSettingsItemByText(text) {
     }
     return null;
 }
-// Crash Log Dialog Toggle / Action
-const crashLogItem = getSettingsItemByText("Crash Log Dialog");
-if (crashLogItem) {
-    crashLogItem.addEventListener("click", () => {
-        let isEnabled = localStorage.getItem("crashLogEnabled") !== "false";
-        let confirmAction = confirm(`Crash Log Dialog is currently ${isEnabled ? 'ENABLED' : 'DISABLED'}.\n\nDo you want to ${isEnabled ? 'disable' : 'enable'} error reporting?`);
-        
-        if (confirmAction) {
-            localStorage.setItem("crashLogEnabled", (!isEnabled).toString());
-            alert(`Crash Log Dialog has been ${!isEnabled ? 'Enabled' : 'Disabled'}.`);
-        }
-    });
-}
-    // Floating Player (Picture-in-Picture) Toggle
-    const floatingPlayerItem = getSettingsItemByText("Floating Player");
-    if (floatingPlayerItem) {
-        floatingPlayerItem.addEventListener("click", () => {
-            toggleFloatingPlayer();
-        });
-    }
-
 
 // ==========================================
 // PAGE CONTROLS
@@ -805,6 +787,11 @@ function playChannel(channel) {
         video.pause();
         video.removeAttribute("src");
         video.load();
+
+        // Double tap on video screen to toggle PiP (Floating mode)
+        video.ondblclick = async () => {
+            toggleFloatingPlayer();
+        };
     }
 
     const url = String(channel.url).trim();
@@ -857,6 +844,7 @@ function closePlayer() {
         playerContainer.classList.add("hidden");
     }
 }
+
 // ==========================================
 // FLOATING PLAYER (PICTURE-IN-PICTURE) LOGIC
 // ==========================================
@@ -868,20 +856,16 @@ async function toggleFloatingPlayer() {
         return;
     }
 
-    // Check if video is currently playing
-    if (videoElement.paused || !videoElement.src && !videoElement.srcObject) {
+    if (videoElement.paused || (!videoElement.src && !videoElement.srcObject)) {
         alert("Please play a channel first to use Floating Player!");
         return;
     }
 
     try {
-        // Check PiP support
         if (document.pictureInPictureEnabled) {
             if (document.pictureInPictureElement) {
-                // Exit PiP if already active
                 await document.exitPictureInPicture();
             } else {
-                // Request PiP mode
                 await videoElement.requestPictureInPicture();
             }
         } else {
@@ -889,6 +873,5 @@ async function toggleFloatingPlayer() {
         }
     } catch (error) {
         console.error("Floating Player Error:", error);
-        alert("Failed to enable Floating Player: " + error.message);
     }
 }
