@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Script (With Modern Custom Overlay Controls & Auto-Hide PiP Space)
+// StreamZX - Script (With Live Events Fix & Custom Controls)
 // ==========================================
 
 let channels = [];
@@ -25,7 +25,7 @@ let customPlaylists = JSON.parse(localStorage.getItem("customPlaylists") || "[]"
 // ==========================================
 const CONFIG = {
     SPORTMONKS_API_TOKEN: 'YOUR_SPORTMONKS_API_TOKEN', // এখানে আপনার আসল API Token বসাবেন
-    REFRESH_INTERVAL: 30000 // ৩০ সেকেন্ড (মিলিসেকেন্ডে)
+    REFRESH_INTERVAL: 30000 // ৩০ সেকেন্ড
 };
 
 // ==========================================
@@ -119,7 +119,6 @@ function initPlayerControls() {
     const currentTimeEl = document.getElementById("currentTime");
     const durationEl = document.getElementById("durationTime");
 
-    // PIP ENTRANCE & EXIT LISTENERS
     if (video) {
         video.addEventListener("enterpictureinpicture", () => {
             if (playerContainer) {
@@ -134,13 +133,11 @@ function initPlayerControls() {
         });
     }
 
-    // Play / Pause Toggle
     if (playPauseBtn && video) {
         playPauseBtn.addEventListener("click", togglePlayPause);
         video.addEventListener("click", toggleOverlayVisibility);
     }
 
-    // Rewind / Forward 10s
     if (rewindBtn && video) {
         rewindBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -157,7 +154,6 @@ function initPlayerControls() {
         });
     }
 
-    // Mute / Unmute
     if (muteBtn && video) {
         muteBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -170,7 +166,6 @@ function initPlayerControls() {
         });
     }
 
-    // Screen Lock Toggle
     if (lockBtn) {
         lockBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -190,7 +185,6 @@ function initPlayerControls() {
         });
     }
 
-    // Aspect Ratio Cycle
     if (aspectRatioBtn && video) {
         aspectRatioBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -200,7 +194,6 @@ function initPlayerControls() {
         });
     }
 
-    // Floating Picture-in-Picture Button
     if (pipBtn) {
         pipBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -209,7 +202,6 @@ function initPlayerControls() {
         });
     }
 
-    // Fullscreen Toggle
     if (fullscreenBtn && video) {
         fullscreenBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -218,7 +210,6 @@ function initPlayerControls() {
         });
     }
 
-    // Progress Bar & Time Updates
     if (video) {
         video.addEventListener("timeupdate", () => {
             if (!video.duration) return;
@@ -346,7 +337,6 @@ function hideSplash() {
 // ==========================================
 function setupEventListeners() {
 
-    // --- SEARCH BUTTON TOGGLE ---
     const searchBtn = document.getElementById("searchBtn");
     if (searchBtn) {
         searchBtn.addEventListener("click", () => {
@@ -366,13 +356,11 @@ function setupEventListeners() {
         });
     }
 
-    // --- PIP PLAYER BUTTON ---
     const pipPlayerBtn = document.getElementById("pipPlayerBtn");
     if (pipPlayerBtn) {
         pipPlayerBtn.addEventListener("click", toggleFloatingPlayer);
     }
 
-    // --- FAVORITES HEADER BTN ---
     const favHeaderBtn = document.getElementById("favHeaderBtn");
     if (favHeaderBtn) {
         favHeaderBtn.addEventListener("click", () => {
@@ -384,7 +372,6 @@ function setupEventListeners() {
         });
     }
 
-    // --- REFRESH BUTTON ---
     const refreshBtn = document.getElementById("refreshBtn");
     if (refreshBtn) {
         refreshBtn.addEventListener("click", () => {
@@ -396,22 +383,18 @@ function setupEventListeners() {
         });
     }
 
-    // --- SEARCH INPUT ---
     if (search) {
         search.addEventListener("input", () => {
             renderChannels();
         });
     }
 
-    // --- CLOSE PLAYER BUTTON ---
     const closePlayerBtn = document.getElementById("closePlayerBtn");
     if (closePlayerBtn) {
         closePlayerBtn.addEventListener("click", closePlayer);
     }
 
-    // ==========================================
     // BOTTOM NAVIGATION LISTENERS
-    // ==========================================
     const liveEventBtn = document.getElementById("liveEventNav");
     const categoryNavBtn = document.getElementById("categoryNav");
     const sportsNavBtn = document.getElementById("sportsNav");
@@ -465,7 +448,6 @@ function setupEventListeners() {
         });
     }
 
-    // --- CATEGORY GRID ITEMS ---
     document.querySelectorAll(".category-item").forEach(item => {
         item.addEventListener("click", () => {
             const selectedCategory = item.dataset.category;
@@ -622,7 +604,6 @@ function setupSettingsActions() {
         });
     }
 
-    // NOTICE MODAL LOGIC
     const noticeItem = document.getElementById("settingsNoticeBtn") || getSettingsItemByText("Notice");
     const noticeModal = document.getElementById("noticeModal");
     const closeNoticeModal = document.getElementById("closeNoticeModal");
@@ -648,7 +629,6 @@ function setupSettingsActions() {
         });
     }
 
-    // COPYRIGHT MODAL LOGIC
     const copyrightBtn = document.getElementById("settingsCopyrightBtn") || getSettingsItemByText("Copyright");
     const copyrightModal = document.getElementById("copyrightModal");
     const closeCopyrightModal = document.getElementById("closeCopyrightModal");
@@ -671,7 +651,6 @@ function setupSettingsActions() {
         });
     }
 
-    // SHARE APP LOGIC
     const shareBtn = document.getElementById("settingsShareBtn") || getSettingsItemByText("Share Our App");
     if (shareBtn) {
         shareBtn.addEventListener("click", async () => {
@@ -694,7 +673,6 @@ function setupSettingsActions() {
         });
     }
 
-    // EMAIL CONTACT LOGIC
     const emailBtn = document.getElementById("settingsEmailBtn") || getSettingsItemByText("Email Us") || getSettingsItemByText("Email");
     if (emailBtn) {
         emailBtn.addEventListener("click", () => {
@@ -707,9 +685,6 @@ function setupSettingsActions() {
     }
 }
 
-// ==========================================
-// LOAD NOTICE CONTENT FUNCTION
-// ==========================================
 function loadNoticeContent() {
     const noticeBody = document.getElementById("noticeBody");
     if (!noticeBody) return;
@@ -717,7 +692,7 @@ function loadNoticeContent() {
     const noticeData = {
         title: "📢 StreamZX আপডেট ও ঘোষণা",
         date: new Date().toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' }),
-        message: "আমাদের StreamZX অ্যাপে স্বাগতম! কোনো চ্যানেল চলতে সমস্যা হলে রিফ্রেশ বাটন ব্যবহার করুন। সর্বাধুনিক স্পোর্টস লিঙ্ক এবং আপডেট পাওয়ার জন্য আমাদের টেলিগ্রাম চ্যানেলে যুক্ত থাকুন।"
+        message: "আমাদের StreamZX অ্যাপে স্বাগতম! কোনো চ্যানেল চলতে সমস্যা হলে রিফ্রেশ বাটন ব্যবহার করুন।"
     };
 
     noticeBody.innerHTML = `
@@ -887,6 +862,11 @@ function updateSectionTitle() {
 async function loadChannels() {
     if (!channelList) return;
 
+    if (currentCategory === "Live Event") {
+        renderLiveEventsUI();
+        return;
+    }
+
     channelList.innerHTML = `
         <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted, #888);">
             ⏳ Loading channels...
@@ -944,11 +924,12 @@ async function loadChannels() {
 }
 
 // ==========================================
-// RENDER MAIN CHANNELS
+// RENDER MAIN CHANNELS (PURE CHANNEL CARDS ONLY)
 // ==========================================
 function renderChannels() {
     if (!channelList) return;
 
+    // Ensure category title is visible and no live events element is left
     channelList.innerHTML = "";
     const keyword = search ? search.value.toLowerCase().trim() : "";
 
@@ -1228,7 +1209,8 @@ function renderLiveEventsUI() {
 }
 
 async function loadSportsData(sportType = activeSport) {
-    activeSport = sportType;
+    if (currentCategory !== "Live Event") return;
+    
     const gridContainer = document.getElementById('sportsMatchGrid');
     if (!gridContainer) return;
 
@@ -1238,6 +1220,8 @@ async function loadSportsData(sportType = activeSport) {
         const response = await fetch(ENDPOINTS[sportType]);
         const result = await response.json();
 
+        if (currentCategory !== "Live Event") return;
+
         if (result.data && result.data.length > 0) {
             renderMatches(result.data, sportType);
         } else {
@@ -1245,13 +1229,15 @@ async function loadSportsData(sportType = activeSport) {
         }
     } catch (error) {
         console.error(`Error loading ${sportType} data:`, error);
-        gridContainer.innerHTML = `<p style="color:#ef4444; grid-column: 1/-1; text-align:center;">Failed to load live scores.</p>`;
+        if (currentCategory === "Live Event" && gridContainer) {
+            gridContainer.innerHTML = `<p style="color:#ef4444; grid-column: 1/-1; text-align:center;">Failed to load live scores.</p>`;
+        }
     }
 }
 
 function renderMatches(matches, type) {
     const gridContainer = document.getElementById('sportsMatchGrid');
-    if (!gridContainer) return;
+    if (!gridContainer || currentCategory !== "Live Event") return;
     gridContainer.innerHTML = '';
 
     matches.forEach(match => {
