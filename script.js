@@ -87,12 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2000);
 
     initApp();
-
-    // Sportmonks Auto Refresh Setup
-    if (document.getElementById('sportsMatchGrid')) {
-        loadSportsData('football');
-        setInterval(() => loadSportsData(activeSport), CONFIG.REFRESH_INTERVAL);
-    }
 });
 
 // ==========================================
@@ -394,7 +388,11 @@ function setupEventListeners() {
     const refreshBtn = document.getElementById("refreshBtn");
     if (refreshBtn) {
         refreshBtn.addEventListener("click", () => {
-            loadChannels();
+            if (currentCategory === "Live Event") {
+                renderLiveEventsUI();
+            } else {
+                loadChannels();
+            }
         });
     }
 
@@ -429,17 +427,9 @@ function setupEventListeners() {
             const mainContent = document.querySelector(".main-content");
             if (mainContent) mainContent.style.display = "block";
 
-            if (mainSectionTitle) mainSectionTitle.textContent = "🔴 Live Events";
+            if (mainSectionTitle) mainSectionTitle.textContent = "🔴 Live Events & Scores";
 
-            if (channelList) {
-                channelList.innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
-                        <div>Live Events</div>
-                        <small>Live event schedule and channels will appear here.</small>
-                    </div>
-                `;
-            }
+            renderLiveEventsUI();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
@@ -930,8 +920,7 @@ async function loadChannels() {
             }
         } else {
             if (currentCategory === "Live Event") {
-                const liveEventBtn = document.getElementById("liveEventNav");
-                if (liveEventBtn) liveEventBtn.click();
+                renderLiveEventsUI();
             } else {
                 renderChannels();
             }
@@ -1194,19 +1183,56 @@ async function toggleFloatingPlayer() {
 }
 
 // ==========================================
-// SPORTMONKS API INTEGRATION (FOOTBALL & CRICKET)
+// LIVE EVENTS & SPORTMONKS INTEGRATION
 // ==========================================
 const ENDPOINTS = {
     football: `https://api.sportmonks.com/v3/football/livescores/inplay?api_token=${CONFIG.SPORTMONKS_API_TOKEN}&include=participants;scores`,
     cricket: `https://api.sportmonks.com/v3/cricket/livescores/inplay?api_token=${CONFIG.SPORTMONKS_API_TOKEN}&include=participants;runs`
 };
 
+function renderLiveEventsUI() {
+    if (!channelList) return;
+
+    channelList.innerHTML = `
+        <div style="grid-column: 1/-1; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center;">
+            <button id="btnFootball" class="sport-tab-btn active" style="padding: 8px 16px; background: var(--primary, #ff2a4b); color: #fff; border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">Football</button>
+            <button id="btnCricket" class="sport-tab-btn" style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: var(--text-primary); border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">Cricket</button>
+        </div>
+        <div id="sportsMatchGrid" style="grid-column: 1/-1; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+            <p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">Loading matches...</p>
+        </div>
+    `;
+
+    const btnFootball = document.getElementById('btnFootball');
+    const btnCricket = document.getElementById('btnCricket');
+
+    if (btnFootball && btnCricket) {
+        btnFootball.addEventListener('click', () => {
+            btnFootball.style.background = 'var(--primary, #ff2a4b)';
+            btnFootball.style.color = '#fff';
+            btnCricket.style.background = 'rgba(255,255,255,0.1)';
+            btnCricket.style.color = 'var(--text-primary)';
+            loadSportsData('football');
+        });
+
+        btnCricket.addEventListener('click', () => {
+            btnCricket.style.background = 'var(--primary, #ff2a4b)';
+            btnCricket.style.color = '#fff';
+            btnFootball.style.background = 'rgba(255,255,255,0.1)';
+            btnFootball.style.color = 'var(--text-primary)';
+            loadSportsData('cricket');
+        });
+    }
+
+    loadSportsData(activeSport);
+}
+
 async function loadSportsData(sportType = activeSport) {
     activeSport = sportType;
     const gridContainer = document.getElementById('sportsMatchGrid');
     if (!gridContainer) return;
 
-    gridContainer.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">Loading matches...</p>';
+    gridContainer.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">Loading live matches...</p>';
 
     try {
         const response = await fetch(ENDPOINTS[sportType]);
@@ -1252,11 +1278,11 @@ function renderMatches(matches, type) {
         }
 
         const matchCard = `
-            <div class="channel-card">
-                <span class="badge-new" style="position: absolute; top: 6px; left: 6px; background:#ef4444;">LIVE</span>
-                <h4 style="margin-top: 15px;">${escapeHTML(homeTeam)}</h4>
-                <p style="font-weight: 800; color: var(--primary); margin: 6px 0; font-size: 14px;">${escapeHTML(scoreText)}</p>
-                <h4>${escapeHTML(awayTeam)}</h4>
+            <div class="channel-card" style="padding: 15px; text-align: center; position: relative;">
+                <span class="badge-new" style="position: absolute; top: 8px; left: 8px; background:#ef4444; color:#fff; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:bold;">LIVE</span>
+                <h4 style="margin-top: 10px; font-size: 15px;">${escapeHTML(homeTeam)}</h4>
+                <p style="font-weight: 800; color: var(--primary, #ff2a4b); margin: 8px 0; font-size: 16px;">${escapeHTML(scoreText)}</p>
+                <h4 style="font-size: 15px;">${escapeHTML(awayTeam)}</h4>
             </div>
         `;
         gridContainer.insertAdjacentHTML('beforeend', matchCard);
