@@ -94,8 +94,6 @@ function initApp() {
 function initPlayerControls() {
     playerOverlay = document.getElementById("playerOverlay");
     lockOverlay = document.getElementById("lockOverlay");
-    
-    // playerContainer নিশ্চিতভাবে এখানে সিলেক্ট করে নিন
     playerContainer = document.getElementById("playerContainer");
 
     const playPauseBtn = document.getElementById("playPauseBtn");
@@ -104,26 +102,26 @@ function initPlayerControls() {
     const muteBtn = document.getElementById("muteBtn");
     const lockBtn = document.getElementById("lockBtn");
     const unlockBtn = document.getElementById("unlockBtn");
-    const aspectRatioBtn = document.getElementById("aspectRatioBtn");
-    const pipBtn = document.getElementById("pipBtn");
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
-    const seekBar = document.getElementById("seekBar");
+    
+    // HTML-এর সাপেক্ষে ফিক্সড ID নামসমূহ:
+    const aspectRatioBtn = document.getElementById("aspectBtn");
+    const pipBtn = document.getElementById("pipPlayerBtn");
+    const fullscreenBtn = document.getElementById("fullScreenBtn");
+    const seekBar = document.getElementById("progressBar");
     const currentTimeEl = document.getElementById("currentTime");
-    const durationEl = document.getElementById("duration");
+    const durationEl = document.getElementById("durationTime");
 
     // PIP ENTRANCE & EXIT LISTENERS
     if (video) {
         video.addEventListener("enterpictureinpicture", () => {
-            const pContainer = document.getElementById("playerContainer");
-            if (pContainer) {
-                pContainer.style.display = "none";
+            if (playerContainer) {
+                playerContainer.style.display = "none";
             }
         });
 
         video.addEventListener("leavepictureinpicture", () => {
-            const pContainer = document.getElementById("playerContainer");
-            if (pContainer) {
-                pContainer.style.display = "block";
+            if (playerContainer) {
+                playerContainer.style.display = "block";
             }
         });
     }
@@ -236,7 +234,6 @@ function initPlayerControls() {
     }
 }
 
-  
 function togglePlayPause(e) {
     if (e) e.stopPropagation();
     if (!video) return;
@@ -620,14 +617,8 @@ function setupSettingsActions() {
             }
         });
     }
-}
-// ==========================================
-// NOTICE MODAL HANDLER
-// ==========================================
-function setupSettingsActions() {
-    // ... আপনার আগের বাকি সব সেটিং আইটেম কোড ঠিক থাকবে ...
 
-    // NOTICE MODAL LOGIC (নোটিশ অপশনের কাজ)
+    // NOTICE MODAL LOGIC
     const noticeItem = document.getElementById("settingsNoticeBtn") || getSettingsItemByText("Notice");
     const noticeModal = document.getElementById("noticeModal");
     const closeNoticeModal = document.getElementById("closeNoticeModal");
@@ -645,7 +636,6 @@ function setupSettingsActions() {
         });
     }
 
-    // ব্যাকগ্রাউন্ডে ক্লিক করলে নোটিশ উইন্ডো বন্ধ হওয়া
     if (noticeModal) {
         noticeModal.addEventListener("click", (e) => {
             if (e.target === noticeModal) {
@@ -653,72 +643,64 @@ function setupSettingsActions() {
             }
         });
     }
-}
-// ==========================================
-// 1. COPYRIGHT MODAL HANDLER
-// ==========================================
-const copyrightBtn = document.getElementById("settingsCopyrightBtn") || getSettingsItemByText("Copyright");
-const copyrightModal = document.getElementById("copyrightModal");
-const closeCopyrightModal = document.getElementById("closeCopyrightModal");
 
-if (copyrightBtn && copyrightModal) {
-    copyrightBtn.addEventListener("click", () => {
-        copyrightModal.classList.remove("hidden");
-    });
-}
+    // COPYRIGHT MODAL LOGIC
+    const copyrightBtn = document.getElementById("settingsCopyrightBtn") || getSettingsItemByText("Copyright");
+    const copyrightModal = document.getElementById("copyrightModal");
+    const closeCopyrightModal = document.getElementById("closeCopyrightModal");
 
-if (closeCopyrightModal && copyrightModal) {
-    closeCopyrightModal.addEventListener("click", () => {
-        copyrightModal.classList.add("hidden");
-    });
-}
+    if (copyrightBtn && copyrightModal) {
+        copyrightBtn.addEventListener("click", () => {
+            copyrightModal.classList.remove("hidden");
+        });
+    }
 
-if (copyrightModal) {
-    copyrightModal.addEventListener("click", (e) => {
-        if (e.target === copyrightModal) copyrightModal.classList.add("hidden");
-    });
-}
+    if (closeCopyrightModal && copyrightModal) {
+        closeCopyrightModal.addEventListener("click", () => {
+            copyrightModal.classList.add("hidden");
+        });
+    }
 
-// ==========================================
-// 2. SHARE OUR APP HANDLER
-// ==========================================
-const shareBtn = document.getElementById("settingsShareBtn") || getSettingsItemByText("Share Our App");
+    if (copyrightModal) {
+        copyrightModal.addEventListener("click", (e) => {
+            if (e.target === copyrightModal) copyrightModal.classList.add("hidden");
+        });
+    }
 
-if (shareBtn) {
-    shareBtn.addEventListener("click", async () => {
-        const shareData = {
-            title: "StreamZX - Live TV & Sports",
-            text: "StreamZX অ্যাপ দিয়ে সরাসরি ফ্রিতে দেখুন সকল লাইভ স্পোর্টস ও টিভি চ্যানেল। অ্যাপটি এখনই ডাউনলোড করুন!",
-            url: window.location.href // এখানে আপনার অ্যাপ ডাউনলোড বা টেলিগ্রাম বট লিঙ্কও দিতে পারেন
-        };
+    // SHARE APP LOGIC
+    const shareBtn = document.getElementById("settingsShareBtn") || getSettingsItemByText("Share Our App");
+    if (shareBtn) {
+        shareBtn.addEventListener("click", async () => {
+            const shareData = {
+                title: "StreamZX - Live TV & Sports",
+                text: "StreamZX অ্যাপ দিয়ে সরাসরি ফ্রিতে দেখুন সকল লাইভ স্পোর্টস ও টিভি চ্যানেল। অ্যাপটি এখনই ডাউনলোড করুন!",
+                url: window.location.href
+            };
 
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                console.log("Sharing cancelled", err);
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    console.log("Sharing cancelled", err);
+                }
+            } else {
+                navigator.clipboard.writeText(shareData.url);
+                alert("App link copied to clipboard! Share it with your friends.");
             }
-        } else {
-            // ব্রাউজার বা ডিভাইসে Native Share সাপোর্ট না করলে লিঙ্ক কপি হবে
-            navigator.clipboard.writeText(shareData.url);
-            alert("App link copied to clipboard! Share it with your friends.");
-        }
-    });
-}
+        });
+    }
 
-// ==========================================
-// 3. EMAIL CONTACT HANDLER
-// ==========================================
-const emailBtn = document.getElementById("settingsEmailBtn") || getSettingsItemByText("Email");
+    // EMAIL CONTACT LOGIC
+    const emailBtn = document.getElementById("settingsEmailBtn") || getSettingsItemByText("Email Us") || getSettingsItemByText("Email");
+    if (emailBtn) {
+        emailBtn.addEventListener("click", () => {
+            const adminEmail = "support@streamzx.com";
+            const subject = encodeURIComponent("StreamZX App Support / DMCA Request");
+            const body = encodeURIComponent("Hello StreamZX Team,\n\nI want to inform/ask about:\n");
 
-if (emailBtn) {
-    emailBtn.addEventListener("click", () => {
-        const adminEmail = "support@streamzx.com"; // আপনার সাপোর্ট ইমেইল এড্রেস
-        const subject = encodeURIComponent("StreamZX App Support / DMCA Request");
-        const body = encodeURIComponent("Hello StreamZX Team,\n\nI want to inform/ask about:\n");
-
-        window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
-    });
+            window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+        });
+    }
 }
 
 // ==========================================
@@ -728,7 +710,6 @@ function loadNoticeContent() {
     const noticeBody = document.getElementById("noticeBody");
     if (!noticeBody) return;
 
-    // আপনার প্রয়োজন অনুযায়ী নোটিশের লেখা ও তারিখ পরিবর্তন করতে পারবেন
     const noticeData = {
         title: "📢 StreamZX আপডেট ও ঘোষণা",
         date: new Date().toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' }),
