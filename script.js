@@ -500,6 +500,19 @@ function getSettingsItemByText(text) {
     }
     return null;
 }
+// Crash Log Dialog Toggle / Action
+const crashLogItem = getSettingsItemByText("Crash Log Dialog");
+if (crashLogItem) {
+    crashLogItem.addEventListener("click", () => {
+        let isEnabled = localStorage.getItem("crashLogEnabled") !== "false";
+        let confirmAction = confirm(`Crash Log Dialog is currently ${isEnabled ? 'ENABLED' : 'DISABLED'}.\n\nDo you want to ${isEnabled ? 'disable' : 'enable'} error reporting?`);
+        
+        if (confirmAction) {
+            localStorage.setItem("crashLogEnabled", (!isEnabled).toString());
+            alert(`Crash Log Dialog has been ${!isEnabled ? 'Enabled' : 'Disabled'}.`);
+        }
+    });
+}
 
 
 // ==========================================
