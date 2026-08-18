@@ -621,6 +621,62 @@ function setupSettingsActions() {
         });
     }
 }
+// ==========================================
+// NOTICE MODAL HANDLER
+// ==========================================
+function setupSettingsActions() {
+    // ... আপনার আগের বাকি সব সেটিং আইটেম কোড ঠিক থাকবে ...
+
+    // NOTICE MODAL LOGIC (নোটিশ অপশনের কাজ)
+    const noticeItem = document.getElementById("settingsNoticeBtn") || getSettingsItemByText("Notice");
+    const noticeModal = document.getElementById("noticeModal");
+    const closeNoticeModal = document.getElementById("closeNoticeModal");
+
+    if (noticeItem && noticeModal) {
+        noticeItem.addEventListener("click", () => {
+            noticeModal.classList.remove("hidden");
+            loadNoticeContent();
+        });
+    }
+
+    if (closeNoticeModal) {
+        closeNoticeModal.addEventListener("click", () => {
+            noticeModal.classList.add("hidden");
+        });
+    }
+
+    // ব্যাকগ্রাউন্ডে ক্লিক করলে নোটিশ উইন্ডো বন্ধ হওয়া
+    if (noticeModal) {
+        noticeModal.addEventListener("click", (e) => {
+            if (e.target === noticeModal) {
+                noticeModal.classList.add("hidden");
+            }
+        });
+    }
+}
+
+// ==========================================
+// LOAD NOTICE CONTENT FUNCTION
+// ==========================================
+function loadNoticeContent() {
+    const noticeBody = document.getElementById("noticeBody");
+    if (!noticeBody) return;
+
+    // আপনার প্রয়োজন অনুযায়ী নোটিশের লেখা ও তারিখ পরিবর্তন করতে পারবেন
+    const noticeData = {
+        title: "📢 StreamZX আপডেট ও ঘোষণা",
+        date: new Date().toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' }),
+        message: "আমাদের StreamZX অ্যাপে স্বাগতম! কোনো চ্যানেল চলতে সমস্যা হলে রিফ্রেশ বাটন ব্যবহার করুন। সর্বাধুনিক স্পোর্টস লিঙ্ক এবং আপডেট পাওয়ার জন্য আমাদের টেলিগ্রাম চ্যানেলে যুক্ত থাকুন।"
+    };
+
+    noticeBody.innerHTML = `
+        <div class="notice-box" style="text-align: left;">
+            <h4 style="margin-bottom: 6px; color: var(--primary, #ff2a4b); font-size: 16px;">${escapeHTML(noticeData.title)}</h4>
+            <small style="color: var(--text-muted, #888); display: block; margin-bottom: 12px; font-size: 11px;">📅 তারিখ: ${escapeHTML(noticeData.date)}</small>
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-primary);">${escapeHTML(noticeData.message)}</p>
+        </div>
+    `;
+}
 
 function renderPlaylists() {
     const container = document.getElementById("playlistContainer");
