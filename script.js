@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Script (Without Sidebar)
+// StreamZX - Script (With Modern Custom Overlay Controls)
 // ==========================================
 
 let channels = [];
@@ -39,6 +39,14 @@ let mainSectionTitle;
 let categoryPage;
 let settingsPage;
 
+// Overlay Player Elements
+let playerOverlay;
+let lockOverlay;
+let isLocked = false;
+let overlayTimeout = null;
+let currentAspectRatioIndex = 0;
+const aspectRatios = ["contain", "cover", "fill"];
+
 // ==========================================
 // APP START
 // ==========================================
@@ -60,8 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
     categoryPage = document.getElementById("categoryPage");
     settingsPage = document.getElementById("settingsPage");
 
-    // Initialize Theme (Dark / Light Mode)
+    // Initialize Theme & Player Controls
     initTheme();
+    initPlayerControls();
 
     // Splash Screen Auto-Timeout Safety
     setTimeout(() => {
@@ -80,13 +89,201 @@ function initApp() {
 }
 
 // ==========================================
+// CUSTOM PLAYER CONTROLS LOGIC
+// ==========================================
+function initPlayerControls() {
+    playerOverlay = document.getElementById("playerOverlay");
+    lockOverlay = document.getElementById("lockOverlay");
+
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const rewindBtn = document.getElementById("rewindBtn");
+    const forwardBtn = document.getElementById("forwardBtn");
+    const muteBtn = document.getElementById("muteBtn");
+    const lockBtn = document.getElementById("lockBtn");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const aspectRatioBtn = document.getElementById("aspectRatioBtn");
+    const pipBtn = document.getElementById("pipBtn");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const seekBar = document.getElementById("seekBar");
+    const currentTimeEl = document.getElementById("currentTime");
+    const durationEl = document.getElementById("duration");
+
+    // Play / Pause Toggle
+    if (playPauseBtn && video) {
+        playPauseBtn.addEventListener("click", togglePlayPause);
+        video.addEventListener("click", toggleOverlayVisibility);
+    }
+
+    // Rewind / Forward 10s
+    if (rewindBtn && video) {
+        rewindBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            video.currentTime = Math.max(0, video.currentTime - 10);
+            resetOverlayTimeout();
+        });
+    }
+
+    if (forwardBtn && video) {
+        forwardBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 10);
+            resetOverlayTimeout();
+        });
+    }
+
+    // Mute / Unmute
+    if (muteBtn && video) {
+        muteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            video.muted = !video.muted;
+            const icon = muteBtn.querySelector("i");
+            if (icon) {
+                icon.className = video.muted ? "fa-solid fa-volume-xmark" : "fa-solid fa-volume-high";
+            }
+            resetOverlayTimeout();
+        });
+    }
+
+    // Screen Lock Toggle
+    if (lockBtn) {
+        lockBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            isLocked = true;
+            if (playerOverlay) playerOverlay.classList.add("hidden-overlay");
+            if (lockOverlay) lockOverlay.classList.remove("hidden");
+        });
+    }
+
+    if (unlockBtn) {
+        unlockBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            isLocked = false;
+            if (lockOverlay) lockOverlay.classList.add("hidden");
+            if (playerOverlay) playerOverlay.classList.remove("hidden-overlay");
+            resetOverlayTimeout();
+        });
+    }
+
+    // Aspect Ratio Cycle (Contain / Cover / Fill)
+    if (aspectRatioBtn && video) {
+        aspectRatioBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            currentAspectRatioIndex = (currentAspectRatioIndex + 1) % aspectRatios.length;
+            video.style.objectFit = aspectRatios[currentAspectRatioIndex];
+            resetOverlayTimeout();
+        });
+    }
+
+    // Floating Picture-in-Picture
+    if (pipBtn) {
+        pipBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleFloatingPlayer();
+            resetOverlayTimeout();
+        });
+    }
+
+    // Fullscreen Toggle
+    if (fullscreenBtn && video) {
+        fullscreenBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleFullScreen();
+            resetOverlayTimeout();
+        });
+    }
+
+    // Progress / Seek Bar Updates
+    if (video) {
+        video.addEventListener("timeupdate", () => {
+            if (!video.duration) return;
+            if (seekBar) {
+                seekBar.value = (video.currentTime / video.duration) * 100;
+            }
+            if (currentTimeEl) currentTimeEl.textContent = formatTime(video.currentTime);
+            if (durationEl) durationEl.textContent = formatTime(video.duration);
+        });
+
+        if (seekBar) {
+            seekBar.addEventListener("input", (e) => {
+                if (video.duration) {
+                    video.currentTime = (e.target.value / 100) * video.duration;
+                }
+            });
+        }
+
+        video.addEventListener("play", updatePlayIcon);
+        video.addEventListener("pause", updatePlayIcon);
+    }
+}
+
+function togglePlayPause(e) {
+    if (e) e.stopPropagation();
+    if (!video) return;
+
+    if (video.paused) {
+        video.play().catch(err => console.log("Play error:", err));
+    } else {
+        video.pause();
+    }
+    resetOverlayTimeout();
+}
+
+function updatePlayIcon() {
+    const playIcon = document.querySelector("#playPauseBtn i");
+    if (playIcon) {
+        playIcon.className = video.paused ? "fa-solid fa-play" : "fa-solid fa-pause";
+    }
+}
+
+function toggleOverlayVisibility() {
+    if (isLocked || !playerOverlay) return;
+
+    if (playerOverlay.classList.contains("hidden-overlay")) {
+        playerOverlay.classList.remove("hidden-overlay");
+        resetOverlayTimeout();
+    } else {
+        playerOverlay.classList.add("hidden-overlay");
+    }
+}
+
+function resetOverlayTimeout() {
+    if (overlayTimeout) clearTimeout(overlayTimeout);
+    if (!isLocked && playerOverlay) {
+        playerOverlay.classList.remove("hidden-overlay");
+        overlayTimeout = setTimeout(() => {
+            if (video && !video.paused) {
+                playerOverlay.classList.add("hidden-overlay");
+            }
+        }, 4000);
+    }
+}
+
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds === Infinity) return "00:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+function toggleFullScreen() {
+    const wrapper = document.querySelector(".video-player-wrapper") || video;
+    if (!document.fullscreenElement) {
+        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+        else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+        else if (wrapper.msRequestFullscreen) wrapper.msRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+}
+
+// ==========================================
 // THEME (DARK / LIGHT MODE) LOGIC
 // ==========================================
 function initTheme() {
     const themeToggle = document.getElementById("themeToggle");
     const savedTheme = localStorage.getItem("theme");
 
-    // Check if user set Light mode previously
     if (savedTheme === "light") {
         document.body.classList.add("light-mode");
         if (themeToggle) themeToggle.checked = false;
@@ -95,7 +292,6 @@ function initTheme() {
         if (themeToggle) themeToggle.checked = true;
     }
 
-    // Toggle switch listener
     if (themeToggle) {
         themeToggle.addEventListener("change", () => {
             if (themeToggle.checked) {
@@ -144,7 +340,7 @@ function setupEventListeners() {
         });
     }
 
-    // --- PIP PLAYER BUTTON (IN PLAYER HEADER) ---
+    // --- PIP PLAYER BUTTON ---
     const pipPlayerBtn = document.getElementById("pipPlayerBtn");
     if (pipPlayerBtn) {
         pipPlayerBtn.addEventListener("click", toggleFloatingPlayer);
@@ -191,7 +387,6 @@ function setupEventListeners() {
     const sportsNavBtn = document.getElementById("sportsNav");
     const settingsNavBtn = document.getElementById("settingsNav");
 
-    // LIVE EVENT NAV
     if (liveEventBtn) {
         liveEventBtn.addEventListener("click", () => {
             setActiveBottomNav(liveEventBtn);
@@ -217,7 +412,6 @@ function setupEventListeners() {
         });
     }
 
-    // CATEGORY NAV
     if (categoryNavBtn) {
         categoryNavBtn.addEventListener("click", () => {
             setActiveBottomNav(categoryNavBtn);
@@ -226,7 +420,6 @@ function setupEventListeners() {
         });
     }
 
-    // SPORTS NAV
     if (sportsNavBtn) {
         sportsNavBtn.addEventListener("click", () => {
             setActiveBottomNav(sportsNavBtn);
@@ -242,7 +435,6 @@ function setupEventListeners() {
         });
     }
 
-    // SETTINGS NAV
     if (settingsNavBtn) {
         settingsNavBtn.addEventListener("click", () => {
             setActiveBottomNav(settingsNavBtn);
@@ -281,8 +473,6 @@ function setupEventListeners() {
 // PLAYLIST MANAGER & SETTINGS LOGIC
 // ==========================================
 function setupSettingsActions() {
-
-    // 1. PLAYLISTS MODAL TRIGGER
     const playlistItem = getSettingsItemByText("Playlists");
     const playlistModal = document.getElementById("playlistModal");
     const closePlaylistModal = document.getElementById("closePlaylistModal");
@@ -309,7 +499,6 @@ function setupSettingsActions() {
         });
     }
 
-    // M3U FILE UPLOAD READ LOGIC
     let uploadedFileContent = "";
     const playlistFileInput = document.getElementById("playlistFileInput");
     if (playlistFileInput) {
@@ -326,7 +515,6 @@ function setupSettingsActions() {
         });
     }
 
-    // SAVE PLAYLIST
     if (savePlaylistBtn) {
         savePlaylistBtn.addEventListener("click", async () => {
             const name = document.getElementById("playlistNameInput").value.trim() || "Custom Playlist";
@@ -373,7 +561,6 @@ function setupSettingsActions() {
         });
     }
 
-    // 2. Network Stream
     const networkStreamBtn = document.getElementById("settingsNetworkStreamBtn");
     if (networkStreamBtn) {
         networkStreamBtn.addEventListener("click", () => {
@@ -388,7 +575,6 @@ function setupSettingsActions() {
         });
     }
 
-    // 3. Clear App Data
     const clearDataBtn = document.getElementById("settingsClearDataBtn");
     if (clearDataBtn) {
         clearDataBtn.addEventListener("click", () => {
@@ -399,7 +585,6 @@ function setupSettingsActions() {
         });
     }
 
-    // 4. Exit Application
     const exitBtn = document.getElementById("settingsExitBtn");
     if (exitBtn) {
         exitBtn.addEventListener("click", () => {
@@ -416,7 +601,6 @@ function setupSettingsActions() {
     }
 }
 
-// RENDER SAVED PLAYLISTS IN MODAL
 function renderPlaylists() {
     const container = document.getElementById("playlistContainer");
     if (!container) return;
@@ -466,7 +650,6 @@ function renderPlaylists() {
     });
 }
 
-// M3U PARSER ENGINE
 function parseM3UContent(m3uData) {
     const lines = m3uData.split("\n");
     const parsedList = [];
@@ -497,7 +680,6 @@ function parseM3UContent(m3uData) {
     return parsedList;
 }
 
-// HELPER UTILITY FOR SETTINGS ITEM
 function getSettingsItemByText(text) {
     const items = document.querySelectorAll('.settings-item span');
     for (let span of items) {
@@ -787,11 +969,6 @@ function playChannel(channel) {
         video.pause();
         video.removeAttribute("src");
         video.load();
-
-        // Double tap on video screen to toggle PiP (Floating mode)
-        video.ondblclick = async () => {
-            toggleFloatingPlayer();
-        };
     }
 
     const url = String(channel.url).trim();
@@ -817,6 +994,8 @@ function playChannel(channel) {
         video.src = url;
         video.play().catch(error => console.log("Autoplay blocked:", error));
     }
+
+    resetOverlayTimeout();
 
     try {
         localStorage.setItem("lastChannel", JSON.stringify(channel));
