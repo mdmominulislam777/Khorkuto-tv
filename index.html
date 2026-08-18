@@ -300,6 +300,36 @@
      JAVASCRIPT
 ========================================== -->
 <script src="script.js"></script>
+    
+<div id="playlistModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-list-ul"></i> IPTV Playlists</h3>
+            <button id="closePlaylistModal" class="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <div class="playlist-action-bar">
+            <span>Add Custom Playlist</span>
+            <button id="openAddPlaylistBtn" class="add-playlist-btn" title="Add M3U Playlist">
+                <i class="fa-solid fa-plus"></i> Add
+            </button>
+        </div>
+
+        <div id="addPlaylistForm" class="add-playlist-form hidden">
+            <input type="text" id="playlistNameInput" placeholder="Playlist Name (e.g. My IPTV)">
+            <input type="url" id="playlistUrlInput" placeholder="Enter M3U / M3U8 URL (http://...)">
+            <div class="or-divider">OR</div>
+            <label class="file-upload-label">
+                <i class="fa-solid fa-file-arrow-up"></i> Upload M3U File
+                <input type="file" id="playlistFileInput" accept=".m3u,.m3u8,.txt">
+            </label>
+            <button id="savePlaylistBtn" class="save-btn"><i class="fa-solid fa-check"></i> Save & Load</button>
+        </div>
+
+        <div id="playlistContainer" class="playlist-list">
+            </div>
+    </div>
+</div>
 
 </body>
 </html>
