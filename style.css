@@ -945,8 +945,12 @@ nav.bottom-navigation,
     font-size: 12px;
     cursor: pointer;
 }
-/* Picture-in-Picture চালু থাকলে প্লেয়ার কন্টেইনার সম্পূর্ণ গায়েব হবে */
+
+/* ==========================================
+   PICTURE-IN-PICTURE (PiP) HIDE STYLES
+========================================== */
 #playerContainer.hidden,
-#playerContainer:has(video:picture-in-picture) {
+#playerContainer:has(video:picture-in-picture),
+.player-container:has(video:picture-in-picture) {
     display: none !important;
 }
