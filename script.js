@@ -269,122 +269,138 @@ function setupEventListeners() {
 }
 
 // ==========================================
-// SETTINGS ACTIONS & ITEM FUNCTIONS
+// PLAYLIST MANAGER & M3U PARSER LOGIC
 // ==========================================
+let customPlaylists = JSON.parse(localStorage.getItem("customPlaylists") || "[]");
+
 function setupSettingsActions() {
-    
-    // 1. Network Stream
+
+    // 1. PLAYLISTS MODAL TRIGGER
+    const playlistItem = getSettingsItemByText("Playlists");
+    const playlistModal = document.getElementById("playlistModal");
+    const closePlaylistModal = document.getElementById("closePlaylistModal");
+    const openAddPlaylistBtn = document.getElementById("openAddPlaylistBtn");
+    const addPlaylistForm = document.getElementById("addPlaylistForm");
+    const savePlaylistBtn = document.getElementById("savePlaylistBtn");
+
+    if (playlistItem && playlistModal) {
+        playlistItem.addEventListener("click", () => {
+            playlistModal.classList.remove("hidden");
+            renderPlaylists();
+        });
+    }
+
+    if (closePlaylistModal) {
+        closePlaylistModal.addEventListener("click", () => {
+            playlistModal.classList.add("hidden");
+        });
+    }
+
+    if (openAddPlaylistBtn) {
+        openAddPlaylistBtn.addEventListener("click", () => {
+            addPlaylistForm.classList.toggle("hidden");
+        });
+    }
+
+    // M3U FILE UPLOAD READ LOGIC
+    let uploadedFileContent = "";
+    const playlistFileInput = document.getElementById("playlistFileInput");
+    if (playlistFileInput) {
+        playlistFileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadedFileContent = event.target.result;
+                    alert(`Selected File: ${file.name}`);
+                };
+                reader.readAsText(file);
+            }
+        });
+    }
+
+    // SAVE PLAYLIST
+    if (savePlaylistBtn) {
+        savePlaylistBtn.addEventListener("click", async () => {
+            const name = document.getElementById("playlistNameInput").value.trim() || "Custom Playlist";
+            const url = document.getElementById("playlistUrlInput").value.trim();
+
+            if (!url && !uploadedFileContent) {
+                alert("Please enter a M3U URL or upload an M3U file!");
+                return;
+            }
+
+            let parsedChannels = [];
+
+            if (uploadedFileContent) {
+                parsedChannels = parseM3UContent(uploadedFileContent);
+            } else if (url) {
+                try {
+                    const res = await fetch(url);
+                    const text = await res.text();
+                    parsedChannels = parseM3UContent(text);
+                } catch (err) {
+                    // Fallback to single stream entry if CORS/fetch fails
+                    parsedChannels = [{ id: Date.now(), name: name, category: "Custom", url: url, logo: "logo.png" }];
+                }
+            }
+
+            if (parsedChannels.length === 0) {
+                alert("No valid channels found in the Playlist!");
+                return;
+            }
+
+            const newPL = {
+                id: Date.now(),
+                name: name,
+                channels: parsedChannels
+            };
+
+            customPlaylists.push(newPL);
+            localStorage.setItem("customPlaylists", JSON.stringify(customPlaylists));
+
+            // Reset inputs & refresh list
+            document.getElementById("playlistNameInput").value = "";
+            document.getElementById("playlistUrlInput").value = "";
+            uploadedFileContent = "";
+            addPlaylistForm.classList.add("hidden");
+            renderPlaylists();
+        });
+    }
+
+    // 2. Network Stream
     const networkStreamBtn = document.getElementById("settingsNetworkStreamBtn");
     if (networkStreamBtn) {
         networkStreamBtn.addEventListener("click", () => {
             const streamUrl = prompt("Enter Video or HLS (.m3u8) Stream URL:");
             if (streamUrl && streamUrl.trim() !== "") {
-                const customChannel = {
+                playChannel({
                     name: "Network Stream",
                     url: streamUrl.trim(),
-                    logo: "https://via.placeholder.com/80?text=Stream"
-                };
-                playChannel(customChannel);
+                    logo: "logo.png"
+                });
             }
         });
     }
 
-    // 2. Playlists (Shows Saved Favorite Channels)
-    const playlistItem = getSettingsItemByText("Playlists");
-    if (playlistItem) {
-        playlistItem.addEventListener("click", () => {
-            currentCategory = "Favorites";
-            showNormalContent();
-            updateSectionTitle();
-            renderChannels();
-            setActiveBottomNav(null);
-        });
-    }
-
-    // 3. Floating Player
-    const floatingPlayerItem = getSettingsItemByText("Floating Player");
-    if (floatingPlayerItem) {
-        floatingPlayerItem.addEventListener("click", () => {
-            alert("Picture-in-Picture (PiP) is enabled by default in the video player controls.");
-        });
-    }
-
-    // 4. Video Quality Setting
-    const qualityItem = getSettingsItemByText("Video Quality Setting");
-    if (qualityItem) {
-        qualityItem.addEventListener("click", () => {
-            alert("Video quality is set to Auto (Adaptive HLS Bitrate). You can adjust it via video player menu.");
-        });
-    }
-
-    // 5. Notice
-    const noticeItem = getSettingsItemByText("Notice");
-    if (noticeItem) {
-        noticeItem.addEventListener("click", () => {
-            alert("📢 StreamZX Notice:\nWelcome to StreamZX! Enjoy smooth live streaming. Keep your app updated for new channels.");
-        });
-    }
-
-    // 6. Copyright
-    const copyrightItem = getSettingsItemByText("Copyright");
-    if (copyrightItem) {
-        copyrightItem.addEventListener("click", () => {
-            alert("© 2026 StreamZX. All rights reserved.\nAll stream links are collected from free public sources on the internet.");
-        });
-    }
-
-    // 7. Share Our App
-    const shareItem = getSettingsItemByText("Share Our App");
-    if (shareItem) {
-        shareItem.addEventListener("click", () => {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'StreamZX - Live TV',
-                    text: 'Watch Live TV Channels on StreamZX!',
-                    url: window.location.href,
-                }).catch((err) => console.log('Share failed:', err));
-            } else {
-                prompt("Copy and share this app link:", window.location.href);
-            }
-        });
-    }
-
-    // 8. Email
-    const emailItem = getSettingsItemByText("Email");
-    if (emailItem) {
-        emailItem.addEventListener("click", () => {
-            window.location.href = "mailto:support@streamzx.com?subject=StreamZX%20Support%20Feedback";
-        });
-    }
-
-    // 9. Update App
-    const updateItem = getSettingsItemByText("Update App");
-    if (updateItem) {
-        updateItem.addEventListener("click", () => {
-            alert("🚀 You are using the latest version of StreamZX (v2.0).");
-        });
-    }
-
-    // 10. Clear App Data
+    // 3. Clear App Data
     const clearDataBtn = document.getElementById("settingsClearDataBtn");
     if (clearDataBtn) {
         clearDataBtn.addEventListener("click", () => {
-            if (confirm("Are you sure you want to clear app cache and favorite data?")) {
+            if (confirm("Are you sure you want to clear all data and playlists?")) {
                 localStorage.clear();
                 location.reload();
             }
         });
     }
 
-    // 11. Exit Application
+    // 4. Exit Application
     const exitBtn = document.getElementById("settingsExitBtn");
     if (exitBtn) {
         exitBtn.addEventListener("click", () => {
             if (confirm("Are you sure you want to exit?")) {
                 if (window.Telegram && window.Telegram.WebApp) {
                     window.Telegram.WebApp.close();
-                } else if (window.navigator && window.navigator.app && window.navigator.app.exitApp) {
-                    window.navigator.app.exitApp();
                 } else {
                     window.close();
                 }
@@ -393,7 +409,88 @@ function setupSettingsActions() {
     }
 }
 
-// Helper utility to target settings items easily
+// RENDER SAVED PLAYLISTS IN MODAL
+function renderPlaylists() {
+    const container = document.getElementById("playlistContainer");
+    if (!container) return;
+
+    if (customPlaylists.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No custom playlists added yet.</div>`;
+        return;
+    }
+
+    container.innerHTML = "";
+    customPlaylists.forEach((pl, index) => {
+        const item = document.createElement("div");
+        item.className = "playlist-item-card";
+        item.innerHTML = `
+            <div class="playlist-item-info">
+                <i class="fa-solid fa-folder-play"></i>
+                <div>
+                    <strong>${escapeHTML(pl.name)}</strong>
+                    <div style="font-size:11px; color:var(--text-muted);">${pl.channels.length} Channels</div>
+                </div>
+            </div>
+            <div class="playlist-item-actions">
+                <button class="play-pl-btn"><i class="fa-solid fa-play"></i> Load</button>
+                <button class="del-pl-btn"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+
+        item.querySelector(".play-pl-btn").addEventListener("click", () => {
+            channels = pl.channels;
+            currentCategory = pl.name;
+            showNormalContent();
+            if (mainSectionTitle) mainSectionTitle.textContent = "📁 " + pl.name;
+            renderChannels();
+            document.getElementById("playlistModal").classList.add("hidden");
+            hideSettingsPage();
+        });
+
+        item.querySelector(".del-pl-btn").addEventListener("click", () => {
+            if (confirm("Delete this playlist?")) {
+                customPlaylists.splice(index, 1);
+                localStorage.setItem("customPlaylists", JSON.stringify(customPlaylists));
+                renderPlaylists();
+            }
+        });
+
+        container.appendChild(item);
+    });
+}
+
+// M3U PARSER ENGINE
+function parseM3UContent(m3uData) {
+    const lines = m3uData.split("\n");
+    const parsedList = [];
+    let currentChannel = {};
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+
+        if (line.startsWith("#EXTINF:")) {
+            currentChannel = {};
+            const nameParts = line.split(",");
+            currentChannel.name = nameParts[nameParts.length - 1].trim() || "Channel";
+
+            const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+            currentChannel.logo = logoMatch ? logoMatch[1] : "logo.png";
+
+            const groupMatch = line.match(/group-title="([^"]+)"/);
+            currentChannel.category = groupMatch ? groupMatch[1] : "Custom";
+            currentChannel.id = "pl_" + Math.random().toString(36).substr(2, 9);
+        } else if (line.length > 0 && !line.startsWith("#")) {
+            currentChannel.url = line;
+            if (currentChannel.name) {
+                parsedList.push(currentChannel);
+            }
+            currentChannel = {};
+        }
+    }
+    return parsedList;
+}
+
+// Helper utility
 function getSettingsItemByText(text) {
     const items = document.querySelectorAll('.settings-item span');
     for (let span of items) {
