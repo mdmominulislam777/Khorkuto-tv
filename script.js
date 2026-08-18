@@ -1,5 +1,5 @@
 // ==========================================
-// StreamZX - Script (With Live Events Fix & Custom Controls)
+// StreamZX - Script (Fixed Live Events & Channels Separation)
 // ==========================================
 
 let channels = [];
@@ -295,7 +295,7 @@ function toggleFullScreen() {
 }
 
 // ==========================================
-// THEME (DARK / LIGHT MODE) LOGIC
+// THEME LOGIC
 // ==========================================
 function initTheme() {
     const themeToggle = document.getElementById("themeToggle");
@@ -323,7 +323,7 @@ function initTheme() {
 }
 
 // ==========================================
-// SPLASH SCREEN CONTROL
+// SPLASH SCREEN
 // ==========================================
 function hideSplash() {
     const splash = document.getElementById("splash");
@@ -892,12 +892,9 @@ async function loadChannels() {
 
         if (isInitialLoad) {
             isInitialLoad = false;
-            const liveEventBtn = document.getElementById("liveEventNav");
-            if (liveEventBtn) {
-                liveEventBtn.click();
-            } else {
-                renderChannels();
-            }
+            currentCategory = "Sports";
+            updateSectionTitle();
+            renderChannels();
         } else {
             if (currentCategory === "Live Event") {
                 renderLiveEventsUI();
@@ -929,8 +926,19 @@ async function loadChannels() {
 function renderChannels() {
     if (!channelList) return;
 
-    // Ensure category title is visible and no live events element is left
+    // Safety check: Strict condition so Live Events UI never shows in Channel tab
+    if (currentCategory === "Live Event") {
+        renderLiveEventsUI();
+        return;
+    }
+
+    // Clear everything inside channel list cleanly
     channelList.innerHTML = "";
+    
+    // Remove any leftover floating Live Event tabs if created dynamically
+    const extraTabHeader = document.getElementById("liveEventsTabHeader");
+    if (extraTabHeader) extraTabHeader.remove();
+
     const keyword = search ? search.value.toLowerCase().trim() : "";
 
     const filtered = channels.filter(channel => {
@@ -1173,9 +1181,12 @@ const ENDPOINTS = {
 
 function renderLiveEventsUI() {
     if (!channelList) return;
+    
+    // Strict guard: Do not render live event UI if current category is NOT Live Event
+    if (currentCategory !== "Live Event") return;
 
     channelList.innerHTML = `
-        <div style="grid-column: 1/-1; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center;">
+        <div id="liveEventsTabHeader" style="grid-column: 1/-1; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center;">
             <button id="btnFootball" class="sport-tab-btn active" style="padding: 8px 16px; background: var(--primary, #ff2a4b); color: #fff; border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">Football</button>
             <button id="btnCricket" class="sport-tab-btn" style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: var(--text-primary); border: none; border-radius: 20px; font-weight: bold; cursor: pointer;">Cricket</button>
         </div>
