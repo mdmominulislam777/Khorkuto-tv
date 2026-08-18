@@ -513,6 +513,13 @@ if (crashLogItem) {
         }
     });
 }
+    // Floating Player (Picture-in-Picture) Toggle
+    const floatingPlayerItem = getSettingsItemByText("Floating Player");
+    if (floatingPlayerItem) {
+        floatingPlayerItem.addEventListener("click", () => {
+            toggleFloatingPlayer();
+        });
+    }
 
 
 // ==========================================
