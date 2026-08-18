@@ -269,9 +269,11 @@ function setupEventListeners() {
 }
 
 // ==========================================
-// SETTINGS ACTIONS HANDLER
+// SETTINGS ACTIONS & ITEM FUNCTIONS
 // ==========================================
 function setupSettingsActions() {
+    
+    // 1. Network Stream
     const networkStreamBtn = document.getElementById("settingsNetworkStreamBtn");
     if (networkStreamBtn) {
         networkStreamBtn.addEventListener("click", () => {
@@ -287,16 +289,94 @@ function setupSettingsActions() {
         });
     }
 
+    // 2. Playlists (Shows Saved Favorite Channels)
+    const playlistItem = getSettingsItemByText("Playlists");
+    if (playlistItem) {
+        playlistItem.addEventListener("click", () => {
+            currentCategory = "Favorites";
+            showNormalContent();
+            updateSectionTitle();
+            renderChannels();
+            setActiveBottomNav(null);
+        });
+    }
+
+    // 3. Floating Player
+    const floatingPlayerItem = getSettingsItemByText("Floating Player");
+    if (floatingPlayerItem) {
+        floatingPlayerItem.addEventListener("click", () => {
+            alert("Picture-in-Picture (PiP) is enabled by default in the video player controls.");
+        });
+    }
+
+    // 4. Video Quality Setting
+    const qualityItem = getSettingsItemByText("Video Quality Setting");
+    if (qualityItem) {
+        qualityItem.addEventListener("click", () => {
+            alert("Video quality is set to Auto (Adaptive HLS Bitrate). You can adjust it via video player menu.");
+        });
+    }
+
+    // 5. Notice
+    const noticeItem = getSettingsItemByText("Notice");
+    if (noticeItem) {
+        noticeItem.addEventListener("click", () => {
+            alert("📢 StreamZX Notice:\nWelcome to StreamZX! Enjoy smooth live streaming. Keep your app updated for new channels.");
+        });
+    }
+
+    // 6. Copyright
+    const copyrightItem = getSettingsItemByText("Copyright");
+    if (copyrightItem) {
+        copyrightItem.addEventListener("click", () => {
+            alert("© 2026 StreamZX. All rights reserved.\nAll stream links are collected from free public sources on the internet.");
+        });
+    }
+
+    // 7. Share Our App
+    const shareItem = getSettingsItemByText("Share Our App");
+    if (shareItem) {
+        shareItem.addEventListener("click", () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'StreamZX - Live TV',
+                    text: 'Watch Live TV Channels on StreamZX!',
+                    url: window.location.href,
+                }).catch((err) => console.log('Share failed:', err));
+            } else {
+                prompt("Copy and share this app link:", window.location.href);
+            }
+        });
+    }
+
+    // 8. Email
+    const emailItem = getSettingsItemByText("Email");
+    if (emailItem) {
+        emailItem.addEventListener("click", () => {
+            window.location.href = "mailto:support@streamzx.com?subject=StreamZX%20Support%20Feedback";
+        });
+    }
+
+    // 9. Update App
+    const updateItem = getSettingsItemByText("Update App");
+    if (updateItem) {
+        updateItem.addEventListener("click", () => {
+            alert("🚀 You are using the latest version of StreamZX (v2.0).");
+        });
+    }
+
+    // 10. Clear App Data
     const clearDataBtn = document.getElementById("settingsClearDataBtn");
     if (clearDataBtn) {
         clearDataBtn.addEventListener("click", () => {
-            if (confirm("Are you sure you want to clear app data?")) {
+            if (confirm("Are you sure you want to clear app cache and favorite data?")) {
                 localStorage.clear();
                 location.reload();
             }
         });
     }
 
+    // 11. Exit Application
     const exitBtn = document.getElementById("settingsExitBtn");
     if (exitBtn) {
         exitBtn.addEventListener("click", () => {
@@ -312,6 +392,18 @@ function setupSettingsActions() {
         });
     }
 }
+
+// Helper utility to target settings items easily
+function getSettingsItemByText(text) {
+    const items = document.querySelectorAll('.settings-item span');
+    for (let span of items) {
+        if (span.textContent.trim().toLowerCase() === text.toLowerCase()) {
+            return span.closest('.settings-item');
+        }
+    }
+    return null;
+}
+
 
 // ==========================================
 // PAGE CONTROLS
