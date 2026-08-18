@@ -181,7 +181,7 @@
     <div class="settings-group">
         <div class="settings-group-title">COMMUNITY & ABOUT</div>
 
-        <div class="settings-item" id="settingsNoticeBtn">
+        <div class="settings-item">
             <div class="item-left">
                 <i class="fa-solid fa-bell"></i>
                 <span>Notice</span>
@@ -252,17 +252,6 @@
 </section>
 
 <main class="main-content">
-    <!-- স্পোর্টস ট্যাব বাটন -->
-    <div class="sports-tabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <button onclick="loadSportsData('football')" class="tab-btn active">Football</button>
-        <button onclick="loadSportsData('cricket')" class="tab-btn">Cricket</button>
-    </div>
-
-    <!-- ম্যাচ লিস্ট দেখানোর গ্রিড -->
-    <div id="sportsMatchGrid" class="channel-grid">
-        <!-- API থেকে আসা লাইভ স্কোরের ম্যাচগুলো এখানে লোড হবে -->
-    </div>
-
     <h3 class="section-title" id="mainSectionTitle">⚽ Sports Channels</h3>
     <div id="channelList" class="channel-grid"></div>
 </main>
@@ -289,7 +278,6 @@
     </button>
 </nav>
 
-<!-- MODALS -->
 <div id="playlistModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header">
@@ -318,7 +306,6 @@
         <div id="playlistContainer" class="playlist-list"></div>
     </div>
 </div>
-
 <div id="noticeModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header">
@@ -330,7 +317,6 @@
         </div>
     </div>
 </div>
-
 <div id="copyrightModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header">
@@ -346,18 +332,6 @@
         </div>
     </div>
 </div>
-
-<!-- ========================================== -->
-<!-- APP CONFIGURATION JS                       -->
-<!-- ========================================== -->
-<script>
-    window.APP_CONFIG = {
-        SPORTMONKS_API_TOKEN: "YOUR_SPORTMONKS_API_TOKEN", // এখানে আপনার API Token দিন
-        REFRESH_INTERVAL: 30000,                            // স্পোর্টস লাইভ স্কোর রিফ্রেশ টাইম (৩০ সেকেন্ড)
-        TELEGRAM_URL: "https://t.me/your_channel",
-        SUPPORT_EMAIL: "support@streamzx.com"
-    };
-</script>
 
 <script src="script.js"></script>
 
