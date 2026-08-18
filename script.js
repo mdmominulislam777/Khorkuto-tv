@@ -94,8 +94,6 @@ function initApp() {
 function initPlayerControls() {
     playerOverlay = document.getElementById("playerOverlay");
     lockOverlay = document.getElementById("lockOverlay");
-    
-    // playerContainer নিশ্চিতভাবে এখানে সিলেক্ট করে নিন
     playerContainer = document.getElementById("playerContainer");
 
     const playPauseBtn = document.getElementById("playPauseBtn");
@@ -111,7 +109,7 @@ function initPlayerControls() {
     const currentTimeEl = document.getElementById("currentTime");
     const durationEl = document.getElementById("duration");
 
-    // PIP ENTRANCE & EXIT LISTENERS
+    // PIP ENTRANCE & EXIT LISTENERS (Hides player area when PiP is active)
     if (video) {
         video.addEventListener("enterpictureinpicture", () => {
             const pContainer = document.getElementById("playerContainer");
@@ -236,7 +234,6 @@ function initPlayerControls() {
     }
 }
 
-  
 function togglePlayPause(e) {
     if (e) e.stopPropagation();
     if (!video) return;
@@ -359,12 +356,6 @@ function setupEventListeners() {
                 renderChannels();
             }
         });
-    }
-
-    // --- PIP PLAYER BUTTON ---
-    const pipPlayerBtn = document.getElementById("pipPlayerBtn");
-    if (pipPlayerBtn) {
-        pipPlayerBtn.addEventListener("click", toggleFloatingPlayer);
     }
 
     // --- FAVORITES HEADER BTN ---
@@ -520,6 +511,24 @@ function setupSettingsActions() {
         });
     }
 
+    // --- NOTICE MODAL LOGIC ---
+    const noticeItem = document.getElementById("settingsNoticeBtn") || getSettingsItemByText("Notice");
+    const noticeModal = document.getElementById("noticeModal");
+    const closeNoticeModal = document.getElementById("closeNoticeModal");
+
+    if (noticeItem && noticeModal) {
+        noticeItem.addEventListener("click", () => {
+            noticeModal.classList.remove("hidden");
+            loadNoticeContent();
+        });
+    }
+
+    if (closeNoticeModal) {
+        closeNoticeModal.addEventListener("click", () => {
+            noticeModal.classList.add("hidden");
+        });
+    }
+
     let uploadedFileContent = "";
     const playlistFileInput = document.getElementById("playlistFileInput");
     if (playlistFileInput) {
@@ -620,6 +629,26 @@ function setupSettingsActions() {
             }
         });
     }
+}
+
+// NOTICE CONTENT LOADER
+function loadNoticeContent() {
+    const noticeBody = document.getElementById("noticeBody");
+    if (!noticeBody) return;
+
+    const noticeData = {
+        title: "Welcome to StreamZX!",
+        date: "2026-08-18",
+        message: "আমাদের অ্যাপে স্বাগতম! কোনো চ্যানেল না চললে রিলোড বাটনে ক্লিক করুন। নতুন আপডেট ও সার্ভার পরিবর্তন সম্পর্কিত খবরের জন্য আমাদের সাথেই থাকুন।"
+    };
+
+    noticeBody.innerHTML = `
+        <div class="notice-box">
+            <h4 style="margin-bottom: 5px; color: var(--primary, #ff2a4b);">${escapeHTML(noticeData.title)}</h4>
+            <small style="color: var(--text-muted, #888); display: block; margin-bottom: 12px;">📅 Date: ${escapeHTML(noticeData.date)}</small>
+            <p style="font-size: 14px; line-height: 1.5; color: var(--text-primary);">${escapeHTML(noticeData.message)}</p>
+        </div>
+    `;
 }
 
 function renderPlaylists() {
@@ -759,14 +788,14 @@ function setActiveBottomNav(activeButton) {
 
 function updateSectionTitle() {
     const titles = {
-        Sports: " Sports Channels",
-        Entertainment: " Entertainment Channels",
-        News: " News Channels",
-        Movies: " Movies Channels",
-        Islamic: " Islamic Channels",
-        Kids: " Kids Channels",
-        Music: " Music Channels",
-        Favorites: " Favorite Channels"
+        Sports: "⚽ Sports Channels",
+        Entertainment: "🎬 Entertainment Channels",
+        News: "📰 News Channels",
+        Movies: "🎬 Movies Channels",
+        Islamic: "🕌 Islamic Channels",
+        Kids: "🧒 Kids Channels",
+        Music: "🎵 Music Channels",
+        Favorites: "⭐ Favorite Channels"
     };
 
     if (mainSectionTitle) {
