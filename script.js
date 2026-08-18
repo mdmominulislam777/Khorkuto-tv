@@ -54,6 +54,7 @@ let isLocked = false;
 let overlayTimeout = null;
 let currentAspectRatioIndex = 0;
 const aspectRatios = ["contain", "cover", "fill"];
+let activeSport = 'football';
 
 // ==========================================
 // APP START
@@ -86,6 +87,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2000);
 
     initApp();
+
+    // Sportmonks Auto Refresh Setup
+    if (document.getElementById('sportsMatchGrid')) {
+        loadSportsData('football');
+        setInterval(() => loadSportsData(activeSport), CONFIG.REFRESH_INTERVAL);
+    }
 });
 
 // ==========================================
@@ -111,7 +118,6 @@ function initPlayerControls() {
     const lockBtn = document.getElementById("lockBtn");
     const unlockBtn = document.getElementById("unlockBtn");
     
-    // HTML-এর সাপেক্ষে ফিক্সড ID নামসমূহ:
     const aspectRatioBtn = document.getElementById("aspectBtn");
     const pipBtn = document.getElementById("pipPlayerBtn");
     const fullscreenBtn = document.getElementById("fullScreenBtn");
@@ -1187,19 +1193,14 @@ async function toggleFloatingPlayer() {
     }
 }
 
-/* ==========================================
-   SPORTMONKS API INTEGRATION (FOOTBALL & CRICKET)
-========================================== */
-
-// API Endpoints
+// ==========================================
+// SPORTMONKS API INTEGRATION (FOOTBALL & CRICKET)
+// ==========================================
 const ENDPOINTS = {
     football: `https://api.sportmonks.com/v3/football/livescores/inplay?api_token=${CONFIG.SPORTMONKS_API_TOKEN}&include=participants;scores`,
     cricket: `https://api.sportmonks.com/v3/cricket/livescores/inplay?api_token=${CONFIG.SPORTMONKS_API_TOKEN}&include=participants;runs`
 };
 
-let activeSport = 'football';
-
-// ১. ডাটা ফেচ ফাংশন
 async function loadSportsData(sportType = activeSport) {
     activeSport = sportType;
     const gridContainer = document.getElementById('sportsMatchGrid');
@@ -1222,9 +1223,9 @@ async function loadSportsData(sportType = activeSport) {
     }
 }
 
-// ২. UI-তে ডাটা রেন্ডার করার ফাংশন
 function renderMatches(matches, type) {
     const gridContainer = document.getElementById('sportsMatchGrid');
+    if (!gridContainer) return;
     gridContainer.innerHTML = '';
 
     matches.forEach(match => {
@@ -1244,28 +1245,20 @@ function renderMatches(matches, type) {
             homeTeam = match.participants?.find(p => p.meta?.position === 'home')?.name || 'Team A';
             awayTeam = match.participants?.find(p => p.meta?.position === 'away')?.name || 'Team B';
 
-            // ক্রিকেটের ক্ষেত্রে রান/উইকেট ফরম্যাট
             const runs = match.runs || [];
             const homeRun = runs[0] ? `${runs[0].score}/${runs[0].wickets}` : '0/0';
             const awayRun = runs[1] ? `${runs[1].score}/${runs[1].wickets}` : '0/0';
             scoreText = `${homeRun} vs ${awayRun}`;
         }
 
-        // StreamZX CSS অনুযায়ী কার্ড জেনারেট করা
         const matchCard = `
             <div class="channel-card">
                 <span class="badge-new" style="position: absolute; top: 6px; left: 6px; background:#ef4444;">LIVE</span>
-                <h4 style="margin-top: 15px;">${homeTeam}</h4>
-                <p style="font-weight: 800; color: var(--primary); margin: 6px 0; font-size: 14px;">${scoreText}</p>
-                <h4>${awayTeam}</h4>
+                <h4 style="margin-top: 15px;">${escapeHTML(homeTeam)}</h4>
+                <p style="font-weight: 800; color: var(--primary); margin: 6px 0; font-size: 14px;">${escapeHTML(scoreText)}</p>
+                <h4>${escapeHTML(awayTeam)}</h4>
             </div>
         `;
         gridContainer.insertAdjacentHTML('beforeend', matchCard);
     });
 }
-
-// পেজ লোড হলে এবং CONFIG অনুযায়ী নির্দিষ্ট সময় পর পর ডাটা অটো-আপডেট হবে
-document.addEventListener('DOMContentLoaded', () => {
-    loadSportsData('football');
-    setInterval(() => loadSportsData(activeSport), CONFIG.REFRESH_INTERVAL);
-});
