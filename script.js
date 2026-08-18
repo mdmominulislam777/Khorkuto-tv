@@ -21,6 +21,14 @@ try {
 let customPlaylists = JSON.parse(localStorage.getItem("customPlaylists") || "[]");
 
 // ==========================================
+// CONFIGURATIONS & API KEYS
+// ==========================================
+const CONFIG = {
+    SPORTMONKS_API_TOKEN: 'YOUR_SPORTMONKS_API_TOKEN', // এখানে আপনার আসল API Token বসাবেন
+    REFRESH_INTERVAL: 30000 // ৩০ সেকেন্ড (মিলিসেকেন্ডে)
+};
+
+// ==========================================
 // MONETAG ADS CONFIG
 // ==========================================
 let firstChannelAdShown = false;
@@ -1178,16 +1186,15 @@ async function toggleFloatingPlayer() {
         console.error("Floating Player Error:", error);
     }
 }
+
 /* ==========================================
    SPORTMONKS API INTEGRATION (FOOTBALL & CRICKET)
 ========================================== */
 
-const SPORTMONKS_API_TOKEN = 'YOUR_SPORTMONKS_API_TOKEN'; // আপনার API Token বসান
-
-// Endpoints (Football v3 & Cricket v2/v3)
+// API Endpoints
 const ENDPOINTS = {
-    football: `https://api.sportmonks.com/v3/football/livescores/inplay?api_token=${SPORTMONKS_API_TOKEN}&include=participants;scores`,
-    cricket: `https://api.sportmonks.com/v3/cricket/livescores/inplay?api_token=${SPORTMONKS_API_TOKEN}&include=participants;runs`
+    football: `https://api.sportmonks.com/v3/football/livescores/inplay?api_token=${CONFIG.SPORTMONKS_API_TOKEN}&include=participants;scores`,
+    cricket: `https://api.sportmonks.com/v3/cricket/livescores/inplay?api_token=${CONFIG.SPORTMONKS_API_TOKEN}&include=participants;runs`
 };
 
 let activeSport = 'football';
@@ -1198,7 +1205,7 @@ async function loadSportsData(sportType = activeSport) {
     const gridContainer = document.getElementById('sportsMatchGrid');
     if (!gridContainer) return;
 
-    gridContainer.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1;">Loading matches...</p>';
+    gridContainer.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">Loading matches...</p>';
 
     try {
         const response = await fetch(ENDPOINTS[sportType]);
@@ -1207,11 +1214,11 @@ async function loadSportsData(sportType = activeSport) {
         if (result.data && result.data.length > 0) {
             renderMatches(result.data, sportType);
         } else {
-            gridContainer.innerHTML = `<p style="color:var(--text-muted); grid-column: 1/-1;">No live ${sportType} matches right now.</p>`;
+            gridContainer.innerHTML = `<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">No live ${sportType} matches right now.</p>`;
         }
     } catch (error) {
         console.error(`Error loading ${sportType} data:`, error);
-        gridContainer.innerHTML = `<p style="color:#ef4444; grid-column: 1/-1;">Failed to load live scores.</p>`;
+        gridContainer.innerHTML = `<p style="color:#ef4444; grid-column: 1/-1; text-align:center;">Failed to load live scores.</p>`;
     }
 }
 
@@ -1257,8 +1264,8 @@ function renderMatches(matches, type) {
     });
 }
 
-// পেজ লোড হলে এবং প্রতি ৩০ সেকেন্ড পর পর ডাটা অটো-আপডেট হবে
+// পেজ লোড হলে এবং CONFIG অনুযায়ী নির্দিষ্ট সময় পর পর ডাটা অটো-আপডেট হবে
 document.addEventListener('DOMContentLoaded', () => {
     loadSportsData('football');
-    setInterval(() => loadSportsData(activeSport), 30000);
+    setInterval(() => loadSportsData(activeSport), CONFIG.REFRESH_INTERVAL);
 });
