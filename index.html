@@ -39,6 +39,7 @@
      HEADER
 ========================================== -->
 <header class="top-header">
+    <div class="header-left">
         <span class="brand-title">Stream<span class="zx-text">ZX</span></span>
     </div>
 
@@ -120,13 +121,28 @@
         <h2>Settings</h2>
     </div>
 
-    <!-- GENERAL SECTION -->
+    <!-- APPEARANCE / THEME -->
     <div class="settings-group">
-        <div class="settings-group-title">GENERAL</div>
+        <div class="settings-group-title">APPEARANCE</div>
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-moon"></i>
+                <span>Dark Mode</span>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle" checked>
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- STREAMING & MEDIA SECTION -->
+    <div class="settings-group">
+        <div class="settings-group-title">STREAMING & MEDIA</div>
         
         <div class="settings-item" id="settingsNetworkStreamBtn">
             <div class="item-left">
-                <i class="fa-solid fa-globe"></i>
+                <i class="fa-solid fa-link"></i>
                 <span>Network Stream</span>
             </div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -134,7 +150,7 @@
 
         <div class="settings-item">
             <div class="item-left">
-                <i class="fa-solid fa-bars-staggered"></i>
+                <i class="fa-solid fa-list-ul"></i>
                 <span>Playlists</span>
             </div>
             <i class="fa-solid fa-chevron-right"></i>
@@ -142,54 +158,88 @@
 
         <div class="settings-item">
             <div class="item-left">
-                <i class="fa-solid fa-globe"></i>
-                <span>Web Version</span>
-                <span class="badge-new">New</span>
+                <i class="fa-solid fa-window-restore"></i>
+                <span>Floating Player</span>
             </div>
             <i class="fa-solid fa-chevron-right"></i>
         </div>
 
         <div class="settings-item">
             <div class="item-left">
-                <i class="fa-solid fa-cricket-bat-ball"></i>
-                <span>Cricket Score</span>
+                <i class="fa-solid fa-sliders"></i>
+                <span>Video Quality Setting</span>
             </div>
             <i class="fa-solid fa-chevron-right"></i>
         </div>
 
         <div class="settings-item">
             <div class="item-left">
-                <i class="fa-solid fa-futbol"></i>
-                <span>Football Score</span>
+                <i class="fa-solid fa-bug"></i>
+                <span>Crash Log Dialog</span>
             </div>
-            <i class="fa-solid fa-chevron-right"></i>
+            <label class="switch">
+                <input type="checkbox" id="crashLogToggle">
+                <span class="slider round"></span>
+            </label>
         </div>
     </div>
 
-    <!-- COMMUNITY SECTION -->
+    <!-- COMMUNITY & ABOUT SECTION -->
     <div class="settings-group">
-        <div class="settings-group-title">COMMUNITY</div>
+        <div class="settings-group-title">COMMUNITY & ABOUT</div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-bell"></i>
+                <span>Notice</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
 
         <a href="https://t.me/your_channel" target="_blank" class="settings-item">
             <div class="item-left">
                 <i class="fa-brands fa-telegram"></i>
-                <span>Join Channel</span>
+                <span>Join Us</span>
             </div>
             <i class="fa-solid fa-chevron-right"></i>
         </a>
-        
+
         <div class="settings-item">
             <div class="item-left">
-                <i class="fa-solid fa-circle-question"></i>
-                <span>Contact Us</span>
+                <i class="fa-solid fa-copyright"></i>
+                <span>Copyright</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-share-nodes"></i>
+                <span>Share Our App</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Email</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="settings-item">
+            <div class="item-left">
+                <i class="fa-solid fa-arrows-rotate"></i>
+                <span>Update App</span>
             </div>
             <i class="fa-solid fa-chevron-right"></i>
         </div>
     </div>
 
-    <!-- APP SECTION -->
+    <!-- APP CONTROL SECTION -->
     <div class="settings-group">
-        <div class="settings-group-title">APP</div>
+        <div class="settings-group-title">APP CONTROL</div>
 
         <div class="settings-item" id="settingsClearDataBtn">
             <div class="item-left">
@@ -202,7 +252,7 @@
         <div class="settings-item danger-item" id="settingsExitBtn">
             <div class="item-left">
                 <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Exit Application</span>
+                <span>Exit</span>
             </div>
             <i class="fa-solid fa-chevron-right"></i>
         </div>
