@@ -57,6 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
     categoryPage = document.getElementById("categoryPage");
     settingsPage = document.getElementById("settingsPage");
 
+    // Initialize Theme (Dark / Light Mode)
+    initTheme();
+
     // Splash Screen Auto-Timeout Safety
     setTimeout(() => {
         hideSplash();
@@ -71,6 +74,36 @@ document.addEventListener("DOMContentLoaded", () => {
 function initApp() {
     setupEventListeners();
     loadChannels();
+}
+
+// ==========================================
+// THEME (DARK / LIGHT MODE) LOGIC
+// ==========================================
+function initTheme() {
+    const themeToggle = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("theme");
+
+    // Check if user set Light mode previously
+    if (savedTheme === "light") {
+        document.body.classList.add("light-mode");
+        if (themeToggle) themeToggle.checked = false;
+    } else {
+        document.body.classList.remove("light-mode");
+        if (themeToggle) themeToggle.checked = true;
+    }
+
+    // Toggle switch listener
+    if (themeToggle) {
+        themeToggle.addEventListener("change", () => {
+            if (themeToggle.checked) {
+                document.body.classList.remove("light-mode");
+                localStorage.setItem("theme", "dark");
+            } else {
+                document.body.classList.add("light-mode");
+                localStorage.setItem("theme", "light");
+            }
+        });
+    }
 }
 
 // ==========================================
