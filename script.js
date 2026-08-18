@@ -853,3 +853,38 @@ function closePlayer() {
         playerContainer.classList.add("hidden");
     }
 }
+// ==========================================
+// FLOATING PLAYER (PICTURE-IN-PICTURE) LOGIC
+// ==========================================
+async function toggleFloatingPlayer() {
+    const videoElement = document.getElementById("video");
+
+    if (!videoElement) {
+        alert("Video player not found!");
+        return;
+    }
+
+    // Check if video is currently playing
+    if (videoElement.paused || !videoElement.src && !videoElement.srcObject) {
+        alert("Please play a channel first to use Floating Player!");
+        return;
+    }
+
+    try {
+        // Check PiP support
+        if (document.pictureInPictureEnabled) {
+            if (document.pictureInPictureElement) {
+                // Exit PiP if already active
+                await document.exitPictureInPicture();
+            } else {
+                // Request PiP mode
+                await videoElement.requestPictureInPicture();
+            }
+        } else {
+            alert("Picture-in-Picture mode is not supported in this browser.");
+        }
+    } catch (error) {
+        console.error("Floating Player Error:", error);
+        alert("Failed to enable Floating Player: " + error.message);
+    }
+}
