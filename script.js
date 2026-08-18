@@ -94,6 +94,9 @@ function initApp() {
 function initPlayerControls() {
     playerOverlay = document.getElementById("playerOverlay");
     lockOverlay = document.getElementById("lockOverlay");
+    
+    // playerContainer নিশ্চিতভাবে এখানে সিলেক্ট করে নিন
+    playerContainer = document.getElementById("playerContainer");
 
     const playPauseBtn = document.getElementById("playPauseBtn");
     const rewindBtn = document.getElementById("rewindBtn");
@@ -108,17 +111,19 @@ function initPlayerControls() {
     const currentTimeEl = document.getElementById("currentTime");
     const durationEl = document.getElementById("duration");
 
-    // PIP ENTRANCE & EXIT LISTENERS (Hides player area when PiP is active)
+    // PIP ENTRANCE & EXIT LISTENERS
     if (video) {
         video.addEventListener("enterpictureinpicture", () => {
-            if (playerContainer) {
-                playerContainer.classList.add("hidden");
+            const pContainer = document.getElementById("playerContainer");
+            if (pContainer) {
+                pContainer.style.display = "none";
             }
         });
 
         video.addEventListener("leavepictureinpicture", () => {
-            if (playerContainer) {
-                playerContainer.classList.remove("hidden");
+            const pContainer = document.getElementById("playerContainer");
+            if (pContainer) {
+                pContainer.style.display = "block";
             }
         });
     }
@@ -231,6 +236,7 @@ function initPlayerControls() {
     }
 }
 
+  
 function togglePlayPause(e) {
     if (e) e.stopPropagation();
     if (!video) return;
