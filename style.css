@@ -14,6 +14,35 @@
 }
 
 /* ==========================================
+   LIGHT MODE STYLES & OVERRIDES
+========================================== */
+body.light-mode {
+    --bg-main: #f4f5f7;
+    --bg-card: #ffffff;
+    --bg-surface: #e5e7eb;
+    --bg-header: #ffffff;
+    --text-primary: #111827;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+}
+
+body.light-mode .brand-title {
+    color: #111827 !important;
+}
+
+body.light-mode nav.bottom-navigation,
+body.light-mode .bottom-navigation,
+body.light-mode #bottomNavigation {
+    background: #ffffff !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .search-area input {
+    background: #ffffff;
+    color: #111827;
+}
+
+/* ==========================================
    RESET & GLOBAL
 ========================================== */
 * {
@@ -171,7 +200,7 @@ body {
     border: none;
     border-radius: 10px;
     background: var(--bg-surface);
-    color: #fff;
+    color: var(--text-primary);
     font-size: 15px;
     cursor: pointer;
     display: flex;
@@ -220,7 +249,7 @@ body {
     outline: none;
     border-radius: 10px;
     background: var(--bg-surface);
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
 }
 
@@ -261,7 +290,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 12px 8px;
-    color: #fff;
+    color: var(--text-primary);
     cursor: pointer;
     transition: transform 0.2s ease, background 0.2s ease;
 }
@@ -380,14 +409,14 @@ body {
     align-items: center;
     padding: 8px 12px;
     background: var(--bg-header);
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
 }
 
 .player-header button {
     background: none;
     border: none;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 18px;
     cursor: pointer;
 }
@@ -400,7 +429,7 @@ video {
 }
 
 /* ==========================================
-   SETTINGS PAGE
+   SETTINGS PAGE & TOGGLE SWITCH
 ========================================== */
 .settings-page {
     max-width: 600px;
@@ -479,6 +508,51 @@ video {
     color: #ef4444;
 }
 
+/* Toggle Switch UI Styling */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--bg-surface);
+    transition: .3s;
+    border-radius: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #ffffff;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
 /* ==========================================
    BOTTOM NAVIGATION BAR
 ========================================== */
@@ -494,7 +568,7 @@ nav.bottom-navigation,
     border-radius: 0 !important;
     padding: 6px 0 !important;
     box-sizing: border-box !important;
-    background: #0f172a !important;
+    background: var(--bg-header) !important;
     border-top: 1px solid var(--border-color) !important;
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
@@ -537,4 +611,3 @@ nav.bottom-navigation,
 .bottom-nav-btn.active span {
     color: #f87171 !important;
 }
-
