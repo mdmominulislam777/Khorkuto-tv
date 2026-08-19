@@ -417,17 +417,74 @@ function setupEventListeners() {
 
             if (mainSectionTitle) mainSectionTitle.textContent = "🔴 Live Events";
 
-            if (channelList) {
+            loadLiveEvents();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    // ==========================================
+    // LIVE EVENTS — Cloudflare Worker থেকে লাইভ ম্যাচ আনা
+    // ==========================================
+    const LIVE_EVENTS_API = "https://streamzx.mdmominulislam5600.workers.dev";
+
+    async function loadLiveEvents() {
+        if (!channelList) return;
+
+        channelList.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:32px; margin-bottom:15px; display:block;"></i>
+                <div>লোড হচ্ছে...</div>
+            </div>
+        `;
+
+        try {
+            const res = await fetch(LIVE_EVENTS_API);
+            const data = await res.json();
+            const matches = (data && data.matches) || [];
+
+            if (!matches.length) {
                 channelList.innerHTML = `
                     <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
                         <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
-                        <div>Live Events</div>
-                        <small>Live event schedule and channels will appear here.</small>
+                        <div>এই মুহূর্তে কোনো লাইভ ম্যাচ নেই</div>
+                        <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
                     </div>
                 `;
+                return;
             }
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+
+            channelList.innerHTML = "";
+            matches.forEach(m => {
+                const home = escapeHTML(m.homeTeam?.name || "Home");
+                const away = escapeHTML(m.awayTeam?.name || "Away");
+                const homeLogo = escapeHTML(m.homeTeam?.crest || "logo.png");
+                const awayLogo = escapeHTML(m.awayTeam?.crest || "logo.png");
+                const homeScore = m.score?.fullTime?.home ?? 0;
+                const awayScore = m.score?.fullTime?.away ?? 0;
+                const score = `${homeScore} - ${awayScore}`;
+                const minute = escapeHTML(m.minute ? m.minute + "'" : "লাইভ");
+                const league = escapeHTML(m.competition?.name || "");
+
+                const card = document.createElement("div");
+                card.className = "channel-card";
+                card.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;">
+                        <img src="${homeLogo}" alt="${home}" style="width:28px;height:28px;object-fit:contain;">
+                        <span style="font-weight:bold;">${score}</span>
+                        <img src="${awayLogo}" alt="${away}" style="width:28px;height:28px;object-fit:contain;">
+                    </div>
+                    <h4 style="font-size:12px;">${home} vs ${away}</h4>
+                    <small style="color:var(--primary, #ff2a4b);">🔴 ${minute} · ${league}</small>
+                `;
+                channelList.appendChild(card);
+            });
+        } catch (err) {
+            channelList.innerHTML = `
+                <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                    <div>ডেটা লোড করা যায়নি, একটু পরে চেষ্টা করো।</div>
+                </div>
+            `;
+        }
     }
 
     if (categoryNavBtn) {
