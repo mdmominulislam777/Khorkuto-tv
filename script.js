@@ -438,20 +438,7 @@ function setupEventListeners() {
         });
     }
 
-    if (sportsNavBtn) {
-        sportsNavBtn.addEventListener("click", () => {
-            setActiveBottomNav(sportsNavBtn);
-            hideCategoryPage();
-            hideSettingsPage();
-            showNormalContent();
-
-            currentCategory = "Sports";
-            updateSectionTitle();
-            renderChannels();
-
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-    }
+    
 
     if (settingsNavBtn) {
         settingsNavBtn.addEventListener("click", () => {
@@ -460,7 +447,6 @@ function setupEventListeners() {
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
-
     // --- CATEGORY GRID ITEMS ---
     document.querySelectorAll(".category-item").forEach(item => {
         item.addEventListener("click", () => {
