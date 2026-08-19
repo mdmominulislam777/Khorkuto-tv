@@ -1178,3 +1178,845 @@ async function toggleFloatingPlayer() {
         console.error("Floating Player Error:", error);
     }
 }
+// ==========================================
+// STREAMZX - FREE SPORTS EVENTS SYSTEM
+// Football + Cricket + WWE
+// TheSportsDB Free API
+// ==========================================
+
+const SPORTS_API =
+    "https://www.thesportsdb.com/api/v1/json/123";
+
+let sportsEvents = [];
+let selectedSport = "All";
+let selectedEventStatus = "Upcoming";
+
+// ------------------------------------------
+// SPORTS NAVIGATION
+// ------------------------------------------
+
+function openSportsEvents() {
+    hideCategoryPage();
+    hideSettingsPage();
+    showNormalContent();
+
+    currentCategory = "Sports";
+
+    if (mainSectionTitle) {
+        mainSectionTitle.textContent = "🏆 Sports Events";
+    }
+
+    if (searchArea) {
+        searchArea.classList.remove("active");
+    }
+
+    renderSportsPage();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+// ------------------------------------------
+// CREATE SPORTS PAGE
+// ------------------------------------------
+
+function renderSportsPage() {
+
+    if (!channelList) return;
+
+    channelList.innerHTML = `
+        <div class="sports-page">
+
+            <div class="sports-sport-tabs">
+
+                <button class="sports-sport-tab active"
+                    data-sport="All">
+                    🏆 All
+                </button>
+
+                <button class="sports-sport-tab"
+                    data-sport="Soccer">
+                    ⚽ Football
+                </button>
+
+                <button class="sports-sport-tab"
+                    data-sport="Cricket">
+                    🏏 Cricket
+                </button>
+
+                <button class="sports-sport-tab"
+                    data-sport="Wrestling">
+                    🤼 WWE
+                </button>
+
+            </div>
+
+
+            <div class="sports-status-tabs">
+
+                <button class="sports-status-tab active"
+                    data-status="Upcoming">
+                    🕐 Upcoming
+                </button>
+
+                <button class="sports-status-tab"
+                    data-status="Live">
+                    🔴 Live
+                </button>
+
+                <button class="sports-status-tab"
+                    data-status="Finished">
+                    ✅ Finished
+                </button>
+
+            </div>
+
+
+            <div id="sportsEventsContainer">
+
+                <div class="sports-loading">
+                    <div class="sports-spinner"></div>
+                    <span>Loading sports events...</span>
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+
+    // SPORT TABS
+
+    document.querySelectorAll(".sports-sport-tab")
+        .forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                document
+                    .querySelectorAll(".sports-sport-tab")
+                    .forEach(btn =>
+                        btn.classList.remove("active")
+                    );
+
+                button.classList.add("active");
+
+                selectedSport =
+                    button.dataset.sport;
+
+                loadSportsEvents();
+            });
+
+        });
+
+
+    // STATUS TABS
+
+    document.querySelectorAll(".sports-status-tab")
+        .forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                document
+                    .querySelectorAll(".sports-status-tab")
+                    .forEach(btn =>
+                        btn.classList.remove("active")
+                    );
+
+                button.classList.add("active");
+
+                selectedEventStatus =
+                    button.dataset.status;
+
+                loadSportsEvents();
+            });
+
+        });
+
+
+    loadSportsEvents();
+}
+
+
+// ------------------------------------------
+// LOAD SPORTS EVENTS
+// ------------------------------------------
+
+async function loadSportsEvents() {
+
+    const container =
+        document.getElementById("sportsEventsContainer");
+
+    if (!container) return;
+
+
+    container.innerHTML = `
+        <div class="sports-loading">
+
+            <div class="sports-spinner"></div>
+
+            <span>
+                Loading ${selectedSport} events...
+            </span>
+
+        </div>
+    `;
+
+
+    try {
+
+        let events = [];
+
+
+        // ======================================
+        // FOOTBALL
+        // ======================================
+
+        if (
+            selectedSport === "All" ||
+            selectedSport === "Soccer"
+        ) {
+
+            // English Premier League
+            const football =
+                await fetchSportsAPI(
+                    `${SPORTS_API}/eventsnextleague.php?id=4328`
+                );
+
+            if (football && football.events) {
+
+                events = events.concat(
+                    football.events.map(event => ({
+                        ...event,
+                        apiSport: "Soccer"
+                    }))
+                );
+
+            }
+
+        }
+
+
+        // ======================================
+        // CRICKET
+        // ======================================
+
+        if (
+            selectedSport === "All" ||
+            selectedSport === "Cricket"
+        ) {
+
+            const cricketLeagues = [
+                4468, // ICC
+                4480  // Cricket
+            ];
+
+            for (const leagueId of cricketLeagues) {
+
+                try {
+
+                    const cricket =
+                        await fetchSportsAPI(
+                            `${SPORTS_API}/eventsnextleague.php?id=${leagueId}`
+                        );
+
+                    if (cricket && cricket.events) {
+
+                        events = events.concat(
+                            cricket.events.map(event => ({
+                                ...event,
+                                apiSport: "Cricket"
+                            }))
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.log(
+                        "Cricket league error:",
+                        leagueId
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        // ======================================
+        // WWE / WRESTLING
+        // ======================================
+
+        if (
+            selectedSport === "All" ||
+            selectedSport === "Wrestling"
+        ) {
+
+            try {
+
+                const wrestling =
+                    await fetchSportsAPI(
+                        `${SPORTS_API}/eventsnextleague.php?id=4443`
+                    );
+
+                if (
+                    wrestling &&
+                    wrestling.events
+                ) {
+
+                    events = events.concat(
+                        wrestling.events.map(event => ({
+                            ...event,
+                            apiSport: "Wrestling"
+                        }))
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.log(
+                    "Wrestling API error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        sportsEvents = removeDuplicateEvents(events);
+
+        renderSportsEvents();
+
+
+    } catch (error) {
+
+        console.error(
+            "Sports API Error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="sports-empty">
+
+                <div class="sports-empty-icon">
+                    ⚠️
+                </div>
+
+                <h3>
+                    Sports data unavailable
+                </h3>
+
+                <p>
+                    Please try again later.
+                </p>
+
+                <button
+                    class="sports-retry-btn"
+                    onclick="loadSportsEvents()">
+
+                    🔄 Retry
+
+                </button>
+
+            </div>
+        `;
+
+    }
+
+}
+
+
+// ------------------------------------------
+// API FETCH
+// ------------------------------------------
+
+async function fetchSportsAPI(url) {
+
+    const response =
+        await fetch(url, {
+            cache: "no-store"
+        });
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            `HTTP ${response.status}`
+        );
+
+    }
+
+
+    return await response.json();
+
+}
+
+
+// ------------------------------------------
+// REMOVE DUPLICATES
+// ------------------------------------------
+
+function removeDuplicateEvents(events) {
+
+    const seen = new Set();
+
+    return events.filter(event => {
+
+        const id =
+            event.idEvent ||
+            `${event.strEvent}-${event.dateEvent}`;
+
+        if (seen.has(id)) {
+            return false;
+        }
+
+        seen.add(id);
+
+        return true;
+
+    });
+
+}
+
+
+// ------------------------------------------
+// RENDER SPORTS EVENTS
+// ------------------------------------------
+
+function renderSportsEvents() {
+
+    const container =
+        document.getElementById(
+            "sportsEventsContainer"
+        );
+
+    if (!container) return;
+
+
+    let filteredEvents =
+        [...sportsEvents];
+
+
+    // FILTER SPORT
+
+    if (selectedSport !== "All") {
+
+        filteredEvents =
+            filteredEvents.filter(
+                event =>
+                    event.apiSport === selectedSport
+            );
+
+    }
+
+
+    // FILTER STATUS
+
+    filteredEvents =
+        filteredEvents.filter(event => {
+
+            const status =
+                getEventStatus(event);
+
+            return status === selectedEventStatus;
+
+        });
+
+
+    // SORT DATE
+
+    filteredEvents.sort((a, b) => {
+
+        const dateA =
+            new Date(
+                `${a.dateEvent || ""} ${a.strTime || ""}`
+            );
+
+        const dateB =
+            new Date(
+                `${b.dateEvent || ""} ${b.strTime || ""}`
+            );
+
+        return dateA - dateB;
+
+    });
+
+
+    // EMPTY
+
+    if (!filteredEvents.length) {
+
+        container.innerHTML = `
+
+            <div class="sports-empty">
+
+                <div class="sports-empty-icon">
+                    🏟️
+                </div>
+
+                <h3>
+                    No ${selectedEventStatus.toLowerCase()}
+                    events
+                </h3>
+
+                <p>
+                    No ${selectedSport === "All"
+                        ? "sports"
+                        : selectedSport}
+                    events are available right now.
+                </p>
+
+                <button
+                    class="sports-retry-btn"
+                    onclick="loadSportsEvents()">
+
+                    🔄 Refresh
+
+                </button>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    filteredEvents.forEach(event => {
+
+        container.appendChild(
+            createSportsEventCard(event)
+        );
+
+    });
+
+}
+
+
+// ------------------------------------------
+// EVENT STATUS
+// ------------------------------------------
+
+function getEventStatus(event) {
+
+    const now = new Date();
+
+    const eventDate =
+        event.dateEvent || "";
+
+    const eventTime =
+        event.strTime || "00:00:00";
+
+    const eventDateTime =
+        new Date(
+            `${eventDate} ${eventTime}`
+        );
+
+
+    // Finished
+
+    if (
+        event.intHomeScore !== null &&
+        event.intHomeScore !== undefined &&
+        event.intAwayScore !== null &&
+        event.intAwayScore !== undefined
+    ) {
+
+        // Some events can already have a score.
+        // We still use date to distinguish future events.
+
+        if (eventDateTime < now) {
+            return "Finished";
+        }
+
+    }
+
+
+    // Past
+
+    if (eventDateTime < now) {
+        return "Finished";
+    }
+
+
+    // Future
+
+    return "Upcoming";
+
+}
+
+
+// ------------------------------------------
+// EVENT CARD
+// ------------------------------------------
+
+function createSportsEventCard(event) {
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "sport-event-card";
+
+
+    const sport =
+        event.apiSport || event.strSport || "Sports";
+
+
+    let icon = "🏆";
+
+    if (sport === "Soccer") {
+        icon = "⚽";
+    }
+
+    if (sport === "Cricket") {
+        icon = "🏏";
+    }
+
+    if (sport === "Wrestling") {
+        icon = "🤼";
+    }
+
+
+    const homeTeam =
+        event.strHomeTeam ||
+        "Home Team";
+
+
+    const awayTeam =
+        event.strAwayTeam ||
+        "Away Team";
+
+
+    const homeLogo =
+        event.strHomeTeamBadge ||
+        event.strThumb ||
+        "logo.png";
+
+
+    const awayLogo =
+        event.strAwayTeamBadge ||
+        event.strThumb ||
+        "logo.png";
+
+
+    const status =
+        getEventStatus(event);
+
+
+    let statusHTML = "";
+
+
+    if (status === "Upcoming") {
+
+        statusHTML = `
+            <span class="sports-upcoming-badge">
+                🕐 UPCOMING
+            </span>
+        `;
+
+    } else if (status === "Live") {
+
+        statusHTML = `
+            <span class="sports-live-badge">
+                🔴 LIVE
+            </span>
+        `;
+
+    } else {
+
+        statusHTML = `
+            <span class="sports-finished-badge">
+                ✓ FINISHED
+            </span>
+        `;
+
+    }
+
+
+    const scoreAvailable =
+        event.intHomeScore !== null &&
+        event.intHomeScore !== undefined &&
+        event.intAwayScore !== null &&
+        event.intAwayScore !== undefined;
+
+
+    const scoreHTML =
+        scoreAvailable
+            ? `${event.intHomeScore} - ${event.intAwayScore}`
+            : "VS";
+
+
+    card.innerHTML = `
+
+        <div class="sport-event-top">
+
+            <div class="sport-event-league">
+
+                ${icon}
+                ${escapeHTML(
+                    event.strLeague ||
+                    sport
+                )}
+
+            </div>
+
+            ${statusHTML}
+
+        </div>
+
+
+        <div class="sport-event-body">
+
+
+            <div class="sport-team">
+
+                <img
+                    src="${escapeHTML(homeLogo)}"
+                    onerror="
+                        this.onerror=null;
+                        this.src='logo.png';
+                    "
+                >
+
+                <span>
+                    ${escapeHTML(homeTeam)}
+                </span>
+
+            </div>
+
+
+            <div class="sport-score">
+
+                <strong>
+                    ${scoreHTML}
+                </strong>
+
+                <small>
+                    ${formatSportsDate(event)}
+                </small>
+
+            </div>
+
+
+            <div class="sport-team">
+
+                <img
+                    src="${escapeHTML(awayLogo)}"
+                    onerror="
+                        this.onerror=null;
+                        this.src='logo.png';
+                    "
+                >
+
+                <span>
+                    ${escapeHTML(awayTeam)}
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="sport-event-footer">
+
+            <span>
+                📍
+                ${escapeHTML(
+                    event.strVenue ||
+                    "Venue not available"
+                )}
+            </span>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+// ------------------------------------------
+// DATE FORMAT
+// ------------------------------------------
+
+function formatSportsDate(event) {
+
+    if (!event.dateEvent) {
+        return "Date unavailable";
+    }
+
+
+    try {
+
+        const date =
+            new Date(
+                `${event.dateEvent}T${event.strTime || "00:00:00"}`
+            );
+
+
+        return date.toLocaleString(
+            "en-BD",
+            {
+                day: "2-digit",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    } catch (error) {
+
+        return event.dateEvent;
+
+    }
+
+}
+
+
+// ==========================================
+// OVERRIDE SPORTS NAV BUTTON
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const sportsBtn =
+            document.getElementById(
+                "sportsNav"
+            );
+
+
+        if (sportsBtn) {
+
+            sportsBtn.addEventListener(
+                "click",
+                () => {
+
+                    setActiveBottomNav(
+                        sportsBtn
+                    );
+
+                    openSportsEvents();
+
+                }
+            );
+
+        }
+
+    }
+);
