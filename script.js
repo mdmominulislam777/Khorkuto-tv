@@ -862,7 +862,379 @@ function updateSectionTitle() {
         mainSectionTitle.textContent = titles[currentCategory] || "📺 Channels";
     }
 }
+// ==========================================
+// LIVE EVENTS SYSTEM
+// ==========================================
 
+let liveEvents = [];
+
+async function loadLiveEvents() {
+
+    if (!channelList) return;
+
+    channelList.innerHTML = `
+        <div style="
+            grid-column:1/-1;
+            text-align:center;
+            padding:35px 20px;
+            color:var(--text-muted,#888);
+        ">
+            <i class="fa-solid fa-circle-notch fa-spin"
+               style="
+                    font-size:32px;
+                    margin-bottom:12px;
+                    color:var(--primary,#ff2a4b);
+               ">
+            </i>
+
+            <div>Loading Live Events...</div>
+        </div>
+    `;
+
+    try {
+
+        const response = await fetch(
+            "events.json?t=" + Date.now(),
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+            liveEvents = data;
+        } else {
+            liveEvents = [];
+        }
+
+        renderLiveEvents();
+
+    } catch (error) {
+
+        console.error("Live Event loading error:", error);
+
+        channelList.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:35px 20px;
+                color:#ef4444;
+            ">
+
+                <i class="fa-solid fa-triangle-exclamation"
+                   style="
+                        font-size:35px;
+                        margin-bottom:12px;
+                    ">
+                </i>
+
+                <div>
+                    Could not load events.json
+                </div>
+
+                <small style="
+                    display:block;
+                    margin-top:8px;
+                    color:var(--text-muted,#888);
+                ">
+                    ${escapeHTML(error.message)}
+                </small>
+
+            </div>
+        `;
+    }
+}
+
+
+// ==========================================
+// RENDER LIVE EVENTS
+// ==========================================
+
+function renderLiveEvents() {
+
+    if (!channelList) return;
+
+    channelList.innerHTML = "";
+
+    if (!liveEvents.length) {
+
+        channelList.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:45px 20px;
+                color:var(--text-muted,#888);
+            ">
+
+                <i class="fa-solid fa-calendar-xmark"
+                   style="
+                        font-size:42px;
+                        margin-bottom:15px;
+                        color:var(--primary,#ff2a4b);
+                    ">
+                </i>
+
+                <div style="
+                    font-size:16px;
+                    font-weight:600;
+                    color:var(--text-primary);
+                ">
+                    No Live Events
+                </div>
+
+                <small style="
+                    display:block;
+                    margin-top:7px;
+                ">
+                    There are no events available right now.
+                </small>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    // ======================================
+    // LIVE EVENTS
+    // ======================================
+
+    const live = liveEvents.filter(event =>
+        String(event.status || "").toUpperCase() === "LIVE"
+    );
+
+
+    // ======================================
+    // UPCOMING EVENTS
+    // ======================================
+
+    const upcoming = liveEvents.filter(event =>
+        String(event.status || "").toUpperCase() !== "LIVE"
+    );
+
+
+    // ======================================
+    // LIVE NOW TITLE
+    // ======================================
+
+    if (live.length) {
+
+        const liveTitle = document.createElement("div");
+
+        liveTitle.style.cssText = `
+            grid-column:1/-1;
+            font-size:16px;
+            font-weight:700;
+            margin:5px 0 2px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        `;
+
+        liveTitle.innerHTML = `
+            <span style="
+                width:9px;
+                height:9px;
+                border-radius:50%;
+                background:#ef4444;
+                display:inline-block;
+                box-shadow:0 0 10px #ef4444;
+            "></span>
+
+            LIVE NOW
+        `;
+
+        channelList.appendChild(liveTitle);
+
+
+        live.forEach(event => {
+            createLiveEventCard(event);
+        });
+    }
+
+
+    // ======================================
+    // UPCOMING TITLE
+    // ======================================
+
+    if (upcoming.length) {
+
+        const upcomingTitle = document.createElement("div");
+
+        upcomingTitle.style.cssText = `
+            grid-column:1/-1;
+            font-size:16px;
+            font-weight:700;
+            margin:15px 0 2px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        `;
+
+        upcomingTitle.innerHTML = `
+            <i class="fa-regular fa-clock"
+               style="color:var(--primary,#ff2a4b);">
+            </i>
+
+            UPCOMING
+        `;
+
+        channelList.appendChild(upcomingTitle);
+
+
+        upcoming.forEach(event => {
+            createLiveEventCard(event);
+        });
+    }
+}
+
+
+// ==========================================
+// CREATE LIVE EVENT CARD
+// ==========================================
+
+function createLiveEventCard(event) {
+
+    if (!channelList) return;
+
+
+    const card = document.createElement("div");
+
+    card.className = "live-event-card";
+
+
+    const status =
+        String(event.status || "UPCOMING").toUpperCase();
+
+
+    const isLive = status === "LIVE";
+
+
+    card.innerHTML = `
+
+        <div class="live-event-logo">
+
+            <img
+                src="${escapeHTML(event.logo || "logo.png")}"
+                alt="${escapeHTML(event.title || "Event")}"
+                onerror="
+                    this.onerror=null;
+                    this.src='logo.png';
+                "
+            >
+
+            ${
+                isLive
+                ?
+                `
+                <span class="live-badge">
+                    ● LIVE
+                </span>
+                `
+                :
+                `
+                <span class="upcoming-badge">
+                    UPCOMING
+                </span>
+                `
+            }
+
+        </div>
+
+
+        <div class="live-event-info">
+
+            <h4>
+                ${escapeHTML(event.title || "Live Event")}
+            </h4>
+
+            <p>
+                ${escapeHTML(event.subtitle || "Sports Event")}
+            </p>
+
+            <div class="live-event-time">
+
+                <i class="fa-regular fa-clock"></i>
+
+                ${escapeHTML(event.time || "Time TBA")}
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="watch-live-btn"
+            ${isLive ? "" : "disabled"}
+        >
+
+            ${
+                isLive
+                ?
+                `
+                <i class="fa-solid fa-play"></i>
+                WATCH LIVE
+                `
+                :
+                `
+                <i class="fa-regular fa-clock"></i>
+                UPCOMING
+                `
+            }
+
+        </button>
+
+    `;
+
+
+    // ======================================
+    // WATCH LIVE BUTTON
+    // ======================================
+
+    const watchBtn =
+        card.querySelector(".watch-live-btn");
+
+
+    if (watchBtn && isLive) {
+
+        watchBtn.addEventListener("click", eventClick => {
+
+            eventClick.stopPropagation();
+
+            const channelId = event.channelId;
+
+
+            const channel =
+                channels.find(
+                    ch => String(ch.id) === String(channelId)
+                );
+
+
+            if (!channel) {
+
+                alert(
+                    "Channel not found in channels.json!"
+                );
+
+                return;
+            }
+
+
+            playChannelWithAd(channel);
+
+        });
+
+    }
+
+
+    channelList.appendChild(card);
+}
 // ==========================================
 // FETCH CHANNELS DATA
 // ==========================================
