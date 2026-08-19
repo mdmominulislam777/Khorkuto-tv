@@ -406,28 +406,25 @@ function setupEventListeners() {
     const settingsNavBtn = document.getElementById("settingsNav");
 
     if (liveEventBtn) {
-        liveEventBtn.addEventListener("click", () => {
-            setActiveBottomNav(liveEventBtn);
-            hideCategoryPage();
-            hideSettingsPage();
-            currentCategory = "Live Event";
+    liveEventBtn.addEventListener("click", () => {
+        setActiveBottomNav(liveEventBtn);
+        hideCategoryPage();
+        hideSettingsPage();
+        showNormalContent();
 
-            const mainContent = document.querySelector(".main-content");
-            if (mainContent) mainContent.style.display = "block";
+        currentCategory = "Live Event";
 
-            if (mainSectionTitle) mainSectionTitle.textContent = "🔴 Live Events";
+        if (mainSectionTitle) {
+            mainSectionTitle.textContent = "🔴 Live Events";
+        }
 
-            if (channelList) {
-                channelList.innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
-                        <div>Live Events</div>
-                        <small>Live event schedule and channels will appear here.</small>
-                    </div>
-                `;
-            }
-            window.scrollTo({ top: 0, behavior: "smooth" });
+        loadLiveEvents();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
         });
+    });
     }
 
     if (categoryNavBtn) {
