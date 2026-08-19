@@ -418,6 +418,7 @@ function setupEventListeners() {
             if (mainSectionTitle) mainSectionTitle.textContent = "🔴 Live Events";
 
             loadLiveEvents();
+            startLiveEventsRefresh();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
@@ -487,8 +488,24 @@ function setupEventListeners() {
         }
     }
 
+    let liveEventsRefreshTimer = null;
+
+    function stopLiveEventsRefresh() {
+        if (liveEventsRefreshTimer) {
+            clearInterval(liveEventsRefreshTimer);
+            liveEventsRefreshTimer = null;
+        }
+    }
+
+    function startLiveEventsRefresh() {
+        stopLiveEventsRefresh();
+        const interval = (typeof CONFIG !== "undefined" && CONFIG.REFRESH_INTERVAL) ? CONFIG.REFRESH_INTERVAL : 30000;
+        liveEventsRefreshTimer = setInterval(loadLiveEvents, interval);
+    }
+
     if (categoryNavBtn) {
         categoryNavBtn.addEventListener("click", () => {
+            stopLiveEventsRefresh();
             setActiveBottomNav(categoryNavBtn);
             showCategoryPage();
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -497,6 +514,7 @@ function setupEventListeners() {
 
     if (sportsNavBtn) {
         sportsNavBtn.addEventListener("click", () => {
+            stopLiveEventsRefresh();
             setActiveBottomNav(sportsNavBtn);
             hideCategoryPage();
             hideSettingsPage();
@@ -512,6 +530,7 @@ function setupEventListeners() {
 
     if (settingsNavBtn) {
         settingsNavBtn.addEventListener("click", () => {
+            stopLiveEventsRefresh();
             setActiveBottomNav(settingsNavBtn);
             showSettingsPage();
             window.scrollTo({ top: 0, behavior: "smooth" });
