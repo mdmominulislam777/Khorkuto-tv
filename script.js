@@ -941,6 +941,64 @@ async function loadChannels() {
 }
 
 // ==========================================
+// CATEGORY MAPPING
+// channels.json-এ থাকা যেকোনো raw category-কে আমাদের
+// ৭টা fixed ট্যাবের (Sports/Entertainment/News/Movies/Islamic/Kids/Music)
+// একটা বা একাধিকটার সাথে ম্যাপ করে। যেসব category কোনো ট্যাবের
+// নামের সাথে মেলে না (Radio, Documentary, Religious ইত্যাদি),
+// সেগুলো আগে কোনো ট্যাবেই দেখা যেত না — এখন সবচেয়ে কাছাকাছি
+// ট্যাবে দেখাবে।
+// ==========================================
+const CATEGORY_MAP = {
+    "Entertainment": ["Entertainment"],
+    "Music": ["Music"],
+    "Entertainment & Sports": ["Entertainment", "Sports"],
+    "Sports": ["Sports"],
+    "News": ["News"],
+    "Kids": ["Kids"],
+    "Music & Entertainment": ["Music", "Entertainment"],
+    "International": ["News"],
+    "Radio": ["Music"],
+    "Islamic": ["Islamic"],
+    "Documentary & Travel": ["Entertainment"],
+    "Fashion & Lifestyle": ["Entertainment"],
+    "Religious": ["Islamic"],
+    "Movies": ["Movies"],
+    "VOD Movies": ["Movies"],
+    "Lifestyle & Food": ["Entertainment"],
+    "Entertainment & News": ["Entertainment", "News"],
+    "Documentary": ["Entertainment"],
+    "News & International": ["News"]
+};
+const KNOWN_TABS = ["Sports", "Entertainment", "News", "Movies", "Islamic", "Kids", "Music"];
+
+function getDisplayCategories(rawCategory) {
+    if (CATEGORY_MAP[rawCategory]) return CATEGORY_MAP[rawCategory];
+
+    // channels.json-এ নতুন কোনো category যোগ হলে (আমাদের ম্যাপে নেই),
+    // প্রথমে substring মিল খোঁজে, নাহলে Entertainment-এ ফেলে দেয়
+    // যাতে কোনো চ্যানেল আর অদৃশ্য হয়ে না থাকে।
+    const lower = String(rawCategory || "").toLowerCase();
+    const matches = KNOWN_TABS.filter(tab => lower.includes(tab.toLowerCase()));
+    return matches.length ? matches : ["Entertainment"];
+}
+
+const CATEGORY_LOGO_FILES = {
+    Sports: "categorylogos/sports.png",
+    Entertainment: "categorylogos/entertainment.png",
+    News: "categorylogos/news.png",
+    Movies: "categorylogos/movies.png",
+    Islamic: "categorylogos/islamic.png",
+    Kids: "categorylogos/kids.png",
+    Music: "categorylogos/music.png"
+};
+
+function getFallbackLogo(channel) {
+    const displayCats = getDisplayCategories(channel.category);
+    return CATEGORY_LOGO_FILES[displayCats[0]] || "logo.png";
+}
+
+// ==========================================
 // RENDER MAIN CHANNELS
 // ==========================================
 function renderChannels() {
@@ -957,7 +1015,7 @@ function renderChannels() {
         if (currentCategory === "Favorites") {
             categoryMatch = favorites.includes(channel.id);
         } else {
-            categoryMatch = String(channel.category || "").toLowerCase().includes(currentCategory.toLowerCase());
+            categoryMatch = getDisplayCategories(channel.category).includes(currentCategory);
         }
 
         return nameMatch && categoryMatch;
@@ -977,11 +1035,13 @@ function renderChannels() {
         const card = document.createElement("div");
         card.className = "channel-card";
 
+        const fallbackLogo = getFallbackLogo(channel);
+
         card.innerHTML = `
             <button class="fav-btn ${isFav ? "active" : ""}" title="Favorite">
                 <i class="${isFav ? "fa-solid" : "fa-regular"} fa-star"></i>
             </button>
-            <img src="${escapeHTML(channel.logo || "logo.png")}" alt="${escapeHTML(channel.name || "TV")}" onerror="this.onerror=null;this.src='https://via.placeholder.com/80?text=TV';">
+            <img src="${escapeHTML(channel.logo || fallbackLogo)}" alt="${escapeHTML(channel.name || "TV")}" onerror="this.onerror=null;this.src='${escapeHTML(fallbackLogo)}';">
             <h4>${escapeHTML(channel.name || "Unknown")}</h4>
         `;
 
