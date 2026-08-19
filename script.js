@@ -417,74 +417,156 @@ function setupEventListeners() {
 
             if (mainSectionTitle) mainSectionTitle.textContent = "🔴 Live Events";
 
-            loadLiveEvents();
+            renderLiveEventsUI();
             startLiveEventsRefresh();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
 
     // ==========================================
-    // LIVE EVENTS — Cloudflare Worker থেকে লাইভ ম্যাচ আনা
+    // LIVE EVENTS — Cloudflare Worker থেকে ম্যাচ আনা
     // ==========================================
     const LIVE_EVENTS_API = "https://streamzx.mdmominulislam5600.workers.dev";
+    let currentEventsFilter = "live";
+
+    function todayISO(offsetDays = 0) {
+        const d = new Date();
+        d.setDate(d.getDate() + offsetDays);
+        return d.toISOString().split("T")[0];
+    }
+
+    function buildEventsQuery(filter) {
+        if (filter === "live") return "?status=LIVE";
+        if (filter === "today") return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(0)}`;
+        if (filter === "upcoming") return `?status=SCHEDULED&dateFrom=${todayISO(1)}&dateTo=${todayISO(7)}`;
+        // all: আজ থেকে আগামী ৩ দিনের সব ম্যাচ
+        return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(3)}`;
+    }
+
+    function renderLiveEventsUI() {
+        if (!channelList) return;
+        const wrap = document.createElement("div");
+        wrap.style.cssText = "grid-column:1/-1;";
+        wrap.innerHTML = `
+            <div id="eventsFilterTabs" style="display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px;">
+                ${[
+                    ["live", "🔴 Live"],
+                    ["today", "🕐 Today's"],
+                    ["upcoming", "📅 Upcoming"],
+                    ["all", "☰ All"]
+                ].map(([key, label]) => `
+                    <button data-filter="${key}" style="flex-shrink:0; padding:8px 16px; border-radius:20px; border:1px solid var(--primary, #ff2a4b); background:${currentEventsFilter === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentEventsFilter === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; white-space:nowrap;">${label}</button>
+                `).join("")}
+            </div>
+            <div id="eventsListContainer"></div>
+        `;
+        channelList.innerHTML = "";
+        channelList.appendChild(wrap);
+
+        wrap.querySelectorAll("#eventsFilterTabs button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentEventsFilter = btn.dataset.filter;
+                renderLiveEventsUI();
+            });
+        });
+
+        loadLiveEvents();
+    }
 
     async function loadLiveEvents() {
-        if (!channelList) return;
+        const listEl = document.getElementById("eventsListContainer");
+        if (!listEl) return;
 
-        channelList.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+        listEl.innerHTML = `
+            <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
                 <i class="fa-solid fa-spinner fa-spin" style="font-size:32px; margin-bottom:15px; display:block;"></i>
                 <div>লোড হচ্ছে...</div>
             </div>
         `;
 
         try {
-            const res = await fetch(LIVE_EVENTS_API);
+            const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(currentEventsFilter));
             const data = await res.json();
             const matches = (data && data.matches) || [];
 
+            // ফিল্টার বাটন আবার ক্লিক করে বদলে গেলে পুরনো রেসপন্স যেন না বসে
+            const activeListEl = document.getElementById("eventsListContainer");
+            if (!activeListEl) return;
+
             if (!matches.length) {
-                channelList.innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                activeListEl.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
                         <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
-                        <div>এই মুহূর্তে কোনো লাইভ ম্যাচ নেই</div>
+                        <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
                         <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
                     </div>
                 `;
                 return;
             }
 
-            channelList.innerHTML = "";
+            // লিগ অনুযায়ী গ্রুপ করা
+            const byLeague = {};
             matches.forEach(m => {
-                const home = escapeHTML(m.homeTeam?.name || "Home");
-                const away = escapeHTML(m.awayTeam?.name || "Away");
-                const homeLogo = escapeHTML(m.homeTeam?.crest || "logo.png");
-                const awayLogo = escapeHTML(m.awayTeam?.crest || "logo.png");
-                const homeScore = m.score?.fullTime?.home ?? 0;
-                const awayScore = m.score?.fullTime?.away ?? 0;
-                const score = `${homeScore} - ${awayScore}`;
-                const minute = escapeHTML(m.minute ? m.minute + "'" : "লাইভ");
-                const league = escapeHTML(m.competition?.name || "");
+                const league = m.competition?.name || "Football";
+                if (!byLeague[league]) byLeague[league] = [];
+                byLeague[league].push(m);
+            });
 
-                const card = document.createElement("div");
-                card.className = "channel-card";
-                card.innerHTML = `
-                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;">
-                        <img src="${homeLogo}" alt="${home}" style="width:28px;height:28px;object-fit:contain;">
-                        <span style="font-weight:bold;">${score}</span>
-                        <img src="${awayLogo}" alt="${away}" style="width:28px;height:28px;object-fit:contain;">
-                    </div>
-                    <h4 style="font-size:12px;">${home} vs ${away}</h4>
-                    <small style="color:var(--primary, #ff2a4b);">🔴 ${minute} · ${league}</small>
-                `;
-                channelList.appendChild(card);
+            activeListEl.innerHTML = "";
+            Object.keys(byLeague).forEach(league => {
+                const leagueEmblem = byLeague[league][0].competition?.emblem || "";
+                const leagueHeader = document.createElement("div");
+                leagueHeader.style.cssText = "display:flex; align-items:center; gap:8px; margin:14px 0 8px; font-size:13px; color:var(--text-muted, #aaa); font-weight:bold;";
+                leagueHeader.innerHTML = `${leagueEmblem ? `<img src="${escapeHTML(leagueEmblem)}" style="width:16px;height:16px;object-fit:contain;">` : "⚽"} ${escapeHTML(league)}`;
+                activeListEl.appendChild(leagueHeader);
+
+                byLeague[league].forEach(m => {
+                    const home = escapeHTML(m.homeTeam?.name || "Home");
+                    const away = escapeHTML(m.awayTeam?.name || "Away");
+                    const homeLogo = escapeHTML(m.homeTeam?.crest || "logo.png");
+                    const awayLogo = escapeHTML(m.awayTeam?.crest || "logo.png");
+
+                    const isLive = m.status === "IN_PLAY" || m.status === "PAUSED";
+                    const isFinished = m.status === "FINISHED";
+                    const homeScore = m.score?.fullTime?.home;
+                    const awayScore = m.score?.fullTime?.away;
+
+                    let centerHtml;
+                    if (isLive) {
+                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-weight:bold; font-size:16px;">${homeScore ?? 0} - ${awayScore ?? 0}</div>`;
+                    } else if (isFinished) {
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-weight:bold; font-size:16px;">${homeScore ?? 0} - ${awayScore ?? 0}</div>`;
+                    } else {
+                        const dt = new Date(m.utcDate);
+                        const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">⏱️</div><div style="font-size:13px;">${timeStr}</div>`;
+                    }
+
+                    const row = document.createElement("div");
+                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px;";
+                    row.innerHTML = `
+                        <div style="flex:1; text-align:center;">
+                            <img src="${homeLogo}" alt="${home}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${home}</div>
+                        </div>
+                        <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
+                        <div style="flex:1; text-align:center;">
+                            <img src="${awayLogo}" alt="${away}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${away}</div>
+                        </div>
+                    `;
+                    activeListEl.appendChild(row);
+                });
             });
         } catch (err) {
-            channelList.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                    <div>ডেটা লোড করা যায়নি, একটু পরে চেষ্টা করো।</div>
-                </div>
-            `;
+            const activeListEl = document.getElementById("eventsListContainer");
+            if (activeListEl) {
+                activeListEl.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                        <div>ডেটা লোড করা যায়নি, একটু পরে চেষ্টা করো।</div>
+                    </div>
+                `;
+            }
         }
     }
 
