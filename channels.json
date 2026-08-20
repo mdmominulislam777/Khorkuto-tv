@@ -45,7 +45,7 @@
       "name": "Gazi TV",
       "category": "Entertainment & Sports",
       "featured": true,
-      "logo": "g tv.png",
+      "logo": "logos/g tv.png",
       "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/gazibdz.stream/live-orgin/gazibdz.stream/playlist.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
@@ -119,7 +119,7 @@
       "id": 13,
       "name": "A Sports HD",
       "category": "Sports",
-      "logo": "a sports.png",
+      "logo": "logos/a sports.png",
       "url": "https://layztv-apps.pages.dev/asports/index.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
@@ -955,7 +955,7 @@
       "id": 117,
       "name": "Gazi TV (Jagobd)",
       "category": "Entertainment & Sports",
-      "logo": "g tv.png",
+      "logo": "logos/g tv.png",
       "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/gazibdz.stream/tracks-v1a1/mono.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
@@ -1003,7 +1003,7 @@
       "id": 123,
       "name": "Willow HD",
       "category": "Sports",
-      "logo": "willow.png",
+      "logo": "logos/willow.png",
       "url": "https://warm-caverns-48629-92fab798385f.herokuapp.com/https://d36r8jifhgsk5j.cloudfront.net/Willow_TV540p.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
@@ -1059,7 +1059,7 @@
       "id": 130,
       "name": "T-Sports [2]",
       "category": "Sports",
-      "logo": "t sports.png",
+      "logo": "logos/T sports.png",
       "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLm/tracks-v1a1/mono.ts.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
@@ -1083,7 +1083,7 @@
       "id": 133,
       "name": "A SPOR",
       "category": "Sports",
-      "logo": "a spor.png",
+      "logo": "logos/a spor.png",
       "url": "https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/aspor/aspor_480p.m3u8",
       "user_agent": "KhorkutoTV/1.0"
     },
