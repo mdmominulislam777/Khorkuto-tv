@@ -443,11 +443,21 @@ function setupEventListeners() {
         return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(3)}`;
     }
 
+    let currentSport = "football";
+
     function renderLiveEventsUI() {
         if (!channelList) return;
         const wrap = document.createElement("div");
         wrap.style.cssText = "grid-column:1/-1;";
         wrap.innerHTML = `
+            <div id="sportTabs" style="display:flex; gap:8px; padding:4px 2px 10px;">
+                ${[
+                    ["football", "⚽ Football"],
+                    ["cricket", "🏏 Cricket"]
+                ].map(([key, label]) => `
+                    <button data-sport="${key}" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--primary, #ff2a4b); background:${currentSport === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentSport === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; font-weight:bold;">${label}</button>
+                `).join("")}
+            </div>
             <div id="eventsFilterTabs" style="display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px;">
                 ${[
                     ["live", "🔴 Live"],
@@ -462,6 +472,13 @@ function setupEventListeners() {
         `;
         channelList.innerHTML = "";
         channelList.appendChild(wrap);
+
+        wrap.querySelectorAll("#sportTabs button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentSport = btn.dataset.sport;
+                renderLiveEventsUI();
+            });
+        });
 
         wrap.querySelectorAll("#eventsFilterTabs button").forEach(btn => {
             btn.addEventListener("click", () => {
@@ -515,6 +532,11 @@ function setupEventListeners() {
                 <div>লোড হচ্ছে...</div>
             </div>
         `;
+
+        if (currentSport === "cricket") {
+            await loadCricketEvents(listEl);
+            return;
+        }
 
         try {
             const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(currentEventsFilter));
@@ -594,6 +616,103 @@ function setupEventListeners() {
                         <div style="flex:1; text-align:center;">
                             <img src="${awayLogo}" alt="${away}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
                             <div style="font-size:11px;">${away}</div>
+                        </div>
+                    `;
+                    activeListEl.appendChild(row);
+                });
+            });
+        } catch (err) {
+            const activeListEl = document.getElementById("eventsListContainer");
+            if (activeListEl) {
+                activeListEl.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                        <div>ডেটা লোড করা যায়নি, একটু পরে চেষ্টা করো।</div>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // ==========================================
+    // ক্রিকেট — CricAPI (একই Worker দিয়ে, sport=cricket প্যারামিটারে)
+    // ==========================================
+    async function loadCricketEvents(listEl) {
+        try {
+            const res = await fetch(LIVE_EVENTS_API + "?sport=cricket");
+            const data = await res.json();
+            const rawMatches = (data && data.data) || [];
+
+            const activeListEl = document.getElementById("eventsListContainer");
+            if (!activeListEl) return;
+
+            const now = new Date();
+            let matches = rawMatches;
+            if (currentEventsFilter === "live") {
+                matches = rawMatches.filter(m => m.matchStarted && !m.matchEnded);
+            } else if (currentEventsFilter === "today") {
+                const todayStr = todayISO(0);
+                matches = rawMatches.filter(m => (m.date || "").startsWith(todayStr));
+            } else if (currentEventsFilter === "upcoming") {
+                matches = rawMatches.filter(m => !m.matchStarted && new Date(m.dateTimeGMT) > now);
+            }
+            // all: rawMatches যেমন আছে তেমনই
+
+            if (!matches.length) {
+                activeListEl.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
+                        <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
+                        <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
+                    </div>
+                `;
+                return;
+            }
+
+            // ম্যাচ টাইপ (T20/ODI/Test) অনুযায়ী গ্রুপ করা
+            const byType = {};
+            matches.forEach(m => {
+                const type = (m.matchType || "cricket").toUpperCase();
+                if (!byType[type]) byType[type] = [];
+                byType[type].push(m);
+            });
+
+            activeListEl.innerHTML = "";
+            Object.keys(byType).forEach(type => {
+                const header = document.createElement("div");
+                header.style.cssText = "display:flex; align-items:center; gap:8px; margin:14px 0 8px; font-size:13px; color:var(--text-muted, #aaa); font-weight:bold;";
+                header.innerHTML = `🏏 ${escapeHTML(type)}`;
+                activeListEl.appendChild(header);
+
+                byType[type].forEach(m => {
+                    const team1 = escapeHTML((m.teams && m.teams[0]) || "Team 1");
+                    const team2 = escapeHTML((m.teams && m.teams[1]) || "Team 2");
+                    const team1Logo = escapeHTML((m.teamInfo && m.teamInfo[0] && m.teamInfo[0].img) || "logo.png");
+                    const team2Logo = escapeHTML((m.teamInfo && m.teamInfo[1] && m.teamInfo[1].img) || "logo.png");
+
+                    let centerHtml;
+                    if (m.matchStarted && !m.matchEnded) {
+                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-size:11px;">${escapeHTML(m.status || "")}</div>`;
+                    } else if (m.matchEnded) {
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-size:11px;">${escapeHTML(m.status || "")}</div>`;
+                    } else {
+                        const dt = new Date(m.dateTimeGMT);
+                        const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        const dateStr = dt.toLocaleDateString([], { day: "2-digit", month: "short" });
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:11px;">${dateStr}</div><div style="font-size:13px;">${timeStr}</div>`;
+                    }
+
+                    const row = document.createElement("div");
+                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket"));
+                    row.innerHTML = `
+                        <div style="flex:1; text-align:center;">
+                            <img src="${team1Logo}" alt="${team1}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${team1}</div>
+                        </div>
+                        <div style="flex:0 0 90px; text-align:center;">${centerHtml}</div>
+                        <div style="flex:1; text-align:center;">
+                            <img src="${team2Logo}" alt="${team2}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${team2}</div>
                         </div>
                     `;
                     activeListEl.appendChild(row);
