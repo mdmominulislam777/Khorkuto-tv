@@ -519,11 +519,18 @@ function setupEventListeners() {
         try {
             const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(currentEventsFilter));
             const data = await res.json();
-            const matches = (data && data.matches) || [];
+            const rawMatches = (data && data.matches) || [];
 
             // ফিল্টার বাটন আবার ক্লিক করে বদলে গেলে পুরনো রেসপন্স যেন না বসে
             const activeListEl = document.getElementById("eventsListContainer");
             if (!activeListEl) return;
+
+            // সেফটি-চেক: football-data.org-এর status ফিল্ড কখনো দেরিতে আপডেট হয়,
+            // তাই "Upcoming"-এ শুধু সেই ম্যাচগুলো রাখো যেগুলোর কিক-অফ সময় এখনো আসেনি
+            const now = new Date();
+            const matches = currentEventsFilter === "upcoming"
+                ? rawMatches.filter(m => new Date(m.utcDate) > now)
+                : rawMatches;
 
             if (!matches.length) {
                 activeListEl.innerHTML = `
