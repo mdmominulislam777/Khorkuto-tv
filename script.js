@@ -451,12 +451,15 @@ function setupEventListeners() {
         const wrap = document.createElement("div");
         wrap.style.cssText = "grid-column:1/-1;";
         wrap.innerHTML = `
-            <div id="sportTabs" style="display:flex; gap:8px; padding:4px 2px 10px;">
+            <div id="sportTabs" style="display:flex; gap:16px; padding:8px 4px 16px; overflow-x:auto;">
                 ${[
-                    ["football", "⚽ Football"],
-                    ["cricket", "🏏 Cricket"]
-                ].map(([key, label]) => `
-                    <button data-sport="${key}" style="padding:6px 14px; border-radius:8px; border:1px solid var(--primary, #ff2a4b); background:${currentSport === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentSport === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:12px; font-weight:bold;">${label}</button>
+                    ["football", "⚽", "Football"],
+                    ["cricket", "🏏", "Cricket"]
+                ].map(([key, icon, label]) => `
+                    <button data-sport="${key}" style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; background:transparent; border:none;">
+                        <span style="width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; border:2px solid ${currentSport === key ? "var(--primary, #ff2a4b)" : "rgba(128,128,128,0.3)"}; background:${currentSport === key ? "rgba(255,42,75,0.1)" : "transparent"};">${icon}</span>
+                        <span style="font-size:11px; color:${currentSport === key ? "var(--primary, #ff2a4b)" : "var(--text-muted, #888)"}; font-weight:${currentSport === key ? "bold" : "normal"};">${label}</span>
+                    </button>
                 `).join("")}
             </div>
             <div id="eventsFilterTabs" style="display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px;">
