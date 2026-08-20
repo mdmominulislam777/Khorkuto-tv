@@ -473,6 +473,38 @@ function setupEventListeners() {
         loadLiveEvents();
     }
 
+    // ==========================================
+    // লিগ → চ্যানেল ম্যাপিং
+    // এখানে বলে দাও কোন লিগ তোমার কোন চ্যানেলে দেখানো হয়।
+    // key = football-data.org-এর লিগের নাম (আংশিক মিললেই হবে, ছোট হাতের অক্ষরে)
+    // value = channels.json-এর channel নামের অংশ (আংশিক মিললেই হবে)
+    // ==========================================
+    const LEAGUE_TO_CHANNEL_MAP = {
+        // উদাহরণ — নিজের সঠিক তথ্য দিয়ে বদলে/যোগ করে নাও:
+        // "premier league": "T Sports",
+        // "la liga": "Star Sports 1",
+        // "champions league": "Bein Sports",
+    };
+
+    function findChannelForLeague(leagueName) {
+        const leagueLower = String(leagueName || "").toLowerCase();
+        const matchedKey = Object.keys(LEAGUE_TO_CHANNEL_MAP).find(key => leagueLower.includes(key));
+        if (!matchedKey) return null;
+
+        const channelNamePattern = LEAGUE_TO_CHANNEL_MAP[matchedKey].toLowerCase();
+        return channels.find(c => String(c.name || "").toLowerCase().includes(channelNamePattern)) || null;
+    }
+
+    function handleMatchCardClick(leagueName) {
+        const matchedChannel = findChannelForLeague(leagueName);
+        if (matchedChannel) {
+            playChannelWithAd(matchedChannel);
+        } else {
+            alert("এই লিগের জন্য এখনো কোনো চ্যানেল যুক্ত করা হয়নি।");
+        }
+    }
+
+
     async function loadLiveEvents() {
         const listEl = document.getElementById("eventsListContainer");
         if (!listEl) return;
@@ -539,11 +571,13 @@ function setupEventListeners() {
                     } else {
                         const dt = new Date(m.utcDate);
                         const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">⏱️</div><div style="font-size:13px;">${timeStr}</div>`;
+                        const dateStr = dt.toLocaleDateString([], { day: "2-digit", month: "short" });
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:11px;">${dateStr}</div><div style="font-size:13px;">${timeStr}</div>`;
                     }
 
                     const row = document.createElement("div");
-                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px;";
+                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.addEventListener("click", () => handleMatchCardClick(league));
                     row.innerHTML = `
                         <div style="flex:1; text-align:center;">
                             <img src="${homeLogo}" alt="${home}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
