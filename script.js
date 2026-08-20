@@ -456,16 +456,16 @@ function setupEventListeners() {
                     ["football", "⚽ Football"],
                     ["cricket", "🏏 Cricket"]
                 ].map(([key, label]) => `
-                    <button data-sport="${key}" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--primary, #ff2a4b); background:${currentSport === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentSport === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; font-weight:bold;">${label}</button>
+                    <button data-sport="${key}" style="padding:6px 14px; border-radius:8px; border:1px solid var(--primary, #ff2a4b); background:${currentSport === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentSport === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:12px; font-weight:bold;">${label}</button>
                 `).join("")}
             </div>
             <div id="eventsFilterTabs" style="display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px;">
                 ${[
+                    ["all", "☰ All"],
                     ["live", "🔴 Live"],
                     ["today", "🕐 Today's"],
                     ["upcoming", "📅 Upcoming"],
-                    ["ended", "✅ Ended"],
-                    ["all", "☰ All"]
+                    ["ended", "✅ Ended"]
                 ].map(([key, label]) => `
                     <button data-filter="${key}" style="flex-shrink:0; padding:8px 16px; border-radius:20px; border:1px solid var(--primary, #ff2a4b); background:${currentEventsFilter === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentEventsFilter === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; white-space:nowrap;">${label}</button>
                 `).join("")}
