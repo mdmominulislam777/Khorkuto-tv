@@ -439,6 +439,7 @@ function setupEventListeners() {
         if (filter === "live") return "?status=LIVE";
         if (filter === "today") return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(0)}`;
         if (filter === "upcoming") return `?status=SCHEDULED&dateFrom=${todayISO(1)}&dateTo=${todayISO(7)}`;
+        if (filter === "ended") return `?status=FINISHED&dateFrom=${todayISO(-7)}&dateTo=${todayISO(0)}`;
         // all: আজ থেকে আগামী ৩ দিনের সব ম্যাচ
         return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(3)}`;
     }
@@ -463,6 +464,7 @@ function setupEventListeners() {
                     ["live", "🔴 Live"],
                     ["today", "🕐 Today's"],
                     ["upcoming", "📅 Upcoming"],
+                    ["ended", "✅ Ended"],
                     ["all", "☰ All"]
                 ].map(([key, label]) => `
                     <button data-filter="${key}" style="flex-shrink:0; padding:8px 16px; border-radius:20px; border:1px solid var(--primary, #ff2a4b); background:${currentEventsFilter === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentEventsFilter === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; white-space:nowrap;">${label}</button>
@@ -638,7 +640,10 @@ function setupEventListeners() {
     // ==========================================
     async function loadCricketEvents(listEl) {
         try {
-            const res = await fetch(LIVE_EVENTS_API + "?sport=cricket");
+            const cricEndpoint = currentEventsFilter === "upcoming"
+                ? "?sport=cricket&type=matches"
+                : "?sport=cricket";
+            const res = await fetch(LIVE_EVENTS_API + cricEndpoint);
             const data = await res.json();
             const rawMatches = (data && data.data) || [];
 
@@ -654,6 +659,8 @@ function setupEventListeners() {
                 matches = rawMatches.filter(m => (m.date || "").startsWith(todayStr));
             } else if (currentEventsFilter === "upcoming") {
                 matches = rawMatches.filter(m => !m.matchStarted && new Date(m.dateTimeGMT) > now);
+            } else if (currentEventsFilter === "ended") {
+                matches = rawMatches.filter(m => m.matchEnded);
             }
             // all: rawMatches যেমন আছে তেমনই
 
