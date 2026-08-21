@@ -444,7 +444,7 @@ function setupEventListeners() {
         return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(3)}`;
     }
 
-    let currentSport = "football";
+    let currentSport = "all";
 
     function renderLiveEventsUI() {
         if (!channelList) return;
