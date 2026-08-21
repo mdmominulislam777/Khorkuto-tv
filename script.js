@@ -417,79 +417,382 @@ function setupEventListeners() {
 
             if (mainSectionTitle) mainSectionTitle.textContent = "🔴 Live Events";
 
-            loadLiveEvents();
+            renderLiveEventsUI();
+            startLiveEventsRefresh();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
 
     // ==========================================
-    // LIVE EVENTS — Cloudflare Worker থেকে লাইভ ম্যাচ আনা
+    // LIVE EVENTS — Cloudflare Worker থেকে ম্যাচ আনা
     // ==========================================
-    // এই URL-টা তোমার নিজের Cloudflare Worker URL দিয়ে বদলে দাও
     const LIVE_EVENTS_API = "https://streamzx.mdmominulislam5600.workers.dev";
+    let currentEventsFilter = "live";
+
+    function todayISO(offsetDays = 0) {
+        const d = new Date();
+        d.setDate(d.getDate() + offsetDays);
+        return d.toISOString().split("T")[0];
+    }
+
+    function buildEventsQuery(filter) {
+        if (filter === "live") return "?status=LIVE";
+        if (filter === "today") return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(0)}`;
+        if (filter === "upcoming") return `?status=SCHEDULED&dateFrom=${todayISO(1)}&dateTo=${todayISO(7)}`;
+        if (filter === "ended") return `?status=FINISHED&dateFrom=${todayISO(-7)}&dateTo=${todayISO(0)}`;
+        // all: আজ থেকে আগামী ৩ দিনের সব ম্যাচ
+        return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(3)}`;
+    }
+
+    let currentSport = "all";
+
+    function renderLiveEventsUI() {
+        if (!channelList) return;
+        const wrap = document.createElement("div");
+        wrap.style.cssText = "grid-column:1/-1;";
+        wrap.innerHTML = `
+            <div id="sportTabs" style="display:flex; gap:16px; padding:8px 4px 16px; overflow-x:auto;">
+                ${[
+                    ["all", "☰", "All"],
+                    ["football", "⚽", "Football"],
+                    ["cricket", "🏏", "Cricket"]
+                ].map(([key, icon, label]) => `
+                    <button data-sport="${key}" style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; background:transparent; border:none;">
+                        <span style="width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; border:2px solid ${currentSport === key ? "var(--primary, #ff2a4b)" : "rgba(128,128,128,0.3)"}; background:${currentSport === key ? "rgba(255,42,75,0.1)" : "transparent"};">${icon}</span>
+                        <span style="font-size:11px; color:${currentSport === key ? "var(--primary, #ff2a4b)" : "var(--text-muted, #888)"}; font-weight:${currentSport === key ? "bold" : "normal"};">${label}</span>
+                    </button>
+                `).join("")}
+            </div>
+            <div id="eventsFilterTabs" style="display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px;">
+                ${[
+                    ["all", "☰ All"],
+                    ["live", "🔴 Live"],
+                    ["today", "🕐 Today's"],
+                    ["upcoming", "📅 Upcoming"],
+                    ["ended", "✅ Ended"]
+                ].map(([key, label]) => `
+                    <button data-filter="${key}" style="flex-shrink:0; padding:8px 16px; border-radius:20px; border:1px solid var(--primary, #ff2a4b); background:${currentEventsFilter === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentEventsFilter === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; white-space:nowrap;">${label}</button>
+                `).join("")}
+            </div>
+            <div id="eventsListContainer"></div>
+        `;
+        channelList.innerHTML = "";
+        channelList.appendChild(wrap);
+
+        wrap.querySelectorAll("#sportTabs button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentSport = btn.dataset.sport;
+                renderLiveEventsUI();
+            });
+        });
+
+        wrap.querySelectorAll("#eventsFilterTabs button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentEventsFilter = btn.dataset.filter;
+                renderLiveEventsUI();
+            });
+        });
+
+        loadLiveEvents();
+    }
+
+    // ==========================================
+    // লিগ → চ্যানেল ম্যাপিং
+    // এখানে বলে দাও কোন লিগ তোমার কোন চ্যানেলে দেখানো হয়।
+    // key = football-data.org-এর লিগের নাম (আংশিক মিললেই হবে, ছোট হাতের অক্ষরে)
+    // value = channels.json-এর channel নামের অংশ (আংশিক মিললেই হবে)
+    // ==========================================
+    const LEAGUE_TO_CHANNEL_MAP = {
+        // উদাহরণ — নিজের সঠিক তথ্য দিয়ে বদলে/যোগ করে নাও:
+        // "premier league": "T Sports",
+        // "la liga": "Star Sports 1",
+        // "champions league": "Bein Sports",
+    };
+
+    function findChannelForLeague(leagueName) {
+        const leagueLower = String(leagueName || "").toLowerCase();
+        const matchedKey = Object.keys(LEAGUE_TO_CHANNEL_MAP).find(key => leagueLower.includes(key));
+        if (!matchedKey) return null;
+
+        const channelNamePattern = LEAGUE_TO_CHANNEL_MAP[matchedKey].toLowerCase();
+        return channels.find(c => String(c.name || "").toLowerCase().includes(channelNamePattern)) || null;
+    }
+
+    function handleMatchCardClick(leagueName) {
+        const matchedChannel = findChannelForLeague(leagueName);
+        if (matchedChannel) {
+            playChannelWithAd(matchedChannel);
+        } else {
+            alert("এই লিগের জন্য এখনো কোনো চ্যানেল যুক্ত করা হয়নি।");
+        }
+    }
+
 
     async function loadLiveEvents() {
-        if (!channelList) return;
+        const listEl = document.getElementById("eventsListContainer");
+        if (!listEl) return;
 
-        channelList.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+        listEl.innerHTML = `
+            <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
                 <i class="fa-solid fa-spinner fa-spin" style="font-size:32px; margin-bottom:15px; display:block;"></i>
                 <div>লোড হচ্ছে...</div>
             </div>
         `;
 
-        try {
-            const res = await fetch(LIVE_EVENTS_API);
-            const data = await res.json();
-            const matches = (data && data.matches) || [];
+        if (currentSport === "cricket") {
+            listEl.innerHTML = "";
+            await loadCricketEvents(listEl, false);
+            addNoMatchesMessageIfEmpty(listEl);
+            return;
+        }
 
-            if (!matches.length) {
-                channelList.innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
-                        <div>এই মুহূর্তে কোনো লাইভ ম্যাচ নেই</div>
-                        <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
-                    </div>
-                `;
-                return;
-            }
+        if (currentSport === "all") {
+            listEl.innerHTML = "";
+            await loadFootballEvents(listEl, true);
+            await loadCricketEvents(listEl, true);
+            addNoMatchesMessageIfEmpty(listEl);
+            return;
+        }
 
-            channelList.innerHTML = "";
-            matches.forEach(m => {
-                const home = escapeHTML(m.homeTeam?.name || "Home");
-                const away = escapeHTML(m.awayTeam?.name || "Away");
-                const homeLogo = escapeHTML(m.homeTeam?.crest || "logo.png");
-                const awayLogo = escapeHTML(m.awayTeam?.crest || "logo.png");
-                const homeScore = m.score?.fullTime?.home ?? 0;
-                const awayScore = m.score?.fullTime?.away ?? 0;
-                const score = `${homeScore} - ${awayScore}`;
-                const minute = escapeHTML(m.minute ? m.minute + "'" : "লাইভ");
-                const league = escapeHTML(m.competition?.name || "");
+        // ডিফল্ট: football
+        listEl.innerHTML = "";
+        await loadFootballEvents(listEl, false);
+        addNoMatchesMessageIfEmpty(listEl);
+    }
 
-                const card = document.createElement("div");
-                card.className = "channel-card";
-                card.innerHTML = `
-                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;">
-                        <img src="${homeLogo}" alt="${home}" style="width:28px;height:28px;object-fit:contain;">
-                        <span style="font-weight:bold;">${score}</span>
-                        <img src="${awayLogo}" alt="${away}" style="width:28px;height:28px;object-fit:contain;">
-                    </div>
-                    <h4 style="font-size:12px;">${home} vs ${away}</h4>
-                    <small style="color:var(--primary, #ff2a4b);">🔴 ${minute} · ${league}</small>
-                `;
-                channelList.appendChild(card);
-            });
-        } catch (err) {
-            channelList.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                    <div>ডেটা লোড করা যায়নি, একটু পরে চেষ্টা করো।</div>
+    function addNoMatchesMessageIfEmpty(container) {
+        if (container.children.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                    <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
+                    <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
+                    <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
                 </div>
             `;
         }
     }
 
+    async function loadFootballEvents(container, showSportLabel) {
+        try {
+            const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(currentEventsFilter));
+            const data = await res.json();
+            const rawMatches = (data && data.matches) || [];
+
+            // এই ফাংশন চলাকালীন ট্যাব বদলে গেলে যেন পুরনো রেসপন্স আর না বসে
+            const activeListEl = document.getElementById("eventsListContainer");
+            if (!activeListEl || activeListEl !== container) return;
+
+            // সেফটি-চেক: football-data.org-এর status ফিল্ড কখনো দেরিতে আপডেট হয়,
+            // তাই "Upcoming"-এ শুধু সেই ম্যাচগুলো রাখো যেগুলোর কিক-অফ সময় এখনো আসেনি।
+            // "All"-এ শেষ হওয়া ম্যাচ বাদ দাও — সেটার জন্য আলাদা "Ended" ট্যাব আছে।
+            const now = new Date();
+            let matches = rawMatches;
+            if (currentEventsFilter === "upcoming") {
+                matches = rawMatches.filter(m => new Date(m.utcDate) > now);
+            } else if (currentEventsFilter === "all") {
+                matches = rawMatches.filter(m => m.status !== "FINISHED");
+            }
+
+            if (!matches.length) return;
+
+            if (showSportLabel) {
+                const sportHeader = document.createElement("div");
+                sportHeader.style.cssText = "font-size:14px; font-weight:bold; margin:10px 0 6px; color:var(--text, inherit);";
+                sportHeader.textContent = "⚽ Football";
+                container.appendChild(sportHeader);
+            }
+
+            // লিগ অনুযায়ী গ্রুপ করা
+            const byLeague = {};
+            matches.forEach(m => {
+                const league = m.competition?.name || "Football";
+                if (!byLeague[league]) byLeague[league] = [];
+                byLeague[league].push(m);
+            });
+
+            Object.keys(byLeague).forEach(league => {
+                const leagueEmblem = byLeague[league][0].competition?.emblem || "";
+                const leagueHeader = document.createElement("div");
+                leagueHeader.style.cssText = "display:flex; align-items:center; gap:8px; margin:14px 0 8px; font-size:13px; color:var(--text-muted, #aaa); font-weight:bold;";
+                leagueHeader.innerHTML = `${leagueEmblem ? `<img src="${escapeHTML(leagueEmblem)}" style="width:16px;height:16px;object-fit:contain;">` : "⚽"} ${escapeHTML(league)}`;
+                container.appendChild(leagueHeader);
+
+                byLeague[league].forEach(m => {
+                    const home = escapeHTML(m.homeTeam?.name || "Home");
+                    const away = escapeHTML(m.awayTeam?.name || "Away");
+                    const homeLogo = escapeHTML(m.homeTeam?.crest || "logo.png");
+                    const awayLogo = escapeHTML(m.awayTeam?.crest || "logo.png");
+
+                    const isLive = m.status === "IN_PLAY" || m.status === "PAUSED";
+                    const isFinished = m.status === "FINISHED";
+                    const homeScore = m.score?.fullTime?.home;
+                    const awayScore = m.score?.fullTime?.away;
+
+                    let centerHtml;
+                    if (isLive) {
+                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-weight:bold; font-size:16px;">${homeScore ?? 0} - ${awayScore ?? 0}</div>`;
+                    } else if (isFinished) {
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-weight:bold; font-size:16px;">${homeScore ?? 0} - ${awayScore ?? 0}</div>`;
+                    } else {
+                        const dt = new Date(m.utcDate);
+                        const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        const dateStr = dt.toLocaleDateString([], { day: "2-digit", month: "short" });
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:11px;">${dateStr}</div><div style="font-size:13px;">${timeStr}</div>`;
+                    }
+
+                    const row = document.createElement("div");
+                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.addEventListener("click", () => handleMatchCardClick(league));
+                    row.innerHTML = `
+                        <div style="flex:1; text-align:center;">
+                            <img src="${homeLogo}" alt="${home}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${home}</div>
+                        </div>
+                        <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
+                        <div style="flex:1; text-align:center;">
+                            <img src="${awayLogo}" alt="${away}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${away}</div>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            });
+        } catch (err) {
+            const errDiv = document.createElement("div");
+            errDiv.style.cssText = "text-align:center; padding:20px; color:var(--text-muted, #888);";
+            errDiv.textContent = "ফুটবলের ডেটা লোড করা যায়নি।";
+            container.appendChild(errDiv);
+        }
+    }
+
+    // ==========================================
+    // ক্রিকেট — CricAPI (একই Worker দিয়ে, sport=cricket প্যারামিটারে)
+    // ==========================================
+    async function loadCricketEvents(container, showSportLabel) {
+        try {
+            const cricEndpoint = currentEventsFilter === "upcoming"
+                ? "?sport=cricket&type=matches"
+                : "?sport=cricket";
+            const res = await fetch(LIVE_EVENTS_API + cricEndpoint);
+            const data = await res.json();
+            const rawMatches = (data && data.data) || [];
+
+            // এই ফাংশন চলাকালীন ট্যাব বদলে গেলে যেন পুরনো রেসপন্স আর না বসে
+            const activeListEl = document.getElementById("eventsListContainer");
+            if (!activeListEl || activeListEl !== container) return;
+
+            const now = new Date();
+            let matches = rawMatches;
+            if (currentEventsFilter === "live") {
+                matches = rawMatches.filter(m => m.matchStarted && !m.matchEnded);
+            } else if (currentEventsFilter === "today") {
+                const todayStr = todayISO(0);
+                matches = rawMatches.filter(m => (m.date || "").startsWith(todayStr));
+            } else if (currentEventsFilter === "upcoming") {
+                matches = rawMatches.filter(m => !m.matchStarted && new Date(m.dateTimeGMT) > now);
+            } else if (currentEventsFilter === "ended") {
+                matches = rawMatches.filter(m => m.matchEnded);
+            } else if (currentEventsFilter === "all") {
+                matches = rawMatches.filter(m => !m.matchEnded);
+            }
+
+            if (!matches.length) {
+                // combined ("all sport") মোডে খালি হলে কিছু বলার দরকার নেই —
+                // overall "কোনো ম্যাচ নেই" মেসেজ addNoMatchesMessageIfEmpty দেখাবে
+                if (!showSportLabel) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                            <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
+                            <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
+                            <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            if (showSportLabel) {
+                const sportHeader = document.createElement("div");
+                sportHeader.style.cssText = "font-size:14px; font-weight:bold; margin:10px 0 6px; color:var(--text, inherit);";
+                sportHeader.textContent = "🏏 Cricket";
+                container.appendChild(sportHeader);
+            }
+
+            // ম্যাচ টাইপ (T20/ODI/Test) অনুযায়ী গ্রুপ করা
+            const byType = {};
+            matches.forEach(m => {
+                const type = (m.matchType || "cricket").toUpperCase();
+                if (!byType[type]) byType[type] = [];
+                byType[type].push(m);
+            });
+
+            Object.keys(byType).forEach(type => {
+                const header = document.createElement("div");
+                header.style.cssText = "display:flex; align-items:center; gap:8px; margin:14px 0 8px; font-size:13px; color:var(--text-muted, #aaa); font-weight:bold;";
+                header.innerHTML = `🏏 ${escapeHTML(type)}`;
+                container.appendChild(header);
+
+                byType[type].forEach(m => {
+                    const team1 = escapeHTML((m.teams && m.teams[0]) || "Team 1");
+                    const team2 = escapeHTML((m.teams && m.teams[1]) || "Team 2");
+                    const team1Logo = escapeHTML((m.teamInfo && m.teamInfo[0] && m.teamInfo[0].img) || "logo.png");
+                    const team2Logo = escapeHTML((m.teamInfo && m.teamInfo[1] && m.teamInfo[1].img) || "logo.png");
+
+                    let centerHtml;
+                    if (m.matchStarted && !m.matchEnded) {
+                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-size:11px;">${escapeHTML(m.status || "")}</div>`;
+                    } else if (m.matchEnded) {
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-size:11px;">${escapeHTML(m.status || "")}</div>`;
+                    } else {
+                        const dt = new Date(m.dateTimeGMT);
+                        const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        const dateStr = dt.toLocaleDateString([], { day: "2-digit", month: "short" });
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:11px;">${dateStr}</div><div style="font-size:13px;">${timeStr}</div>`;
+                    }
+
+                    const row = document.createElement("div");
+                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket"));
+                    row.innerHTML = `
+                        <div style="flex:1; text-align:center;">
+                            <img src="${team1Logo}" alt="${team1}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${team1}</div>
+                        </div>
+                        <div style="flex:0 0 90px; text-align:center;">${centerHtml}</div>
+                        <div style="flex:1; text-align:center;">
+                            <img src="${team2Logo}" alt="${team2}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px;">${team2}</div>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            });
+        } catch (err) {
+            const errDiv = document.createElement("div");
+            errDiv.style.cssText = "text-align:center; padding:20px; color:var(--text-muted, #888);";
+            errDiv.textContent = "ক্রিকেটের ডেটা লোড করা যায়নি।";
+            container.appendChild(errDiv);
+        }
+    }
+
+    let liveEventsRefreshTimer = null;
+
+    function stopLiveEventsRefresh() {
+        if (liveEventsRefreshTimer) {
+            clearInterval(liveEventsRefreshTimer);
+            liveEventsRefreshTimer = null;
+        }
+    }
+
+    function startLiveEventsRefresh() {
+        stopLiveEventsRefresh();
+        const interval = (typeof CONFIG !== "undefined" && CONFIG.REFRESH_INTERVAL) ? CONFIG.REFRESH_INTERVAL : 30000;
+        liveEventsRefreshTimer = setInterval(loadLiveEvents, interval);
+    }
+
     if (categoryNavBtn) {
         categoryNavBtn.addEventListener("click", () => {
+            stopLiveEventsRefresh();
             setActiveBottomNav(categoryNavBtn);
             showCategoryPage();
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -498,6 +801,7 @@ function setupEventListeners() {
 
     if (sportsNavBtn) {
         sportsNavBtn.addEventListener("click", () => {
+            stopLiveEventsRefresh();
             setActiveBottomNav(sportsNavBtn);
             hideCategoryPage();
             hideSettingsPage();
@@ -513,6 +817,7 @@ function setupEventListeners() {
 
     if (settingsNavBtn) {
         settingsNavBtn.addEventListener("click", () => {
+            stopLiveEventsRefresh();
             setActiveBottomNav(settingsNavBtn);
             showSettingsPage();
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1194,11 +1499,54 @@ function playChannelWithAd(channel) {
 // ==========================================
 // PLAY CHANNEL / STREAM
 // ==========================================
-function playChannel(channel) {
-    if (!channel || !channel.url) return;
+// ==========================================
+// একটা চ্যানেলের সার্ভার লিস্ট বের করা
+// channels.json-এ "servers": [{name,url}, ...] থাকলে সেটাই ব্যবহার হবে,
+// না থাকলে পুরনো "url" ফিল্ড দিয়ে একটামাত্র সার্ভার ধরে নেওয়া হয়
+// ==========================================
+function getChannelServers(channel) {
+    if (channel && Array.isArray(channel.servers) && channel.servers.length > 0) {
+        return channel.servers;
+    }
+    return [{ name: "Server 1", url: channel ? channel.url : "" }];
+}
+
+function renderServerSelector(channel, activeIndex) {
+    const selectorEl = document.getElementById("serverSelector");
+    if (!selectorEl) return;
+
+    const servers = getChannelServers(channel);
+
+    if (servers.length <= 1) {
+        selectorEl.classList.add("hidden");
+        selectorEl.innerHTML = "";
+        return;
+    }
+
+    selectorEl.classList.remove("hidden");
+    selectorEl.innerHTML = "";
+
+    servers.forEach((server, idx) => {
+        const btn = document.createElement("button");
+        const isActive = idx === activeIndex;
+        btn.textContent = server.name || `Server ${idx + 1}`;
+        btn.style.cssText = `flex-shrink:0; padding:8px 16px; border-radius:8px; border:1px solid ${isActive ? "var(--primary, #ff2a4b)" : "rgba(255,255,255,0.2)"}; background:${isActive ? "var(--primary, #ff2a4b)" : "transparent"}; color:#fff; font-size:13px;`;
+        btn.addEventListener("click", () => playChannel(channel, idx));
+        selectorEl.appendChild(btn);
+    });
+}
+
+function playChannel(channel, serverIndex = 0) {
+    if (!channel) return;
+
+    const servers = getChannelServers(channel);
+    const selectedServer = servers[serverIndex] || servers[0];
+    if (!selectedServer || !selectedServer.url) return;
 
     if (currentChannelName) currentChannelName.textContent = channel.name || "Live TV";
     if (playerContainer) playerContainer.classList.remove("hidden");
+
+    renderServerSelector(channel, serverIndex);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -1213,7 +1561,7 @@ function playChannel(channel) {
         video.load();
     }
 
-    const url = String(channel.url).trim();
+    const url = String(selectedServer.url).trim();
 
     if (typeof Hls !== "undefined" && Hls.isSupported() && (url.includes(".m3u8") || url.includes("m3u8"))) {
         hls = new Hls({ enableWorker: true });
@@ -1263,6 +1611,12 @@ function closePlayer() {
 
     if (playerContainer) {
         playerContainer.classList.add("hidden");
+    }
+
+    const selectorEl = document.getElementById("serverSelector");
+    if (selectorEl) {
+        selectorEl.classList.add("hidden");
+        selectorEl.innerHTML = "";
     }
 }
 
