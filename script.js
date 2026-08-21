@@ -1499,11 +1499,54 @@ function playChannelWithAd(channel) {
 // ==========================================
 // PLAY CHANNEL / STREAM
 // ==========================================
-function playChannel(channel) {
-    if (!channel || !channel.url) return;
+// ==========================================
+// একটা চ্যানেলের সার্ভার লিস্ট বের করা
+// channels.json-এ "servers": [{name,url}, ...] থাকলে সেটাই ব্যবহার হবে,
+// না থাকলে পুরনো "url" ফিল্ড দিয়ে একটামাত্র সার্ভার ধরে নেওয়া হয়
+// ==========================================
+function getChannelServers(channel) {
+    if (channel && Array.isArray(channel.servers) && channel.servers.length > 0) {
+        return channel.servers;
+    }
+    return [{ name: "Server 1", url: channel ? channel.url : "" }];
+}
+
+function renderServerSelector(channel, activeIndex) {
+    const selectorEl = document.getElementById("serverSelector");
+    if (!selectorEl) return;
+
+    const servers = getChannelServers(channel);
+
+    if (servers.length <= 1) {
+        selectorEl.classList.add("hidden");
+        selectorEl.innerHTML = "";
+        return;
+    }
+
+    selectorEl.classList.remove("hidden");
+    selectorEl.innerHTML = "";
+
+    servers.forEach((server, idx) => {
+        const btn = document.createElement("button");
+        const isActive = idx === activeIndex;
+        btn.textContent = server.name || `Server ${idx + 1}`;
+        btn.style.cssText = `flex-shrink:0; padding:8px 16px; border-radius:8px; border:1px solid ${isActive ? "var(--primary, #ff2a4b)" : "rgba(255,255,255,0.2)"}; background:${isActive ? "var(--primary, #ff2a4b)" : "transparent"}; color:#fff; font-size:13px;`;
+        btn.addEventListener("click", () => playChannel(channel, idx));
+        selectorEl.appendChild(btn);
+    });
+}
+
+function playChannel(channel, serverIndex = 0) {
+    if (!channel) return;
+
+    const servers = getChannelServers(channel);
+    const selectedServer = servers[serverIndex] || servers[0];
+    if (!selectedServer || !selectedServer.url) return;
 
     if (currentChannelName) currentChannelName.textContent = channel.name || "Live TV";
     if (playerContainer) playerContainer.classList.remove("hidden");
+
+    renderServerSelector(channel, serverIndex);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -1518,7 +1561,7 @@ function playChannel(channel) {
         video.load();
     }
 
-    const url = String(channel.url).trim();
+    const url = String(selectedServer.url).trim();
 
     if (typeof Hls !== "undefined" && Hls.isSupported() && (url.includes(".m3u8") || url.includes("m3u8"))) {
         hls = new Hls({ enableWorker: true });
@@ -1568,6 +1611,12 @@ function closePlayer() {
 
     if (playerContainer) {
         playerContainer.classList.add("hidden");
+    }
+
+    const selectorEl = document.getElementById("serverSelector");
+    if (selectorEl) {
+        selectorEl.classList.add("hidden");
+        selectorEl.innerHTML = "";
     }
 }
 
