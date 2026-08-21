@@ -453,6 +453,7 @@ function setupEventListeners() {
         wrap.innerHTML = `
             <div id="sportTabs" style="display:flex; gap:16px; padding:8px 4px 16px; overflow-x:auto;">
                 ${[
+                    ["all", "☰", "All"],
                     ["football", "⚽", "Football"],
                     ["cricket", "🏏", "Cricket"]
                 ].map(([key, icon, label]) => `
@@ -539,35 +540,66 @@ function setupEventListeners() {
         `;
 
         if (currentSport === "cricket") {
-            await loadCricketEvents(listEl);
+            listEl.innerHTML = "";
+            await loadCricketEvents(listEl, false);
+            addNoMatchesMessageIfEmpty(listEl);
             return;
         }
 
+        if (currentSport === "all") {
+            listEl.innerHTML = "";
+            await loadFootballEvents(listEl, true);
+            await loadCricketEvents(listEl, true);
+            addNoMatchesMessageIfEmpty(listEl);
+            return;
+        }
+
+        // ডিফল্ট: football
+        listEl.innerHTML = "";
+        await loadFootballEvents(listEl, false);
+        addNoMatchesMessageIfEmpty(listEl);
+    }
+
+    function addNoMatchesMessageIfEmpty(container) {
+        if (container.children.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                    <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
+                    <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
+                    <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
+                </div>
+            `;
+        }
+    }
+
+    async function loadFootballEvents(container, showSportLabel) {
         try {
             const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(currentEventsFilter));
             const data = await res.json();
             const rawMatches = (data && data.matches) || [];
 
-            // ফিল্টার বাটন আবার ক্লিক করে বদলে গেলে পুরনো রেসপন্স যেন না বসে
+            // এই ফাংশন চলাকালীন ট্যাব বদলে গেলে যেন পুরনো রেসপন্স আর না বসে
             const activeListEl = document.getElementById("eventsListContainer");
-            if (!activeListEl) return;
+            if (!activeListEl || activeListEl !== container) return;
 
             // সেফটি-চেক: football-data.org-এর status ফিল্ড কখনো দেরিতে আপডেট হয়,
-            // তাই "Upcoming"-এ শুধু সেই ম্যাচগুলো রাখো যেগুলোর কিক-অফ সময় এখনো আসেনি
+            // তাই "Upcoming"-এ শুধু সেই ম্যাচগুলো রাখো যেগুলোর কিক-অফ সময় এখনো আসেনি।
+            // "All"-এ শেষ হওয়া ম্যাচ বাদ দাও — সেটার জন্য আলাদা "Ended" ট্যাব আছে।
             const now = new Date();
-            const matches = currentEventsFilter === "upcoming"
-                ? rawMatches.filter(m => new Date(m.utcDate) > now)
-                : rawMatches;
+            let matches = rawMatches;
+            if (currentEventsFilter === "upcoming") {
+                matches = rawMatches.filter(m => new Date(m.utcDate) > now);
+            } else if (currentEventsFilter === "all") {
+                matches = rawMatches.filter(m => m.status !== "FINISHED");
+            }
 
-            if (!matches.length) {
-                activeListEl.innerHTML = `
-                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
-                        <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
-                        <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
-                    </div>
-                `;
-                return;
+            if (!matches.length) return;
+
+            if (showSportLabel) {
+                const sportHeader = document.createElement("div");
+                sportHeader.style.cssText = "font-size:14px; font-weight:bold; margin:10px 0 6px; color:var(--text, inherit);";
+                sportHeader.textContent = "⚽ Football";
+                container.appendChild(sportHeader);
             }
 
             // লিগ অনুযায়ী গ্রুপ করা
@@ -578,13 +610,12 @@ function setupEventListeners() {
                 byLeague[league].push(m);
             });
 
-            activeListEl.innerHTML = "";
             Object.keys(byLeague).forEach(league => {
                 const leagueEmblem = byLeague[league][0].competition?.emblem || "";
                 const leagueHeader = document.createElement("div");
                 leagueHeader.style.cssText = "display:flex; align-items:center; gap:8px; margin:14px 0 8px; font-size:13px; color:var(--text-muted, #aaa); font-weight:bold;";
                 leagueHeader.innerHTML = `${leagueEmblem ? `<img src="${escapeHTML(leagueEmblem)}" style="width:16px;height:16px;object-fit:contain;">` : "⚽"} ${escapeHTML(league)}`;
-                activeListEl.appendChild(leagueHeader);
+                container.appendChild(leagueHeader);
 
                 byLeague[league].forEach(m => {
                     const home = escapeHTML(m.homeTeam?.name || "Home");
@@ -623,25 +654,21 @@ function setupEventListeners() {
                             <div style="font-size:11px;">${away}</div>
                         </div>
                     `;
-                    activeListEl.appendChild(row);
+                    container.appendChild(row);
                 });
             });
         } catch (err) {
-            const activeListEl = document.getElementById("eventsListContainer");
-            if (activeListEl) {
-                activeListEl.innerHTML = `
-                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <div>ডেটা লোড করা যায়নি, একটু পরে চেষ্টা করো।</div>
-                    </div>
-                `;
-            }
+            const errDiv = document.createElement("div");
+            errDiv.style.cssText = "text-align:center; padding:20px; color:var(--text-muted, #888);";
+            errDiv.textContent = "ফুটবলের ডেটা লোড করা যায়নি।";
+            container.appendChild(errDiv);
         }
     }
 
     // ==========================================
     // ক্রিকেট — CricAPI (একই Worker দিয়ে, sport=cricket প্যারামিটারে)
     // ==========================================
-    async function loadCricketEvents(listEl) {
+    async function loadCricketEvents(container, showSportLabel) {
         try {
             const cricEndpoint = currentEventsFilter === "upcoming"
                 ? "?sport=cricket&type=matches"
@@ -650,8 +677,9 @@ function setupEventListeners() {
             const data = await res.json();
             const rawMatches = (data && data.data) || [];
 
+            // এই ফাংশন চলাকালীন ট্যাব বদলে গেলে যেন পুরনো রেসপন্স আর না বসে
             const activeListEl = document.getElementById("eventsListContainer");
-            if (!activeListEl) return;
+            if (!activeListEl || activeListEl !== container) return;
 
             const now = new Date();
             let matches = rawMatches;
@@ -664,18 +692,30 @@ function setupEventListeners() {
                 matches = rawMatches.filter(m => !m.matchStarted && new Date(m.dateTimeGMT) > now);
             } else if (currentEventsFilter === "ended") {
                 matches = rawMatches.filter(m => m.matchEnded);
+            } else if (currentEventsFilter === "all") {
+                matches = rawMatches.filter(m => !m.matchEnded);
             }
-            // all: rawMatches যেমন আছে তেমনই
 
             if (!matches.length) {
-                activeListEl.innerHTML = `
-                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
-                        <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
-                        <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
-                    </div>
-                `;
+                // combined ("all sport") মোডে খালি হলে কিছু বলার দরকার নেই —
+                // overall "কোনো ম্যাচ নেই" মেসেজ addNoMatchesMessageIfEmpty দেখাবে
+                if (!showSportLabel) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                            <i class="fa-solid fa-tower-broadcast" style="font-size:40px; margin-bottom:15px; display:block; color:var(--primary, #ff2a4b);"></i>
+                            <div>এই মুহূর্তে কোনো ম্যাচ নেই</div>
+                            <small>ম্যাচ শুরু হলে এখানেই দেখা যাবে।</small>
+                        </div>
+                    `;
+                }
                 return;
+            }
+
+            if (showSportLabel) {
+                const sportHeader = document.createElement("div");
+                sportHeader.style.cssText = "font-size:14px; font-weight:bold; margin:10px 0 6px; color:var(--text, inherit);";
+                sportHeader.textContent = "🏏 Cricket";
+                container.appendChild(sportHeader);
             }
 
             // ম্যাচ টাইপ (T20/ODI/Test) অনুযায়ী গ্রুপ করা
@@ -686,12 +726,11 @@ function setupEventListeners() {
                 byType[type].push(m);
             });
 
-            activeListEl.innerHTML = "";
             Object.keys(byType).forEach(type => {
                 const header = document.createElement("div");
                 header.style.cssText = "display:flex; align-items:center; gap:8px; margin:14px 0 8px; font-size:13px; color:var(--text-muted, #aaa); font-weight:bold;";
                 header.innerHTML = `🏏 ${escapeHTML(type)}`;
-                activeListEl.appendChild(header);
+                container.appendChild(header);
 
                 byType[type].forEach(m => {
                     const team1 = escapeHTML((m.teams && m.teams[0]) || "Team 1");
@@ -725,18 +764,14 @@ function setupEventListeners() {
                             <div style="font-size:11px;">${team2}</div>
                         </div>
                     `;
-                    activeListEl.appendChild(row);
+                    container.appendChild(row);
                 });
             });
         } catch (err) {
-            const activeListEl = document.getElementById("eventsListContainer");
-            if (activeListEl) {
-                activeListEl.innerHTML = `
-                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                        <div>ডেটা লোড করা যায়নি, একটু পরে চেষ্টা করো।</div>
-                    </div>
-                `;
-            }
+            const errDiv = document.createElement("div");
+            errDiv.style.cssText = "text-align:center; padding:20px; color:var(--text-muted, #888);";
+            errDiv.textContent = "ক্রিকেটের ডেটা লোড করা যায়নি।";
+            container.appendChild(errDiv);
         }
     }
 
