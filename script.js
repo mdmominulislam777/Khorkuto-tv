@@ -436,12 +436,7 @@ function setupEventListeners() {
     }
 
     function buildEventsQuery(filter) {
-        if (filter === "live") return "?status=LIVE";
-        if (filter === "today") return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(0)}`;
-        if (filter === "upcoming") return `?status=SCHEDULED&dateFrom=${todayISO(1)}&dateTo=${todayISO(7)}`;
-        if (filter === "ended") return `?status=FINISHED&dateFrom=${todayISO(-7)}&dateTo=${todayISO(0)}`;
-        // all: আজ থেকে আগামী ৩ দিনের সব ম্যাচ
-        return `?dateFrom=${todayISO(0)}&dateTo=${todayISO(3)}`;
+        return `?sport=football&filter=${filter}`;
     }
 
     let currentSport = "all";
