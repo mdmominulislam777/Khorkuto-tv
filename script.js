@@ -524,36 +524,50 @@ function setupEventListeners() {
     }
 
 
-    async function loadLiveEvents() {
+    let liveEventsRequestId = 0;
+
+    async function loadLiveEvents(silent = false) {
         const listEl = document.getElementById("eventsListContainer");
         if (!listEl) return;
 
-        listEl.innerHTML = `
-            <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size:32px; margin-bottom:15px; display:block;"></i>
-                <div>লোড হচ্ছে...</div>
-            </div>
-        `;
+        const requestId = ++liveEventsRequestId;
+
+        if (!silent) {
+            listEl.innerHTML = `
+                <div style="text-align:center; padding:40px 20px; color:var(--text-muted, #888);">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size:32px; margin-bottom:15px; display:block;"></i>
+                    <div>লোড হচ্ছে...</div>
+                </div>
+            `;
+        }
+
+        // নতুন ডেটা আগে একটা অদৃশ্য কন্টেইনারে তৈরি হবে,
+        // যাতে রিফ্রেশের সময় স্ক্রিনে খালি/স্পিনার ফ্ল্যাশ না করে
+        // এবং পুরনো কার্ডের সাথে ডুপ্লিকেট হয়ে না জমে
+        const tempContainer = document.createElement("div");
 
         if (currentSport === "cricket") {
-            listEl.innerHTML = "";
-            await loadCricketEvents(listEl, false);
-            addNoMatchesMessageIfEmpty(listEl);
-            return;
+            await loadCricketEvents(tempContainer, false);
+        } else if (currentSport === "all") {
+            await loadFootballEvents(tempContainer, true);
+            await loadCricketEvents(tempContainer, true);
+        } else {
+            await loadFootballEvents(tempContainer, false);
         }
 
-        if (currentSport === "all") {
-            listEl.innerHTML = "";
-            await loadFootballEvents(listEl, true);
-            await loadCricketEvents(listEl, true);
-            addNoMatchesMessageIfEmpty(listEl);
-            return;
-        }
+        addNoMatchesMessageIfEmpty(tempContainer);
 
-        // ডিফল্ট: football
-        listEl.innerHTML = "";
-        await loadFootballEvents(listEl, false);
-        addNoMatchesMessageIfEmpty(listEl);
+        // এর মধ্যে ট্যাব/ফিল্টার বদলে নতুন রিকোয়েস্ট শুরু হয়ে থাকলে,
+        // এই পুরনো রেসপন্স আর বসানো হবে না
+        if (requestId !== liveEventsRequestId) return;
+
+        const activeListEl = document.getElementById("eventsListContainer");
+        if (!activeListEl) return;
+
+        activeListEl.innerHTML = "";
+        while (tempContainer.firstChild) {
+            activeListEl.appendChild(tempContainer.firstChild);
+        }
     }
 
     function addNoMatchesMessageIfEmpty(container) {
@@ -573,10 +587,6 @@ function setupEventListeners() {
             const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(currentEventsFilter));
             const data = await res.json();
             const rawMatches = (data && data.matches) || [];
-
-            // এই ফাংশন চলাকালীন ট্যাব বদলে গেলে যেন পুরনো রেসপন্স আর না বসে
-            const activeListEl = document.getElementById("eventsListContainer");
-            if (!activeListEl || activeListEl !== container) return;
 
             // সেফটি-চেক: football-data.org-এর status ফিল্ড কখনো দেরিতে আপডেট হয়,
             // তাই "Upcoming"-এ শুধু সেই ম্যাচগুলো রাখো যেগুলোর কিক-অফ সময় এখনো আসেনি।
@@ -672,10 +682,6 @@ function setupEventListeners() {
             const res = await fetch(LIVE_EVENTS_API + cricEndpoint);
             const data = await res.json();
             const rawMatches = (data && data.data) || [];
-
-            // এই ফাংশন চলাকালীন ট্যাব বদলে গেলে যেন পুরনো রেসপন্স আর না বসে
-            const activeListEl = document.getElementById("eventsListContainer");
-            if (!activeListEl || activeListEl !== container) return;
 
             const now = new Date();
             let matches = rawMatches;
