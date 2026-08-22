@@ -595,7 +595,7 @@ function setupEventListeners() {
             let matches = rawMatches;
             if (currentEventsFilter === "upcoming") {
                 matches = rawMatches.filter(m => new Date(m.utcDate) > now);
-            } else if (currentEventsFilter === "all") {
+            } else if (currentEventsFilter === "all" || currentEventsFilter === "today") {
                 matches = rawMatches.filter(m => m.status !== "FINISHED");
             }
 
@@ -671,6 +671,24 @@ function setupEventListeners() {
         }
     }
 
+    // ক্রিকেট টিমের লোগো — CricketData.org অনেক সময় আসল লোগোর বদলে
+    // একটা জেনেরিক/নিম্নমানের প্লেসহোল্ডার ছবি পাঠায় (icon512.png বা তাদের
+    // নিজস্ব ব্র্যান্ডিং শিল্ড)। সেগুলো শনাক্ত করে আসল লোগোর মতোই একটা
+    // পরিষ্কার, সামঞ্জস্যপূর্ণ ফলব্যাক আইকন দেখানো হয়।
+    function renderCricketTeamLogo(teamInfo, teamName) {
+        const img = teamInfo && teamInfo.img;
+        const isGenericPlaceholder = !img
+            || img.includes("icon512.png")
+            || img.toLowerCase().includes("cricketdata");
+
+        if (!isGenericPlaceholder) {
+            return `<img src="${escapeHTML(img)}" alt="${escapeHTML(teamName)}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">`;
+        }
+
+        const initial = escapeHTML((teamName || "?").trim().charAt(0).toUpperCase() || "?");
+        return `<div style="width:32px;height:32px;border-radius:50%;background:var(--primary, #ff2a4b);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;margin:0 auto 4px;">${initial}</div>`;
+    }
+
     // ==========================================
     // ক্রিকেট — CricAPI (একই Worker দিয়ে, sport=cricket প্যারামিটারে)
     // ==========================================
@@ -737,8 +755,8 @@ function setupEventListeners() {
                 byType[type].forEach(m => {
                     const team1 = escapeHTML((m.teams && m.teams[0]) || "Team 1");
                     const team2 = escapeHTML((m.teams && m.teams[1]) || "Team 2");
-                    const team1Logo = escapeHTML((m.teamInfo && m.teamInfo[0] && m.teamInfo[0].img) || "logo.png");
-                    const team2Logo = escapeHTML((m.teamInfo && m.teamInfo[1] && m.teamInfo[1].img) || "logo.png");
+                    const team1Info = m.teamInfo && m.teamInfo[0];
+                    const team2Info = m.teamInfo && m.teamInfo[1];
 
                     let centerHtml;
                     if (m.matchStarted && !m.matchEnded) {
@@ -757,12 +775,12 @@ function setupEventListeners() {
                     row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket"));
                     row.innerHTML = `
                         <div style="flex:1; text-align:center;">
-                            <img src="${team1Logo}" alt="${team1}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            ${renderCricketTeamLogo(team1Info, team1)}
                             <div style="font-size:11px;">${team1}</div>
                         </div>
                         <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
                         <div style="flex:1; text-align:center;">
-                            <img src="${team2Logo}" alt="${team2}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            ${renderCricketTeamLogo(team2Info, team2)}
                             <div style="font-size:11px;">${team2}</div>
                         </div>
                     `;
