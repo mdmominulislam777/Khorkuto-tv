@@ -742,9 +742,9 @@ function setupEventListeners() {
 
                     let centerHtml;
                     if (m.matchStarted && !m.matchEnded) {
-                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-size:11px;">${escapeHTML(m.status || "")}</div>`;
+                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-size:10px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(m.status || "")}</div>`;
                     } else if (m.matchEnded) {
-                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-size:11px;">${escapeHTML(m.status || "")}</div>`;
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-size:10px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(m.status || "")}</div>`;
                     } else {
                         const dt = new Date(m.dateTimeGMT);
                         const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -760,7 +760,7 @@ function setupEventListeners() {
                             <img src="${team1Logo}" alt="${team1}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
                             <div style="font-size:11px;">${team1}</div>
                         </div>
-                        <div style="flex:0 0 90px; text-align:center;">${centerHtml}</div>
+                        <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
                         <div style="flex:1; text-align:center;">
                             <img src="${team2Logo}" alt="${team2}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
                             <div style="font-size:11px;">${team2}</div>
