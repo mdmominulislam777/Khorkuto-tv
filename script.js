@@ -485,6 +485,7 @@ function setupEventListeners() {
             btn.addEventListener("click", () => {
                 currentEventsFilter = btn.dataset.filter;
                 renderLiveEventsUI();
+                startLiveEventsRefresh();
             });
         });
 
@@ -781,6 +782,10 @@ function setupEventListeners() {
 
     function startLiveEventsRefresh() {
         stopLiveEventsRefresh();
+        // শুধু "Live" ফিল্টারেই বারবার রিফ্রেশ দরকার —
+        // Today's/Upcoming/Ended-এর ডেটা মিনিটে মিনিটে বদলায় না,
+        // তাই ওখানে বারবার কল করলে শুধু API কোটাই খরচ হবে
+        if (currentEventsFilter !== "live") return;
         const interval = (typeof CONFIG !== "undefined" && CONFIG.REFRESH_INTERVAL) ? CONFIG.REFRESH_INTERVAL : 30000;
         liveEventsRefreshTimer = setInterval(loadLiveEvents, interval);
     }
