@@ -435,9 +435,21 @@ function setupEventListeners() {
         return d.toISOString().split("T")[0];
     }
 
-    function buildEventsQuery(filter) {
-        return `?sport=football&filter=${filter}`;
+    function buildEventsQuery(sportKey, filter) {
+        return `?sport=${sportKey}&filter=${filter}`;
     }
+
+    const TEAM_SPORTS = {
+        football: { emoji: "⚽", label: "Football" },
+        basketball: { emoji: "🏀", label: "Basketball" },
+        baseball: { emoji: "⚾", label: "Baseball" },
+        volleyball: { emoji: "🏐", label: "Volleyball" },
+        handball: { emoji: "🤾", label: "Handball" },
+        hockey: { emoji: "🏒", label: "Hockey" },
+        rugby: { emoji: "🏉", label: "Rugby" },
+        nfl: { emoji: "🏈", label: "NFL" },
+        afl: { emoji: "🏉", label: "AFL" }
+    };
 
     let currentSport = "all";
 
@@ -450,7 +462,15 @@ function setupEventListeners() {
                 ${[
                     ["all", "☰", "All"],
                     ["football", "⚽", "Football"],
-                    ["cricket", "🏏", "Cricket"]
+                    ["cricket", "🏏", "Cricket"],
+                    ["basketball", "🏀", "Basketball"],
+                    ["baseball", "⚾", "Baseball"],
+                    ["volleyball", "🏐", "Volleyball"],
+                    ["handball", "🤾", "Handball"],
+                    ["hockey", "🏒", "Hockey"],
+                    ["rugby", "🏉", "Rugby"],
+                    ["nfl", "🏈", "NFL"],
+                    ["afl", "🏉", "AFL"]
                 ].map(([key, icon, label]) => `
                     <button data-sport="${key}" style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; background:transparent; border:none;">
                         <span style="width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; border:2px solid ${currentSport === key ? "var(--primary, #ff2a4b)" : "rgba(128,128,128,0.3)"}; background:${currentSport === key ? "rgba(255,42,75,0.1)" : "transparent"};">${icon}</span>
@@ -549,10 +569,27 @@ function setupEventListeners() {
         if (currentSport === "cricket") {
             await loadCricketEvents(tempContainer, false);
         } else if (currentSport === "all") {
-            await loadFootballEvents(tempContainer, true);
-            await loadCricketEvents(tempContainer, true);
-        } else {
-            await loadFootballEvents(tempContainer, false);
+            // সব স্পোর্ট একসাথে (parallel) লোড হবে গতির জন্য,
+            // কিন্তু দেখানোর ক্রম (football, cricket, তারপর বাকিগুলো) ঠিক রাখা হয়
+            const order = ["football", "cricket", ...Object.keys(TEAM_SPORTS).filter(k => k !== "football")];
+            const sections = {};
+            await Promise.all(order.map(async key => {
+                const sectionContainer = document.createElement("div");
+                if (key === "cricket") {
+                    await loadCricketEvents(sectionContainer, true);
+                } else {
+                    await loadTeamSportEvents(sectionContainer, true, key);
+                }
+                sections[key] = sectionContainer;
+            }));
+            order.forEach(key => {
+                const sec = sections[key];
+                while (sec.firstChild) {
+                    tempContainer.appendChild(sec.firstChild);
+                }
+            });
+        } else if (TEAM_SPORTS[currentSport]) {
+            await loadTeamSportEvents(tempContainer, false, currentSport);
         }
 
         addNoMatchesMessageIfEmpty(tempContainer);
@@ -582,15 +619,16 @@ function setupEventListeners() {
         }
     }
 
-    async function loadFootballEvents(container, showSportLabel) {
+    async function loadTeamSportEvents(container, showSportLabel, sportKey) {
+        const sportInfo = TEAM_SPORTS[sportKey] || { emoji: "🏆", label: sportKey };
         try {
-            const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(currentEventsFilter));
+            const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(sportKey, currentEventsFilter));
             const data = await res.json();
             const rawMatches = (data && data.matches) || [];
 
-            // সেফটি-চেক: football-data.org-এর status ফিল্ড কখনো দেরিতে আপডেট হয়,
-            // তাই "Upcoming"-এ শুধু সেই ম্যাচগুলো রাখো যেগুলোর কিক-অফ সময় এখনো আসেনি।
-            // "All"-এ শেষ হওয়া ম্যাচ বাদ দাও — সেটার জন্য আলাদা "Ended" ট্যাব আছে।
+            // সেফটি-চেক: status ফিল্ড কখনো দেরিতে আপডেট হয়,
+            // তাই "Upcoming"-এ শুধু সেই ম্যাচগুলো রাখো যেগুলোর শুরুর সময় এখনো আসেনি।
+            // "All"/"Today's"-এ শেষ হওয়া ম্যাচ বাদ দাও — সেটার জন্য আলাদা "Ended" ট্যাব আছে।
             const now = new Date();
             let matches = rawMatches;
             if (currentEventsFilter === "upcoming") {
@@ -604,14 +642,14 @@ function setupEventListeners() {
             if (showSportLabel) {
                 const sportHeader = document.createElement("div");
                 sportHeader.style.cssText = "font-size:14px; font-weight:bold; margin:10px 0 6px; color:var(--text, inherit);";
-                sportHeader.textContent = "⚽ Football";
+                sportHeader.textContent = `${sportInfo.emoji} ${sportInfo.label}`;
                 container.appendChild(sportHeader);
             }
 
             // লিগ অনুযায়ী গ্রুপ করা
             const byLeague = {};
             matches.forEach(m => {
-                const league = m.competition?.name || "Football";
+                const league = m.competition?.name || sportInfo.label;
                 if (!byLeague[league]) byLeague[league] = [];
                 byLeague[league].push(m);
             });
@@ -620,7 +658,7 @@ function setupEventListeners() {
                 const leagueEmblem = byLeague[league][0].competition?.emblem || "";
                 const leagueHeader = document.createElement("div");
                 leagueHeader.style.cssText = "display:flex; align-items:center; gap:8px; margin:14px 0 8px; font-size:13px; color:var(--text-muted, #aaa); font-weight:bold;";
-                leagueHeader.innerHTML = `${leagueEmblem ? `<img src="${escapeHTML(leagueEmblem)}" style="width:16px;height:16px;object-fit:contain;">` : "⚽"} ${escapeHTML(league)}`;
+                leagueHeader.innerHTML = `${leagueEmblem ? `<img src="${escapeHTML(leagueEmblem)}" style="width:16px;height:16px;object-fit:contain;">` : sportInfo.emoji} ${escapeHTML(league)}`;
                 container.appendChild(leagueHeader);
 
                 byLeague[league].forEach(m => {
@@ -666,7 +704,7 @@ function setupEventListeners() {
         } catch (err) {
             const errDiv = document.createElement("div");
             errDiv.style.cssText = "text-align:center; padding:20px; color:var(--text-muted, #888);";
-            errDiv.textContent = "ফুটবলের ডেটা লোড করা যায়নি।";
+            errDiv.textContent = `${sportInfo.label}-এর ডেটা লোড করা যায়নি।`;
             container.appendChild(errDiv);
         }
     }
