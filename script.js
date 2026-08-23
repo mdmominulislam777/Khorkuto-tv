@@ -455,6 +455,12 @@ function setupEventListeners() {
 
     function renderLiveEventsUI() {
         if (!channelList) return;
+
+        // আইকন সারিটা যাতে ক্লিক করার পর আবার শুরুতে "লাফ" দিয়ে ফিরে না যায়,
+        // তার জন্য আগের স্ক্রল পজিশন মনে রাখা হচ্ছে
+        const prevSportTabs = document.getElementById("sportTabs");
+        const prevScrollLeft = prevSportTabs ? prevSportTabs.scrollLeft : 0;
+
         const wrap = document.createElement("div");
         wrap.style.cssText = "grid-column:1/-1;";
         wrap.innerHTML = `
@@ -493,6 +499,11 @@ function setupEventListeners() {
         `;
         channelList.innerHTML = "";
         channelList.appendChild(wrap);
+
+        const newSportTabs = document.getElementById("sportTabs");
+        if (newSportTabs && prevScrollLeft) {
+            newSportTabs.scrollLeft = prevScrollLeft;
+        }
 
         wrap.querySelectorAll("#sportTabs button").forEach(btn => {
             btn.addEventListener("click", () => {
@@ -670,14 +681,17 @@ function setupEventListeners() {
 
                     const isLive = m.status === "IN_PLAY" || m.status === "PAUSED";
                     const isFinished = m.status === "FINISHED";
-                    const homeScore = m.score?.fullTime?.home;
-                    const awayScore = m.score?.fullTime?.away;
+                    // কিছু স্পোর্টে স্কোর সরাসরি সংখ্যা না হয়ে জটিল অবজেক্ট হয়ে আসতে পারে —
+                    // তখন সরাসরি দেখালে "[object Object]" দেখাবে, তাই সংখ্যা কিনা যাচাই করা হচ্ছে
+                    const formatScore = v => (typeof v === "number" && !isNaN(v)) ? v : "-";
+                    const homeScore = formatScore(m.score?.fullTime?.home);
+                    const awayScore = formatScore(m.score?.fullTime?.away);
 
                     let centerHtml;
                     if (isLive) {
-                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-weight:bold; font-size:16px;">${homeScore ?? 0} - ${awayScore ?? 0}</div>`;
+                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-weight:bold; font-size:16px;">${homeScore} - ${awayScore}</div>`;
                     } else if (isFinished) {
-                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-weight:bold; font-size:16px;">${homeScore ?? 0} - ${awayScore ?? 0}</div>`;
+                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-weight:bold; font-size:16px;">${homeScore} - ${awayScore}</div>`;
                     } else {
                         const dt = new Date(m.utcDate);
                         const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
