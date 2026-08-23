@@ -498,6 +498,7 @@ function setupEventListeners() {
             btn.addEventListener("click", () => {
                 currentSport = btn.dataset.sport;
                 renderLiveEventsUI();
+                startLiveEventsRefresh();
             });
         });
 
@@ -848,8 +849,11 @@ function setupEventListeners() {
         // Today's/Upcoming/Ended-এর ডেটা মিনিটে মিনিটে বদলায় না,
         // তাই ওখানে বারবার কল করলে শুধু API কোটাই খরচ হবে
         if (currentEventsFilter !== "live") return;
+        // "All"-এ একসাথে ১০টা স্পোর্ট লোড হয় — প্রতি ৩০ সেকেন্ডে সবগুলো
+        // আবার রিফ্রেশ করা অনেক ভারী, তাই "All"-এ অটো-রিফ্রেশ বন্ধ রাখা হলো
+        if (currentSport === "all") return;
         const interval = (typeof CONFIG !== "undefined" && CONFIG.REFRESH_INTERVAL) ? CONFIG.REFRESH_INTERVAL : 30000;
-        liveEventsRefreshTimer = setInterval(loadLiveEvents, interval);
+        liveEventsRefreshTimer = setInterval(() => loadLiveEvents(true), interval);
     }
 
     if (categoryNavBtn) {
