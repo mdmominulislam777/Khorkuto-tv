@@ -453,6 +453,20 @@ function setupEventListeners() {
 
     let currentSport = "all";
 
+    const FILTER_LABELS = {
+        all: "☰ All",
+        live: "🔴 Live",
+        today: "🕐 Today's",
+        upcoming: "📅 Upcoming",
+        ended: "✅ Ended"
+    };
+    let sportTabCounts = {};
+
+    function filterLabelWithCount(key) {
+        const base = FILTER_LABELS[key];
+        return sportTabCounts[key] != null ? `${base} (${sportTabCounts[key]})` : base;
+    }
+
     function renderLiveEventsUI() {
         if (!channelList) return;
 
@@ -485,14 +499,8 @@ function setupEventListeners() {
                 `).join("")}
             </div>
             <div id="eventsFilterTabs" style="display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px;">
-                ${[
-                    ["all", "☰ All"],
-                    ["live", "🔴 Live"],
-                    ["today", "🕐 Today's"],
-                    ["upcoming", "📅 Upcoming"],
-                    ["ended", "✅ Ended"]
-                ].map(([key, label]) => `
-                    <button data-filter="${key}" style="flex-shrink:0; padding:8px 16px; border-radius:20px; border:1px solid var(--primary, #ff2a4b); background:${currentEventsFilter === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentEventsFilter === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; white-space:nowrap;">${label}</button>
+                ${["all", "live", "today", "upcoming", "ended"].map(key => `
+                    <button data-filter="${key}" style="flex-shrink:0; padding:8px 16px; border-radius:20px; border:1px solid var(--primary, #ff2a4b); background:${currentEventsFilter === key ? "var(--primary, #ff2a4b)" : "transparent"}; color:${currentEventsFilter === key ? "#fff" : "var(--primary, #ff2a4b)"}; font-size:13px; white-space:nowrap;">${filterLabelWithCount(key)}</button>
                 `).join("")}
             </div>
             <div id="eventsListContainer"></div>
@@ -508,8 +516,10 @@ function setupEventListeners() {
         wrap.querySelectorAll("#sportTabs button").forEach(btn => {
             btn.addEventListener("click", () => {
                 currentSport = btn.dataset.sport;
+                sportTabCounts = {}; // নতুন স্পোর্টে আগের কাউন্ট যেন না দেখায়
                 renderLiveEventsUI();
                 startLiveEventsRefresh();
+                updateSportTabCounts(currentSport);
             });
         });
 
@@ -522,6 +532,63 @@ function setupEventListeners() {
         });
 
         loadLiveEvents();
+    }
+
+    // নির্দিষ্ট একটা স্পোর্ট বেছে নিলে (যেমন শুধু Cricket, বা শুধু Football),
+    // ফিল্টার ট্যাবগুলোতে Sportzfy-এর মতো সংখ্যা দেখানোর জন্য একবার বিস্তৃত ডেটা এনে
+    // Live/Today's/Upcoming/All-এর কাউন্ট হিসাব করা হয়। "All" (সব স্পোর্ট একসাথে)
+    // মোডে এটা দেখানো হয় না, কারণ প্রতিটা স্পোর্টের জন্য আলাদা কাউন্ট করতে গেলে
+    // অনেক বেশি API কল লাগবে।
+    async function updateSportTabCounts(sportKey) {
+        if (sportKey === "all") return;
+
+        try {
+            let rawMatches = [];
+            if (sportKey === "cricket") {
+                const res = await fetch(LIVE_EVENTS_API + "?sport=cricket");
+                const data = await res.json();
+                rawMatches = (data && data.data) || [];
+            } else {
+                const res = await fetch(LIVE_EVENTS_API + buildEventsQuery(sportKey, "all"));
+                const data = await res.json();
+                rawMatches = (data && data.matches) || [];
+            }
+
+            // এর মধ্যে ইউজার অন্য স্পোর্টে চলে গেলে পুরনো কাউন্ট যেন না বসে
+            if (currentSport !== sportKey) return;
+
+            const now = new Date();
+            const todayStr = todayISO(0);
+            let counts;
+
+            if (sportKey === "cricket") {
+                counts = {
+                    live: rawMatches.filter(m => m.matchStarted && !m.matchEnded).length,
+                    today: rawMatches.filter(m => (m.date || "").startsWith(todayStr)).length,
+                    upcoming: rawMatches.filter(m => !m.matchStarted && new Date(m.dateTimeGMT) > now).length,
+                    all: rawMatches.filter(m => !m.matchEnded).length
+                };
+            } else {
+                counts = {
+                    live: rawMatches.filter(m => m.status === "IN_PLAY").length,
+                    today: rawMatches.filter(m => new Date(m.utcDate).toDateString() === now.toDateString()).length,
+                    upcoming: rawMatches.filter(m => m.status === "SCHEDULED" && new Date(m.utcDate) > now).length,
+                    all: rawMatches.filter(m => m.status !== "FINISHED").length
+                };
+            }
+
+            sportTabCounts = counts;
+
+            // পুরো UI আবার না বানিয়ে, শুধু ফিল্টার বাটনগুলোর লেখা আপডেট করা হচ্ছে
+            const tabsWrap = document.getElementById("eventsFilterTabs");
+            if (!tabsWrap) return;
+            tabsWrap.querySelectorAll("button").forEach(btn => {
+                const key = btn.dataset.filter;
+                btn.textContent = filterLabelWithCount(key);
+            });
+        } catch (err) {
+            // কাউন্ট আনতে ব্যর্থ হলে চুপচাপ থাকবে — প্লেইন লেবেলই দেখাবে, অ্যাপ ভাঙবে না
+        }
     }
 
     // ==========================================
