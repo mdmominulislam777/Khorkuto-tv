@@ -441,6 +441,7 @@ function setupEventListeners() {
 
     const TEAM_SPORTS = {
         football: { emoji: "⚽", label: "Football" },
+        wwe: { emoji: "🤼", label: "WWE" },
         hockey: { emoji: "🏒", label: "Hockey" },
         basketball: { emoji: "🏀", label: "Basketball" },
         rugby: { emoji: "🏉", label: "Rugby" }
@@ -478,6 +479,7 @@ function setupEventListeners() {
                     ["all", "☰", "All"],
                     ["cricket", "🏏", "Cricket"],
                     ["football", "⚽", "Football"],
+                    ["wwe", "🤼", "WWE"],
                     ["hockey", "🏒", "Hockey"],
                     ["basketball", "🏀", "Basketball"],
                     ["rugby", "🏉", "Rugby"]
