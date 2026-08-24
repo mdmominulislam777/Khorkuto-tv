@@ -441,14 +441,9 @@ function setupEventListeners() {
 
     const TEAM_SPORTS = {
         football: { emoji: "⚽", label: "Football" },
-        basketball: { emoji: "🏀", label: "Basketball" },
-        baseball: { emoji: "⚾", label: "Baseball" },
-        volleyball: { emoji: "🏐", label: "Volleyball" },
-        handball: { emoji: "🤾", label: "Handball" },
         hockey: { emoji: "🏒", label: "Hockey" },
-        rugby: { emoji: "🏉", label: "Rugby" },
-        nfl: { emoji: "🏈", label: "NFL" },
-        afl: { emoji: "🏉", label: "AFL" }
+        basketball: { emoji: "🏀", label: "Basketball" },
+        rugby: { emoji: "🏉", label: "Rugby" }
     };
 
     let currentSport = "all";
@@ -481,16 +476,11 @@ function setupEventListeners() {
             <div id="sportTabs" style="display:flex; gap:16px; padding:8px 4px 16px; overflow-x:auto;">
                 ${[
                     ["all", "☰", "All"],
-                    ["football", "⚽", "Football"],
                     ["cricket", "🏏", "Cricket"],
-                    ["basketball", "🏀", "Basketball"],
-                    ["baseball", "⚾", "Baseball"],
-                    ["volleyball", "🏐", "Volleyball"],
-                    ["handball", "🤾", "Handball"],
+                    ["football", "⚽", "Football"],
                     ["hockey", "🏒", "Hockey"],
-                    ["rugby", "🏉", "Rugby"],
-                    ["nfl", "🏈", "NFL"],
-                    ["afl", "🏉", "AFL"]
+                    ["basketball", "🏀", "Basketball"],
+                    ["rugby", "🏉", "Rugby"]
                 ].map(([key, icon, label]) => `
                     <button data-sport="${key}" style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; background:transparent; border:none;">
                         <span style="width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; border:2px solid ${currentSport === key ? "var(--primary, #ff2a4b)" : "rgba(128,128,128,0.3)"}; background:${currentSport === key ? "rgba(255,42,75,0.1)" : "transparent"};">${icon}</span>
