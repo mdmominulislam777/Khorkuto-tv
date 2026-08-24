@@ -52,9 +52,9 @@
         {
           "name": "Server 2",
           "url": "https://app.ncare.live/c3VydmVyX8RpbEU9Mi8xNy8yMDE0GIDU6RgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcGVMZEJCTEFWeVN3PTOmdFsaWRtaW51aiPhnPTI2/gazibdz.stream/live-orgin/gazibdz.stream/playlist.m3u8"
-        },
+        }
       ]
-    }
+    },
     {
       "id": 5,
       "name": "My TV",
@@ -106,9 +106,9 @@
         {
           "name": "Server 2 (HD)",
           "url": "https://s1.itcnbd.live/T-Sports-HD/tracks-v1a1/mono.m3u8"
-        },
+        }
       ]
-    }
+    },
     {
       "id": 12,
       "name": "Rajdhani TV (1080p)",
@@ -1110,7 +1110,7 @@
       "logo": "",
       "url": "https://live20.bozztv.com/giatvplayout7/giatv-209593/tracks-v1a1/mono.ts.m3u8",
       "user_agent": "KhorkutoTV/1.0"
-    }, 
+    },
     {
       "id": 140,
       "name": "Tapmad HD",
@@ -1118,6 +1118,6 @@
       "logo": "logos/Tapmad HD.png",
       "url": "https://saseries.akamaized.net/hls/live/2110097/2356jkiL-tapmad/level_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
-    }, 
+    }
   ]
 }
