@@ -609,34 +609,65 @@ function setupEventListeners() {
     }
 
     // ==========================================
-    // লিগ → চ্যানেল ম্যাপিং
-    // এখানে বলে দাও কোন লিগ তোমার কোন চ্যানেলে দেখানো হয়।
-    // key = football-data.org-এর লিগের নাম (আংশিক মিললেই হবে, ছোট হাতের অক্ষরে)
-    // value = channels.json-এর channel নামের অংশ (আংশিক মিললেই হবে)
+    // লিগ → চ্যানেল ম্যাপিং (নির্দিষ্ট লিগ, সবচেয়ে বেশি অগ্রাধিকার)
+    // key = football-data.org/api-sports-এর লিগের নাম (আংশিক মিললেই হবে)
+    // value = channels.json-এর channel নামের অংশ
     // ==========================================
     const LEAGUE_TO_CHANNEL_MAP = {
-        // উদাহরণ — নিজের সঠিক তথ্য দিয়ে বদলে/যোগ করে নাও:
         // "premier league": "T Sports",
-        // "la liga": "Star Sports 1",
-        // "champions league": "Bein Sports",
+        // "la liga": "Bein Sports",
+        // "champions league": "T Sports",
     };
 
-    function findChannelForLeague(leagueName) {
-        const leagueLower = String(leagueName || "").toLowerCase();
-        const matchedKey = Object.keys(LEAGUE_TO_CHANNEL_MAP).find(key => leagueLower.includes(key));
-        if (!matchedKey) return null;
+    // ==========================================
+    // স্পোর্ট → চ্যানেল ফলব্যাক ম্যাপিং
+    // উপরের নির্দিষ্ট লিগ ম্যাপিং না পেলে এখান থেকে খোঁজা হবে।
+    // ক্রিকেট আপাতত "Ten Cricket" দিয়ে সেট করা আছে (তোমার লিস্টে এটাই
+    // একমাত্র স্পষ্ট cricket-dedicated চ্যানেল)। বাকি স্পোর্ট
+    // (football/basketball/hockey/rugby/wwe) খালি রাখা হয়েছে, কারণ
+    // তোমার লিস্টের বাকি চ্যানেলগুলো ("A Sports HD", "Live Sports 1"
+    // ইত্যাদি) জেনেরিক নামের — কোনটায় আসলে কোন স্পোর্ট দেখানো হয় তুমি
+    // ভালো জানবে, সেটা এখানে বসিয়ে দাও।
+    // ==========================================
+    const SPORT_TO_CHANNEL_MAP = {
+        cricket: "Ten Cricket",
+        // football: "T Sports",
+        // basketball: "",
+        // hockey: "",
+        // rugby: "",
+        // wwe: "",
+    };
 
-        const channelNamePattern = LEAGUE_TO_CHANNEL_MAP[matchedKey].toLowerCase();
-        return channels.find(c => String(c.name || "").toLowerCase().includes(channelNamePattern)) || null;
+    function findChannelForLeague(leagueName, sportKey) {
+        const leagueLower = String(leagueName || "").toLowerCase();
+        const matchedLeagueKey = Object.keys(LEAGUE_TO_CHANNEL_MAP).find(key => leagueLower.includes(key));
+
+        let channelNamePattern = null;
+        if (matchedLeagueKey) {
+            channelNamePattern = LEAGUE_TO_CHANNEL_MAP[matchedLeagueKey];
+        } else if (sportKey && SPORT_TO_CHANNEL_MAP[sportKey]) {
+            channelNamePattern = SPORT_TO_CHANNEL_MAP[sportKey];
+        }
+
+        if (!channelNamePattern) return null;
+        const patternLower = channelNamePattern.toLowerCase();
+        return channels.find(c => String(c.name || "").toLowerCase().includes(patternLower)) || null;
     }
 
-    function handleMatchCardClick(leagueName) {
-        const matchedChannel = findChannelForLeague(leagueName);
+    function handleMatchCardClick(leagueName, sportKey) {
+        const matchedChannel = findChannelForLeague(leagueName, sportKey);
         if (matchedChannel) {
             playChannelWithAd(matchedChannel);
         } else {
-            alert("এই লিগের জন্য এখনো কোনো চ্যানেল যুক্ত করা হয়নি।");
+            alert("এই ম্যাচের জন্য এখনো কোনো চ্যানেল যুক্ত করা হয়নি।");
         }
+    }
+
+    // ম্যাচ কার্ডে দেখানোর জন্য চ্যানেল-ব্যাজের HTML
+    function channelBadgeHtml(leagueName, sportKey) {
+        const matchedChannel = findChannelForLeague(leagueName, sportKey);
+        if (!matchedChannel) return "";
+        return `<div style="margin-top:6px; font-size:10px; color:var(--primary, #ff2a4b); display:flex; align-items:center; justify-content:center; gap:4px;"><i class="fa-solid fa-tv"></i> ${escapeHTML(matchedChannel.name)}</div>`;
     }
 
 
@@ -796,18 +827,21 @@ function setupEventListeners() {
                     }
 
                     const row = document.createElement("div");
-                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
-                    row.addEventListener("click", () => handleMatchCardClick(league));
+                    row.style.cssText = "display:flex; flex-direction:column; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.addEventListener("click", () => handleMatchCardClick(league, sportKey));
                     row.innerHTML = `
-                        <div style="flex:1; text-align:center;">
-                            <img src="${homeLogo}" alt="${home}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
-                            <div style="font-size:11px;">${home}</div>
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div style="flex:1; text-align:center;">
+                                <img src="${homeLogo}" alt="${home}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                                <div style="font-size:11px;">${home}</div>
+                            </div>
+                            <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
+                            <div style="flex:1; text-align:center;">
+                                <img src="${awayLogo}" alt="${away}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
+                                <div style="font-size:11px;">${away}</div>
+                            </div>
                         </div>
-                        <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
-                        <div style="flex:1; text-align:center;">
-                            <img src="${awayLogo}" alt="${away}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
-                            <div style="font-size:11px;">${away}</div>
-                        </div>
+                        ${channelBadgeHtml(league, sportKey)}
                     `;
                     container.appendChild(row);
                 });
@@ -937,18 +971,21 @@ function setupEventListeners() {
                     }
 
                     const row = document.createElement("div");
-                    row.style.cssText = "display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
-                    row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket"));
+                    row.style.cssText = "display:flex; flex-direction:column; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket", "cricket"));
                     row.innerHTML = `
-                        <div style="flex:1; text-align:center;">
-                            ${renderCricketTeamLogo(team1Info, team1)}
-                            <div style="font-size:11px;">${team1}</div>
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div style="flex:1; text-align:center;">
+                                ${renderCricketTeamLogo(team1Info, team1)}
+                                <div style="font-size:11px;">${team1}</div>
+                            </div>
+                            <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
+                            <div style="flex:1; text-align:center;">
+                                ${renderCricketTeamLogo(team2Info, team2)}
+                                <div style="font-size:11px;">${team2}</div>
+                            </div>
                         </div>
-                        <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
-                        <div style="flex:1; text-align:center;">
-                            ${renderCricketTeamLogo(team2Info, team2)}
-                            <div style="font-size:11px;">${team2}</div>
-                        </div>
+                        ${channelBadgeHtml(m.matchType || "cricket", "cricket")}
                     `;
                     container.appendChild(row);
                 });
