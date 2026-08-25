@@ -1118,6 +1118,14 @@
       "logo": "logos/Tapmad HD.png",
       "url": "https://saseries.akamaized.net/hls/live/2110097/2356jkiL-tapmad/level_0.m3u8",
       "user_agent": "KhorkutoTV/1.0"
+    }, 
+    {
+      "id": 141,
+      "name": "Myco Sports HD",
+      "category": "Sports",
+      "logo": "logos/myco.png",
+      "url": "https://live1.ssmmcdn.cloud:2096/sports247/tracks-v1a1/mono.m3u8",
+      "user_agent": "KhorkutoTV/1.0"
     }
   ]
 }
