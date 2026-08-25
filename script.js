@@ -580,7 +580,7 @@ function setupEventListeners() {
 
             if (sportKey === "cricket") {
                 counts = {
-                    live: rawMatches.filter(m => m.matchStarted && !m.matchEnded).length,
+                    live: rawMatches.filter(isGenuinelyLiveCricketMatch).length,
                     today: rawMatches.filter(m => (m.date || "").startsWith(todayStr)).length,
                     upcoming: rawMatches.filter(m => !m.matchStarted && new Date(m.dateTimeGMT) > now).length,
                     all: rawMatches.filter(m => !m.matchEnded).length
@@ -824,6 +824,20 @@ function setupEventListeners() {
     // একটা জেনেরিক/নিম্নমানের প্লেসহোল্ডার ছবি পাঠায় (icon512.png বা তাদের
     // নিজস্ব ব্র্যান্ডিং শিল্ড)। সেগুলো শনাক্ত করে আসল লোগোর মতোই একটা
     // পরিষ্কার, সামঞ্জস্যপূর্ণ ফলব্যাক আইকন দেখানো হয়।
+    // CricAPI-তে মাঝেমধ্যে walkover/বাতিল হওয়া ম্যাচের matchEnded ফ্ল্যাগ
+    // ঠিকমতো আপডেট হয় না, ফলে সেটা চিরকাল "Live" দেখাতে থাকে। তাই সময়ও
+    // যাচাই করা হচ্ছে — নির্দিষ্ট সময়ের বেশি হলে matchEnded যাই থাকুক,
+    // আর "Live" ধরা হবে না।
+    function isGenuinelyLiveCricketMatch(m) {
+        if (!m.matchStarted || m.matchEnded) return false;
+        const matchDate = new Date(m.dateTimeGMT);
+        if (isNaN(matchDate.getTime())) return true; // তারিখ না থাকলে যাচাই করা যাবে না, তাই বাদ দেওয়া হচ্ছে না
+        const hoursSinceStart = (new Date() - matchDate) / 36e5;
+        const isTestMatch = (m.matchType || "").toLowerCase() === "test";
+        const maxHours = isTestMatch ? 24 * 6 : 24;
+        return hoursSinceStart <= maxHours;
+    }
+
     function renderCricketTeamLogo(teamInfo, teamName) {
         const img = teamInfo && teamInfo.img;
         const isGenericPlaceholder = !img
@@ -853,16 +867,16 @@ function setupEventListeners() {
             const now = new Date();
             let matches = rawMatches;
             if (currentEventsFilter === "live") {
-                matches = rawMatches.filter(m => m.matchStarted && !m.matchEnded);
+                matches = rawMatches.filter(isGenuinelyLiveCricketMatch);
             } else if (currentEventsFilter === "today") {
                 const todayStr = todayISO(0);
                 matches = rawMatches.filter(m => (m.date || "").startsWith(todayStr));
             } else if (currentEventsFilter === "upcoming") {
                 matches = rawMatches.filter(m => !m.matchStarted && new Date(m.dateTimeGMT) > now);
             } else if (currentEventsFilter === "ended") {
-                matches = rawMatches.filter(m => m.matchEnded);
+                matches = rawMatches.filter(m => m.matchEnded || !isGenuinelyLiveCricketMatch(m) && m.matchStarted);
             } else if (currentEventsFilter === "all") {
-                matches = rawMatches.filter(m => !m.matchEnded);
+                matches = rawMatches.filter(m => m.matchEnded ? false : (m.matchStarted ? isGenuinelyLiveCricketMatch(m) : true));
             }
 
             sportBadgeCounts.cricket = matches.length;
@@ -911,9 +925,9 @@ function setupEventListeners() {
                     const team2Info = m.teamInfo && m.teamInfo[1];
 
                     let centerHtml;
-                    if (m.matchStarted && !m.matchEnded) {
+                    if (isGenuinelyLiveCricketMatch(m)) {
                         centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-size:10px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(m.status || "")}</div>`;
-                    } else if (m.matchEnded) {
+                    } else if (m.matchEnded || m.matchStarted) {
                         centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-size:10px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(m.status || "")}</div>`;
                     } else {
                         const dt = new Date(m.dateTimeGMT);
