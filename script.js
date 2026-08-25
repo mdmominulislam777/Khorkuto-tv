@@ -427,7 +427,7 @@ function setupEventListeners() {
     // LIVE EVENTS — Cloudflare Worker থেকে ম্যাচ আনা
     // ==========================================
     const LIVE_EVENTS_API = "https://streamzx.mdmominulislam5600.workers.dev";
-    let currentEventsFilter = "live";
+    let currentEventsFilter = "all";
 
     function todayISO(offsetDays = 0) {
         const d = new Date();
@@ -457,6 +457,30 @@ function setupEventListeners() {
         ended: "✅ Ended"
     };
     let sportTabCounts = {};
+    let sportBadgeCounts = {};
+
+    function updateSportIconBadges() {
+        const tabsWrap = document.getElementById("sportTabs");
+        if (!tabsWrap) return;
+        tabsWrap.querySelectorAll("button").forEach(btn => {
+            const key = btn.dataset.sport;
+            const count = sportBadgeCounts[key];
+            const circle = btn.querySelector(".sport-icon-circle");
+            if (!circle) return;
+            let badge = circle.querySelector(".sport-badge");
+            if (count == null || count === 0) {
+                if (badge) badge.remove();
+                return;
+            }
+            if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "sport-badge";
+                badge.style.cssText = "position:absolute; top:-4px; right:-4px; background:var(--primary, #ff2a4b); color:#fff; font-size:10px; font-weight:bold; border-radius:10px; min-width:16px; height:16px; display:flex; align-items:center; justify-content:center; padding:0 3px; line-height:1;";
+                circle.appendChild(badge);
+            }
+            badge.textContent = count > 99 ? "99+" : String(count);
+        });
+    }
 
     function filterLabelWithCount(key) {
         const base = FILTER_LABELS[key];
@@ -485,7 +509,7 @@ function setupEventListeners() {
                     ["rugby", "🏉", "Rugby"]
                 ].map(([key, icon, label]) => `
                     <button data-sport="${key}" style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; background:transparent; border:none;">
-                        <span style="width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; border:2px solid ${currentSport === key ? "var(--primary, #ff2a4b)" : "rgba(128,128,128,0.3)"}; background:${currentSport === key ? "rgba(255,42,75,0.1)" : "transparent"};">${icon}</span>
+                        <span class="sport-icon-circle" style="position:relative; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; border:2px solid ${currentSport === key ? "var(--primary, #ff2a4b)" : "rgba(128,128,128,0.3)"}; background:${currentSport === key ? "rgba(255,42,75,0.1)" : "transparent"};">${icon}</span>
                         <span style="font-size:11px; color:${currentSport === key ? "var(--primary, #ff2a4b)" : "var(--text-muted, #888)"}; font-weight:${currentSport === key ? "bold" : "normal"};">${label}</span>
                     </button>
                 `).join("")}
@@ -504,6 +528,7 @@ function setupEventListeners() {
         if (newSportTabs && prevScrollLeft) {
             newSportTabs.scrollLeft = prevScrollLeft;
         }
+        updateSportIconBadges();
 
         wrap.querySelectorAll("#sportTabs button").forEach(btn => {
             btn.addEventListener("click", () => {
@@ -659,6 +684,15 @@ function setupEventListeners() {
                     tempContainer.appendChild(sec.firstChild);
                 }
             });
+
+            // যা ডেটা এমনিতেই আনা হলো, তা থেকেই "All" আইকনের ব্যাজ আর
+            // বর্তমান ফিল্টার ট্যাবের কাউন্ট বসানো হচ্ছে — কোনো এক্সট্রা কল ছাড়াই
+            const totalCount = order.reduce((sum, key) => sum + (sportBadgeCounts[key] || 0), 0);
+            sportBadgeCounts.all = totalCount;
+            sportTabCounts[currentEventsFilter] = totalCount;
+            updateSportIconBadges();
+            const filterBtn = document.querySelector(`#eventsFilterTabs button[data-filter="${currentEventsFilter}"]`);
+            if (filterBtn) filterBtn.textContent = filterLabelWithCount(currentEventsFilter);
         } else if (TEAM_SPORTS[currentSport]) {
             await loadTeamSportEvents(tempContainer, false, currentSport);
         }
@@ -707,6 +741,9 @@ function setupEventListeners() {
             } else if (currentEventsFilter === "all" || currentEventsFilter === "today") {
                 matches = rawMatches.filter(m => m.status !== "FINISHED");
             }
+
+            sportBadgeCounts[sportKey] = matches.length;
+            updateSportIconBadges();
 
             if (!matches.length) return;
 
@@ -827,6 +864,9 @@ function setupEventListeners() {
             } else if (currentEventsFilter === "all") {
                 matches = rawMatches.filter(m => !m.matchEnded);
             }
+
+            sportBadgeCounts.cricket = matches.length;
+            updateSportIconBadges();
 
             if (!matches.length) {
                 // combined ("all sport") মোডে খালি হলে কিছু বলার দরকার নেই —
