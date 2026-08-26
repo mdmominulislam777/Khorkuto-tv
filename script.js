@@ -618,7 +618,7 @@ function setupEventListeners() {
         // "la liga": "Bein Sports",
     };
 
-    function findChannelForLeague(leagueName, sportKey) {
+    function findChannelForLeague(leagueName, sportKey, matchIdentifier) {
         const leagueLower = String(leagueName || "").toLowerCase();
         const matchedLeagueKey = Object.keys(LEAGUE_TO_CHANNEL_MAP).find(key => leagueLower.includes(key));
 
@@ -641,18 +641,19 @@ function setupEventListeners() {
         }
 
         // নির্দিষ্ট মিল না পেলে, "Sports" ক্যাটাগরির যেকোনো একটা চ্যানেল
-        // স্বয়ংক্রিয়ভাবে যুক্ত করে দেওয়া হয় — একই ম্যাচ যেন সবসময় একই চ্যানেল
-        // দেখায় (রিফ্রেশে এলোমেলো না হয়ে), তাই ম্যাচের নাম দিয়ে hash করে
-        // consistent ভাবে একটা চ্যানেল বেছে নেওয়া হচ্ছে
+        // স্বয়ংক্রিয়ভাবে যুক্ত করে দেওয়া হয়। প্রতিটা আলাদা ম্যাচ (শুধু লিগ না)
+        // দিয়ে hash করা হচ্ছে, যাতে একই লিগের ভিন্ন ভিন্ন ম্যাচ বিভিন্ন
+        // চ্যানেলে ছড়িয়ে যায় — কিন্তু একই ম্যাচ রিফ্রেশে সবসময় একই চ্যানেলে থাকে
+        const hashSource = String(matchIdentifier || leagueName || "").toLowerCase();
         let hash = 0;
-        for (let i = 0; i < leagueLower.length; i++) {
-            hash = (hash * 31 + leagueLower.charCodeAt(i)) >>> 0;
+        for (let i = 0; i < hashSource.length; i++) {
+            hash = (hash * 31 + hashSource.charCodeAt(i)) >>> 0;
         }
         return sportsChannels[hash % sportsChannels.length];
     }
 
-    function handleMatchCardClick(leagueName, sportKey) {
-        const matchedChannel = findChannelForLeague(leagueName, sportKey);
+    function handleMatchCardClick(leagueName, sportKey, matchIdentifier) {
+        const matchedChannel = findChannelForLeague(leagueName, sportKey, matchIdentifier);
         if (matchedChannel) {
             playChannelWithAd(matchedChannel);
         } else {
@@ -660,11 +661,12 @@ function setupEventListeners() {
         }
     }
 
-    // ম্যাচ কার্ডে দেখানোর জন্য চ্যানেল-ব্যাজের HTML
-    function channelBadgeHtml(leagueName, sportKey) {
-        const matchedChannel = findChannelForLeague(leagueName, sportKey);
+    // ম্যাচ কার্ডে দেখানোর জন্য চ্যানেল-ব্যাজের HTML — চ্যানেলের আসল নাম
+    // দেখানো হয় না (ইচ্ছাকৃতভাবে), শুধু বোঝানো হয় যে দেখার একটা চ্যানেল আছে
+    function channelBadgeHtml(leagueName, sportKey, matchIdentifier) {
+        const matchedChannel = findChannelForLeague(leagueName, sportKey, matchIdentifier);
         if (!matchedChannel) return "";
-        return `<div style="margin-top:6px; font-size:10px; color:var(--primary, #ff2a4b); display:flex; align-items:center; justify-content:center; gap:4px;"><i class="fa-solid fa-tv"></i> ${escapeHTML(matchedChannel.name)}</div>`;
+        return `<div style="margin-top:6px; font-size:10px; color:var(--primary, #ff2a4b); display:flex; align-items:center; justify-content:center; gap:4px;"><i class="fa-solid fa-tv"></i> Watch Live</div>`;
     }
 
 
@@ -825,7 +827,7 @@ function setupEventListeners() {
 
                     const row = document.createElement("div");
                     row.style.cssText = "display:flex; flex-direction:column; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
-                    row.addEventListener("click", () => handleMatchCardClick(league, sportKey));
+                    row.addEventListener("click", () => handleMatchCardClick(league, sportKey, `${home} vs ${away}`));
                     row.innerHTML = `
                         <div style="display:flex; align-items:center; justify-content:space-between;">
                             <div style="flex:1; text-align:center;">
@@ -838,7 +840,7 @@ function setupEventListeners() {
                                 <div style="font-size:11px;">${away}</div>
                             </div>
                         </div>
-                        ${channelBadgeHtml(league, sportKey)}
+                        ${channelBadgeHtml(league, sportKey, `${home} vs ${away}`)}
                     `;
                     container.appendChild(row);
                 });
@@ -969,7 +971,7 @@ function setupEventListeners() {
 
                     const row = document.createElement("div");
                     row.style.cssText = "display:flex; flex-direction:column; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
-                    row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket", "cricket"));
+                    row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket", "cricket", `${team1} vs ${team2}`));
                     row.innerHTML = `
                         <div style="display:flex; align-items:center; justify-content:space-between;">
                             <div style="flex:1; text-align:center;">
@@ -982,7 +984,7 @@ function setupEventListeners() {
                                 <div style="font-size:11px;">${team2}</div>
                             </div>
                         </div>
-                        ${channelBadgeHtml(m.matchType || "cricket", "cricket")}
+                        ${channelBadgeHtml(m.matchType || "cricket", "cricket", `${team1} vs ${team2}`)}
                     `;
                     container.appendChild(row);
                 });
