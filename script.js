@@ -618,6 +618,31 @@ function setupEventListeners() {
         // "la liga": "Bein Sports",
     };
 
+    // ==========================================
+    // কোন চ্যানেলে সাধারণত কোন স্পোর্ট দেখানো হয় — এটা তুমি নিজে জানিয়েছ
+    // key = channels.json-এর চ্যানেল নামের অংশ (ছোট হাতের অক্ষরে)
+    // value = স্পোর্ট কী-গুলোর অ্যারে (football/cricket/basketball/hockey/rugby/wwe)
+    // ==========================================
+    const CHANNEL_SPORTS_TAGS = {
+        "gazi tv": ["cricket"],
+        "t sports": ["cricket"],
+        "a sports hd": ["cricket"],
+        "ptv sports hd": ["cricket"],
+        "bein sports direct hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
+        "ten cricket": ["cricket"],
+        "star sports 1 hd": ["football", "cricket", "kabaddi"],
+        "star sports 1 hindi": ["football", "cricket", "kabaddi"],
+        "star sports 2": ["football", "cricket", "kabaddi"],
+        "willow hd": ["cricket"],
+        "eurosport hd": ["tennis", "kabaddi"],
+    };
+
+    function getChannelSportTags(channel) {
+        const nameLower = String(channel.name || "").toLowerCase();
+        const matchedKey = Object.keys(CHANNEL_SPORTS_TAGS).find(key => nameLower.includes(key));
+        return matchedKey ? CHANNEL_SPORTS_TAGS[matchedKey] : null;
+    }
+
     function findChannelForLeague(leagueName, sportKey, matchIdentifier) {
         const leagueLower = String(leagueName || "").toLowerCase();
         const matchedLeagueKey = Object.keys(LEAGUE_TO_CHANNEL_MAP).find(key => leagueLower.includes(key));
@@ -632,23 +657,29 @@ function setupEventListeners() {
         const sportsChannels = channels.filter(c => String(c.category || "").toLowerCase().includes("sport"));
         if (sportsChannels.length === 0) return null;
 
-        // প্রথমে স্পোর্টের নাম (cricket/football/basketball ইত্যাদি) দিয়ে
-        // চ্যানেলের নামে মিল আছে কিনা দেখা হচ্ছে — যেমন cricket ম্যাচের জন্য
-        // "Ten Cricket"-এর মতো চ্যানেল স্বয়ংক্রিয়ভাবে খুঁজে পাবে
-        if (sportKey) {
-            const keywordMatch = sportsChannels.find(c => String(c.name || "").toLowerCase().includes(String(sportKey).toLowerCase()));
-            if (keywordMatch) return keywordMatch;
-        }
-
-        // নির্দিষ্ট মিল না পেলে, "Sports" ক্যাটাগরির যেকোনো একটা চ্যানেল
-        // স্বয়ংক্রিয়ভাবে যুক্ত করে দেওয়া হয়। প্রতিটা আলাদা ম্যাচ (শুধু লিগ না)
-        // দিয়ে hash করা হচ্ছে, যাতে একই লিগের ভিন্ন ভিন্ন ম্যাচ বিভিন্ন
-        // চ্যানেলে ছড়িয়ে যায় — কিন্তু একই ম্যাচ রিফ্রেশে সবসময় একই চ্যানেলে থাকে
         const hashSource = String(matchIdentifier || leagueName || "").toLowerCase();
         let hash = 0;
         for (let i = 0; i < hashSource.length; i++) {
             hash = (hash * 31 + hashSource.charCodeAt(i)) >>> 0;
         }
+
+        if (sportKey) {
+            // প্রথম অগ্রাধিকার: তুমি নিজে যেসব চ্যানেলে এই স্পোর্ট ট্যাগ করেছ
+            const taggedChannels = sportsChannels.filter(c => {
+                const tags = getChannelSportTags(c);
+                return tags && tags.includes(sportKey);
+            });
+            if (taggedChannels.length > 0) {
+                return taggedChannels[hash % taggedChannels.length];
+            }
+
+            // ট্যাগ না থাকলে, চ্যানেলের নামেই স্পোর্টের কিওয়ার্ড আছে কিনা দেখা হচ্ছে
+            const keywordMatch = sportsChannels.find(c => String(c.name || "").toLowerCase().includes(String(sportKey).toLowerCase()));
+            if (keywordMatch) return keywordMatch;
+        }
+
+        // নির্দিষ্ট মিল না পেলে, "Sports" ক্যাটাগরির যেকোনো একটা চ্যানেল
+        // স্বয়ংক্রিয়ভাবে যুক্ত করে দেওয়া হয় — একই ম্যাচ সবসময় একই চ্যানেলে থাকে
         return sportsChannels[hash % sportsChannels.length];
     }
 
