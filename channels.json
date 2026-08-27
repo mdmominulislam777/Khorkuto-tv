@@ -12,7 +12,7 @@
     "disclaimer": "All stream links are collected from publicly available networks.",
     "auto_update": true,
     "update_interval": "1 hours",
-    "total_channels": 128,
+    "total_channels": 166,
     "last_update": "2026-08-08 09:10 AM (BD Time)"
   },
   "channels": [
@@ -917,7 +917,17 @@
       "category": "Sports",
       "logo": "",
       "url": "https://starsportshindiii.pages.dev/index.m3u8",
-      "user_agent": "StreamZXTV/1.0"
+      "user_agent": "StreamZXTV/1.0",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "https://starsportshindiii.pages.dev/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://41.205.93.154/STARSPORTS1/index.m3u8"
+        }
+      ]
     },
     {
       "id": 112,
@@ -1126,6 +1136,364 @@
       "logo": "logos/myco.png",
       "url": "https://live1.ssmmcdn.cloud:2096/sports247/tracks-v1a1/mono.m3u8",
       "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 142,
+      "name": "STAR SPORTS KHEL",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://103.175.73.12:8080/live/151/151_0.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 143,
+      "name": "ZIGGO SPORT 1",
+      "category": "Sports",
+      "logo": "",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2560/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2560/index.m3u8"
+        }
+      ],
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2560/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 144,
+      "name": "ZIGGO SPORT 2",
+      "category": "Sports",
+      "logo": "",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2561/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2561/index.m3u8"
+        }
+      ],
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2561/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 145,
+      "name": "ZIGGO SPORT 3",
+      "category": "Sports",
+      "logo": "",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2559/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXSYCA/2559/index.m3u8"
+        }
+      ],
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2559/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 146,
+      "name": "DAZN 1",
+      "category": "Sports",
+      "logo": "",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2531/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2531/index.m3u8"
+        }
+      ],
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2531/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 147,
+      "name": "DAZN 2",
+      "category": "Sports",
+      "logo": "",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2532/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2532/index.m3u8"
+        }
+      ],
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2532/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 148,
+      "name": "DAZN 4",
+      "category": "Sports",
+      "logo": "",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2534/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2534/index.m3u8"
+        }
+      ],
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2534/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 149,
+      "name": "DAZN 5",
+      "category": "Sports",
+      "logo": "",
+      "servers": [
+        {
+          "name": "Server 1",
+          "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2535/index.m3u8"
+        },
+        {
+          "name": "Server 2",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2535/index.m3u8"
+        }
+      ],
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/2535/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 150,
+      "name": "EUROSPORT 1",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://151.80.18.177:86/Eurosport_HD/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 151,
+      "name": "EUROSPORT 2",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://151.80.18.177:86/Eurosport_2_HD/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 152,
+      "name": "ESPN",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/19056/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 153,
+      "name": "Trace Sport",
+      "category": "Sports",
+      "logo": "",
+      "url": "https://lightning-tracesport-samsungau.amagi.tv/playlist.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 154,
+      "name": "SKY SPORTS ACTION",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/9155/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 155,
+      "name": "SKY SPORTS CRICKET",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/9258/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 156,
+      "name": "SKY SPORTS FOOTBALL",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/9289/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 157,
+      "name": "SKY SPORTS GOLF",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/19132/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 158,
+      "name": "SKY SPORTS MIX",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/9310/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 159,
+      "name": "SKY SPORTS EPL",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/9334/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 160,
+      "name": "SKY SPORTS RACING",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://ytoxw6un.ottclub.xyz/iptv/KCUHA6DGYYVA8ZZFUPQV3KZH/7341/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 161,
+      "name": "SKY SPORTS TENNIS",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/6546/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 162,
+      "name": "Sport 1",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://212.102.38.45/live/test_sport1_25p/playlist.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 163,
+      "name": "Sport 2",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://212.102.38.45/live/test_sport_2/playlist.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 164,
+      "name": "DD SPORTS",
+      "category": "Sports",
+      "logo": "",
+      "url": "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 165,
+      "name": "Football World Cup 2026 fast",
+      "category": "Sports",
+      "logo": "",
+      "url": "https://live.inplyr.com/room/168740.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 166,
+      "name": "GO 3 sport 1 hd",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/18000/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 167,
+      "name": "GO 3 sport 2 hd",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/18012/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 168,
+      "name": "TNT Sports 1",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2505/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 169,
+      "name": "TNT Sports 2",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2506/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 170,
+      "name": "TNT Sports 3",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/6564/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 171,
+      "name": "TNT Sports 4",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/19054/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 172,
+      "name": "DAZN 3",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2533/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 173,
+      "name": "SKY SPORTS F1",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/7342/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 174,
+      "name": "beIN SPORTS 1 HD",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/6123/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 175,
+      "name": "beIN SPORTS 3 HD",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/6124/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 176,
+      "name": "beIN SPORTS 4 HD",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/6125/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 177,
+      "name": "beIN SPORTS 5 HD",
+      "category": "Sports",
+      "logo": "",
+      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/6126/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
     }
   ]
-}
+    }
