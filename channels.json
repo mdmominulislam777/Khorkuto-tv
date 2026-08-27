@@ -1494,6 +1494,261 @@
       "logo": "",
       "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/6126/index.m3u8",
       "user_agent": "StreamZXTV/1.0"
-    }
+    }, 
+    [
+  {
+    "name": "Somoy tv",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1784629064327.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1713/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Jamuna TV",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1735560213832.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1701/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Independent TV",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1739964387847.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1704/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "DBC News HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770186306600.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1728/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "BTV Shangshad",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1773247382366.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1709/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Ekattor HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1739963327549.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1705/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Channel 24 HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1735556516924.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1703/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "BTV",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1784629845642.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1725/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Maasranga TV",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1773680325498.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1722/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Crazy Ex",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770348753896.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/crazy_ex/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Sports Range",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770380601958.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/sportrange/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Channel 9 HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770188008067.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1729/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Deepto TV HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1742713000749.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1711/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "NTV",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1735560841094.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1716/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Al Jazeera",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1735547218986.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1721/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Channel I HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1740567626692.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1723/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Bangla Vision",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1735561344354.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1715/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Sports Legends",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770377900139.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/sportslegends/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Party Universe",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770378215384.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/partyuniverse/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Thunder Er",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770380791303.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/thunder/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Fighters",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770380942670.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/fighter/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Flash Guys HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770378074527.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/flashguys/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "SRK TV",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1746005940155.png",
+    "url": "https://srknowapp.ncare.live/srktvhlswodrm/srktv.stream/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Nikki",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770378704923.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/nikky/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Channel 1",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1781163068414.png",
+    "url": "https://owrcovcrpy.gpcdn.net/bpk-tv/1702/output/index.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Originals",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770313122372.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/originals/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Joy",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770378874717.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/joy/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Delicious",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770378370876.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/delicious/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Funny Junior HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770379573329.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/funnyjunior/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Kids Stars",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770381398090.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/kidsstars/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Cineedge HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770347851305.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/cineedge/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Crimes",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770380126540.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/crimes/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Screem",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770312098339.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/screem/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Superrix HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770348388925.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/superrix/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Uniques HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770347327658.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/uniques/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "BuddyStar HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770379038530.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/buddystar/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Lucky Family",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770381248531.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/luckyfamily/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Smarty",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770381107924.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/smarty/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Intelligence",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770380460488.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/intelligence/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "True Stories",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770380306806.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/truestories/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Luxell HD",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1770378560772.png",
+    "url": "https://nomawnoijl.gpcdn.net/akash/luxell/playlist.m3u8",
+    "category": "Akash Go"
+  },
+  {
+    "name": "Program Promo",
+    "logo": "https://tstatic.akash-go.com/cms-ui/images/custom-content/1783925099346.png",
+    "url": "https://7lsc33jopp.gpcdn.net/bpk-tv/1720/output/index.m3u8",
+    "category": "Akash Go"
+  }
+]
+
   ]
     }
