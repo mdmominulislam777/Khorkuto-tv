@@ -635,6 +635,24 @@ function setupEventListeners() {
         "star sports 2": ["football", "cricket", "kabaddi"],
         "willow hd": ["cricket"],
         "eurosport hd": ["tennis", "kabaddi"],
+        // নতুন যোগ হওয়া চ্যানেল (PDF থেকে)
+        "eurosport 1": ["tennis", "kabaddi"],
+        "eurosport 2": ["tennis", "kabaddi"],
+        "dazn": ["football", "basketball", "tennis", "hockey", "rugby"],
+        "espn": ["football", "cricket", "basketball", "tennis", "motorsport", "wwe", "hockey"],
+        "sky sports cricket": ["cricket"],
+        "sky sports football": ["football"],
+        "sky sports mix": ["football"],
+        "sky sports epl": ["football"],
+        "sky sports tennis": ["tennis"],
+        "sky sports f1": ["motorsport"],
+        "dd sports": ["kabaddi"],
+        "football world cup 2026 fast": ["football"],
+        "tnt sports": ["football", "basketball", "tennis", "wwe", "hockey", "rugby"],
+        "bein sports 1 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
+        "bein sports 3 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
+        "bein sports 4 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
+        "bein sports 5 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
     };
 
     function getChannelSportTags(channel) {
