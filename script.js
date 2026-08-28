@@ -635,24 +635,29 @@ function setupEventListeners() {
         "star sports 2": ["football", "cricket", "kabaddi"],
         "willow hd": ["cricket"],
         "eurosport hd": ["tennis", "kabaddi"],
-        // নতুন যোগ হওয়া চ্যানেল (PDF থেকে)
+        // নতুন যোগ হওয়া চ্যানেল (PDF থেকে) — শুধু তোমার দেওয়া তালিকায়
+        // স্পষ্টভাবে থাকা মিলগুলোই বসানো হয়েছে
         "eurosport 1": ["tennis", "kabaddi"],
         "eurosport 2": ["tennis", "kabaddi"],
-        "dazn": ["football", "basketball", "tennis", "hockey", "rugby"],
-        "espn": ["football", "cricket", "basketball", "tennis", "motorsport", "wwe", "hockey"],
+        "dazn": ["football", "basketball", "tennis", "motorsport", "hockey", "rugby"],
+        "espn": ["football", "cricket", "basketball", "tennis", "motorsport", "wwe", "hockey", "rugby"],
         "sky sports cricket": ["cricket"],
         "sky sports football": ["football"],
         "sky sports mix": ["football"],
-        "sky sports epl": ["football"],
         "sky sports tennis": ["tennis"],
         "sky sports f1": ["motorsport"],
+        "sky sports epl": ["football"], // চ্যানেলের নাম থেকেই স্পষ্ট (EPL = ফুটবল)
+        "football world cup 2026 fast": ["football"], // নাম থেকেই স্পষ্ট
         "dd sports": ["kabaddi"],
-        "football world cup 2026 fast": ["football"],
         "tnt sports": ["football", "basketball", "tennis", "wwe", "hockey", "rugby"],
         "bein sports 1 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
         "bein sports 3 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
         "bein sports 4 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
         "bein sports 5 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
+        // নিচের চ্যানেলগুলো (Ziggo Sport, Trace Sport, Sky Sports Action/Golf/Racing,
+        // GO 3 Sport, Star Sports Khel, Sport 1/2) তোমার দেওয়া কোনো তালিকাতেই
+        // ছিল না, তাই অনুমান করে ট্যাগ বসানো হয়নি — এগুলো এখন সাধারণ
+        // "Sports" ক্যাটাগরি fallback দিয়ে চলবে
     };
 
     function getChannelSportTags(channel) {
