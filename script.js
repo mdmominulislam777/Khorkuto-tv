@@ -925,18 +925,11 @@ function setupEventListeners() {
         return hoursSinceStart <= maxHours;
     }
 
+    // ফুটবলের মতোই সাধারণ img ট্যাগ — শুধু লোগো URL না থাকলে অ্যাপের
+    // নিজস্ব ফলব্যাক ছবি ব্যবহার হবে, দুই স্পোর্টেই একই রকম দেখতে হবে
     function renderCricketTeamLogo(teamInfo, teamName) {
-        const img = teamInfo && teamInfo.img;
-        const isGenericPlaceholder = !img
-            || img.includes("icon512.png")
-            || img.toLowerCase().includes("cricketdata");
-
-        if (!isGenericPlaceholder) {
-            return `<img src="${escapeHTML(img)}" alt="${escapeHTML(teamName)}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">`;
-        }
-
-        const initial = escapeHTML((teamName || "?").trim().charAt(0).toUpperCase() || "?");
-        return `<div style="width:32px;height:32px;border-radius:50%;background:var(--primary, #ff2a4b);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;margin:0 auto 4px;">${initial}</div>`;
+        const img = (teamInfo && teamInfo.img) || "logo.png";
+        return `<img src="${escapeHTML(img)}" alt="${escapeHTML(teamName)}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">`;
     }
 
     // ==========================================
@@ -1616,7 +1609,7 @@ const CATEGORY_MAP = {
     "Documentary": ["Entertainment"],
     "News & International": ["News"]
 };
-const KNOWN_TABS = ["Sports", "Entertainment", "News", "Movies", "Islamic", "Kids", "Music"];
+const KNOWN_TABS = ["Sports", "Entertainment", "News", "Movies", "Islamic", "Kids", "Music", "Akash Go"];
 
 function getDisplayCategories(rawCategory) {
     if (CATEGORY_MAP[rawCategory]) return CATEGORY_MAP[rawCategory];
