@@ -654,6 +654,10 @@ function setupEventListeners() {
         "bein sports 3 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
         "bein sports 4 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
         "bein sports 5 hd": ["football", "basketball", "tennis", "motorsport", "rugby"],
+        // Akash Go ব্যাচ থেকে — নাম দেখে সাধারণ/মিশ্র স্পোর্টস কনটেন্ট মনে হচ্ছে,
+        // নির্দিষ্ট কোনো একটা স্পোর্ট না, তাই সব সক্রিয় স্পোর্টের fallback হিসেবে রাখা হলো
+        "sports range": ["football", "cricket", "basketball", "hockey", "rugby"],
+        "sports legends": ["football", "cricket", "basketball", "hockey", "rugby"],
         // নিচের চ্যানেলগুলো (Ziggo Sport, Trace Sport, Sky Sports Action/Golf/Racing,
         // GO 3 Sport, Star Sports Khel, Sport 1/2) তোমার দেওয়া কোনো তালিকাতেই
         // ছিল না, তাই অনুমান করে ট্যাগ বসানো হয়নি — এগুলো এখন সাধারণ
@@ -687,8 +691,10 @@ function setupEventListeners() {
         }
 
         if (sportKey) {
-            // প্রথম অগ্রাধিকার: তুমি নিজে যেসব চ্যানেলে এই স্পোর্ট ট্যাগ করেছ
-            const taggedChannels = sportsChannels.filter(c => {
+            // প্রথম অগ্রাধিকার: তুমি নিজে যেসব চ্যানেলে এই স্পোর্ট ট্যাগ করেছ —
+            // এখানে ক্যাটাগরি যাই হোক না কেন (যেমন "Akash Go"-এর Sports Range/
+            // Sports Legends), ট্যাগ থাকলেই বিবেচনা করা হয়
+            const taggedChannels = channels.filter(c => {
                 const tags = getChannelSportTags(c);
                 return tags && tags.includes(sportKey);
             });
