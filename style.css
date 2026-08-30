@@ -433,6 +433,47 @@ body {
     display: none !important;
 }
 
+.mini-player-controls {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.25);
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5;
+}
+
+.player-container.player-mini .mini-player-controls {
+    display: flex;
+}
+
+.mini-player-controls button {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-player-controls #miniCloseBtn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    background: rgba(255,42,75,0.85);
+}
+
 .video-player-wrapper {
     position: relative;
     width: 100%;
