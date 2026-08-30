@@ -403,6 +403,34 @@ body {
     background: #000;
     border-bottom: 1px solid var(--border-color);
     overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+/* স্ক্রল করার সময় বা অন্য ট্যাবে গেলে প্লেয়ার একটা ছোট,
+   সবসময় দেখা যাওয়া popup/floating বক্স হয়ে যাবে —
+   যাতে ভিডিও চলতে থাকা অবস্থায় স্ক্রলে হারিয়ে না যায় */
+.player-container.player-mini {
+    position: fixed;
+    top: auto;
+    bottom: 70px;
+    right: 12px;
+    left: auto;
+    width: 150px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+}
+
+.player-container.player-mini .video-player-wrapper {
+    aspect-ratio: 16 / 9;
+}
+
+.player-container.player-mini .player-top-bar,
+.player-container.player-mini .player-center-controls,
+.player-container.player-mini .player-bottom-bar,
+.player-container.player-mini #serverSelector {
+    display: none !important;
 }
 
 .video-player-wrapper {
