@@ -1833,8 +1833,14 @@ function playChannel(channel, serverIndex = 0) {
     if (playerContainer) {
         playerContainer.classList.remove("hidden");
         playerContainer.classList.remove("player-mini");
+        playerContainer.style.left = "";
+        playerContainer.style.top = "";
+        playerContainer.style.right = "";
+        playerContainer.style.bottom = "";
     }
     playerIsMinimized = false;
+    const miniPlayPauseBtnEl = document.getElementById("miniPlayPauseBtn");
+    if (miniPlayPauseBtnEl) miniPlayPauseBtnEl.innerHTML = '<i class="fa-solid fa-pause"></i>';
 
     renderServerSelector(channel, serverIndex);
 
@@ -1935,18 +1941,113 @@ function minimizePlayer() {
 function restorePlayer() {
     if (!playerContainer || !playerIsMinimized) return;
     playerContainer.classList.remove("player-mini");
+    playerContainer.style.left = "";
+    playerContainer.style.top = "";
+    playerContainer.style.right = "";
+    playerContainer.style.bottom = "";
     playerIsMinimized = false;
 }
 
-// মিনি হয়ে থাকা অবস্থায় প্লেয়ারে ট্যাপ করলে আবার বড় হয়ে যাবে
-if (playerContainer) {
-    playerContainer.addEventListener("click", () => {
-        if (playerIsMinimized) {
-            restorePlayer();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+// মিনি প্লেয়ারের নিজস্ব বাটন — Play/Pause, Expand (বড় করা), Close
+const miniPlayPauseBtn = document.getElementById("miniPlayPauseBtn");
+const miniExpandBtn = document.getElementById("miniExpandBtn");
+const miniCloseBtn = document.getElementById("miniCloseBtn");
+
+if (miniPlayPauseBtn) {
+    miniPlayPauseBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!video) return;
+        if (video.paused) {
+            video.play();
+            miniPlayPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        } else {
+            video.pause();
+            miniPlayPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
         }
     });
 }
+
+if (miniExpandBtn) {
+    miniExpandBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        restorePlayer();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+}
+
+if (miniCloseBtn) {
+    miniCloseBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closePlayer();
+    });
+}
+
+// মিনি প্লেয়ারে ট্যাপ করলে (বাটন ছাড়া অন্য জায়গায়) আবার বড় হয়ে যাবে —
+// কিন্তু ড্র্যাগ করে সরানোর পর যেন ভুল করে বড় না হয়ে যায়, সেটাও খেয়াল রাখা হচ্ছে
+let dragMoved = false;
+if (playerContainer) {
+    playerContainer.addEventListener("click", () => {
+        if (playerIsMinimized && !dragMoved) {
+            restorePlayer();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        dragMoved = false;
+    });
+}
+
+// মিনি প্লেয়ার ড্র্যাগ করে স্ক্রিনের যেকোনো জায়গায় সরানো যাবে
+(function enableMiniPlayerDrag() {
+    if (!playerContainer) return;
+    let dragging = false;
+    let startX, startY, startLeft, startTop;
+
+    function onPointerDown(e) {
+        if (!playerIsMinimized) return;
+        if (e.target.closest("button")) return; // বাটনে ক্লিক করলে ড্র্যাগ শুরু হবে না
+        dragging = true;
+        dragMoved = false;
+        const rect = playerContainer.getBoundingClientRect();
+        startLeft = rect.left;
+        startTop = rect.top;
+        startX = (e.touches ? e.touches[0].clientX : e.clientX);
+        startY = (e.touches ? e.touches[0].clientY : e.clientY);
+        playerContainer.style.right = "auto";
+        playerContainer.style.bottom = "auto";
+        playerContainer.style.left = startLeft + "px";
+        playerContainer.style.top = startTop + "px";
+    }
+
+    function onPointerMove(e) {
+        if (!dragging) return;
+        const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+        const clientY = (e.touches ? e.touches[0].clientY : e.clientY);
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) dragMoved = true;
+
+        let newLeft = startLeft + dx;
+        let newTop = startTop + dy;
+
+        const maxLeft = window.innerWidth - playerContainer.offsetWidth;
+        const maxTop = window.innerHeight - playerContainer.offsetHeight;
+        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+        newTop = Math.max(0, Math.min(newTop, maxTop));
+
+        playerContainer.style.left = newLeft + "px";
+        playerContainer.style.top = newTop + "px";
+    }
+
+    function onPointerUp() {
+        dragging = false;
+    }
+
+    playerContainer.addEventListener("mousedown", onPointerDown);
+    playerContainer.addEventListener("touchstart", onPointerDown, { passive: true });
+    document.addEventListener("mousemove", onPointerMove);
+    document.addEventListener("touchmove", onPointerMove, { passive: true });
+    document.addEventListener("mouseup", onPointerUp);
+    document.addEventListener("touchend", onPointerUp);
+})();
 
 // স্ক্রল করলে প্লেয়ার ছোট হয়ে যাবে, উপরে ফিরে গেলে আবার বড়
 window.addEventListener("scroll", () => {
