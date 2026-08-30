@@ -407,6 +407,7 @@ function setupEventListeners() {
 
     if (liveEventBtn) {
         liveEventBtn.addEventListener("click", () => {
+            keepPlayerFloatingIfActive();
             setActiveBottomNav(liveEventBtn);
             hideCategoryPage();
             hideSettingsPage();
@@ -1074,6 +1075,7 @@ function setupEventListeners() {
 
     if (categoryNavBtn) {
         categoryNavBtn.addEventListener("click", () => {
+            keepPlayerFloatingIfActive();
             stopLiveEventsRefresh();
             setActiveBottomNav(categoryNavBtn);
             showCategoryPage();
@@ -1083,6 +1085,7 @@ function setupEventListeners() {
 
     if (sportsNavBtn) {
         sportsNavBtn.addEventListener("click", () => {
+            keepPlayerFloatingIfActive();
             stopLiveEventsRefresh();
             setActiveBottomNav(sportsNavBtn);
             hideCategoryPage();
@@ -1099,6 +1102,7 @@ function setupEventListeners() {
 
     if (settingsNavBtn) {
         settingsNavBtn.addEventListener("click", () => {
+            keepPlayerFloatingIfActive();
             stopLiveEventsRefresh();
             setActiveBottomNav(settingsNavBtn);
             showSettingsPage();
@@ -1826,7 +1830,11 @@ function playChannel(channel, serverIndex = 0) {
     if (!selectedServer || !selectedServer.url) return;
 
     if (currentChannelName) currentChannelName.textContent = channel.name || "Live TV";
-    if (playerContainer) playerContainer.classList.remove("hidden");
+    if (playerContainer) {
+        playerContainer.classList.remove("hidden");
+        playerContainer.classList.remove("player-mini");
+    }
+    playerIsMinimized = false;
 
     renderServerSelector(channel, serverIndex);
 
@@ -1893,12 +1901,68 @@ function closePlayer() {
 
     if (playerContainer) {
         playerContainer.classList.add("hidden");
+        playerContainer.classList.remove("player-mini");
     }
+    playerIsMinimized = false;
 
     const selectorEl = document.getElementById("serverSelector");
     if (selectorEl) {
         selectorEl.classList.add("hidden");
         selectorEl.innerHTML = "";
+    }
+}
+
+// ==========================================
+// মিনি/ফ্লোটিং প্লেয়ার — স্ক্রল করলে বা অন্য ট্যাবে গেলে
+// প্লেয়ার হারিয়ে না গিয়ে ছোট popup আকারে দেখা যাবে
+// ==========================================
+let playerIsMinimized = false;
+
+function isPlayerActive() {
+    return playerContainer
+        && !playerContainer.classList.contains("hidden")
+        && video
+        && !video.paused;
+}
+
+function minimizePlayer() {
+    if (!playerContainer || playerIsMinimized) return;
+    if (!isPlayerActive()) return;
+    playerContainer.classList.add("player-mini");
+    playerIsMinimized = true;
+}
+
+function restorePlayer() {
+    if (!playerContainer || !playerIsMinimized) return;
+    playerContainer.classList.remove("player-mini");
+    playerIsMinimized = false;
+}
+
+// মিনি হয়ে থাকা অবস্থায় প্লেয়ারে ট্যাপ করলে আবার বড় হয়ে যাবে
+if (playerContainer) {
+    playerContainer.addEventListener("click", () => {
+        if (playerIsMinimized) {
+            restorePlayer();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    });
+}
+
+// স্ক্রল করলে প্লেয়ার ছোট হয়ে যাবে, উপরে ফিরে গেলে আবার বড়
+window.addEventListener("scroll", () => {
+    if (!isPlayerActive()) return;
+    if (window.scrollY > 80) {
+        minimizePlayer();
+    } else {
+        restorePlayer();
+    }
+});
+
+// নিচের/উপরের যেকোনো ট্যাবে ক্লিক করলে, ভিডিও চলতে থাকলে
+// সেটা মিনি-প্লেয়ার আকারে রয়ে যাবে (হারিয়ে যাবে না)
+function keepPlayerFloatingIfActive() {
+    if (isPlayerActive()) {
+        minimizePlayer();
     }
 }
 
