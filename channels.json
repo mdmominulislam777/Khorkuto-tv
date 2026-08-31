@@ -298,7 +298,7 @@
     {
       "id": 35,
       "name": "BTV",
-      "category": "Entertainment",
+      "category": "Entertainment & News",
       "logo": "logos/btv.png",
       "url": "https://103.165.93.31:8095/btv/tracks-v1a1/mono.m3u8",
       "user_agent": "StreamZXTV/1.0"
@@ -464,6 +464,14 @@
       ]
     },
     {
+      "id": 55,
+      "name": "Channel 24",
+      "category": "News",
+      "logo": "",
+      "url": "https://tvsen6.aynaott.com/YrVDF8gu/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
       "id": 56,
       "name": "NewsMax 2",
       "category": "News",
@@ -536,6 +544,14 @@
           "url": "https://b01c02nl.mediatriple.net/videoonlylive/mtkgeuihrlfwlive/u_stream_5c9e2ee6997cb_1/playlist.m3u8"
         }
       ]
+    },
+    {
+      "id": 64,
+      "name": "DBC News",
+      "category": "News",
+      "logo": "",
+      "url": "https://tvsen6.aynaott.com/pF66Tkz0qFwP2aMMqHyt/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
     },
     {
       "id": 65,
