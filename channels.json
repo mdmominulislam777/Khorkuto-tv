@@ -72,6 +72,22 @@
       "user_agent": "StreamZXTV/1.0"
     },
     {
+      "id": 7,
+      "name": "News24 BD",
+      "category": "News",
+      "logo": "",
+      "url": "https://tvsen6.aynaott.com/cdgr3tw6WoG7JyRnLbi0/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 8,
+      "name": "channel I",
+      "category": "News & Entertainment",
+      "logo": "",
+      "url": "https://tvsen6.aynaott.com/FNHpYvGZ7FkCE10PwTHm/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
       "id": 9,
       "name": "NTV (720p)",
       "category": "Entertainment",
