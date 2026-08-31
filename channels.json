@@ -677,6 +677,14 @@
       ]
     },
     {
+      "id": 81,
+      "name": "Jamuna TV",
+      "category": "News",
+      "logo": "",
+      "url": "https://tvsen6.aynaott.com/KGdZEdA7qQ43dmPkgk1j/index.m3u8", 
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
       "id": 82,
       "name": "Peace TV Urdu",
       "category": "Islamic",
