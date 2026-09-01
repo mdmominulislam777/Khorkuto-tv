@@ -313,10 +313,10 @@
     },
     {
       "id": 35,
-      "name": "BTV",
-      "category": "Entertainment & News",
+      "name": "BTV News",
+      "category": "News",
       "logo": "logos/btv.png",
-      "url": "https://103.165.93.31:8095/btv/tracks-v1a1/mono.m3u8",
+      "url": "https://tvsen6.aynaott.com/tV8mB2zP7rX4kL1w/index.m3u8",
       "user_agent": "StreamZXTV/1.0"
     },
     {
@@ -364,6 +364,14 @@
           "url": "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-al-ekhbaria/297b3ef1cd0633ad9cfba7473a686a06/index.m3u8"
         }
       ]
+    },
+    {
+      "id": 41,
+      "name": "Ekattor TV",
+      "category": "News & Bangla",
+      "logo": "",
+      "url": "https://tvsen6.aynaott.com/EWDrV5QskgarZEUBb3pU/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
     },
     {
       "id": 42,
@@ -738,6 +746,14 @@
       "category": "Sports",
       "logo": "",
       "url": "https://s3.itcnbd.live/channel/2929059f34d114ca.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 85,
+      "name": "BBC News",
+      "category": "News",
+      "logo": "",
+      "url": "https://tvsen1.aynaott.com/shn6jGTk/index.m3u8",
       "user_agent": "StreamZXTV/1.0"
     },
     {
