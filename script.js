@@ -815,6 +815,59 @@ function setupEventListeners() {
         }
     }
 
+    // ==========================================
+    // ইভেন্ট কার্ডের নতুন মডেল — বাম পাশে রঙিন লিগ-স্ট্রিপ (উল্লম্ব লেখা),
+    // মাঝখানে ⚡ আইকন (আগের diagonal slash line-এর জায়গায়), লাইভ হলে উপরে
+    // "LIVE" ribbon, আর উপরে-ডানে ফেভারিট স্টার আইকন
+    // ==========================================
+    const LEAGUE_STRIP_COLORS = ["#2563eb", "#7c3aed", "#059669", "#dc2626", "#d97706", "#0891b2"];
+    function colorForLeague(name) {
+        const s = String(name || "");
+        let hash = 0;
+        for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+        return LEAGUE_STRIP_COLORS[hash % LEAGUE_STRIP_COLORS.length];
+    }
+
+    function buildEventCardHtml(opts) {
+        const {
+            homeName, awayName, homeLogo, awayLogo,
+            homeScore, awayScore, statusLabel, isLive, isFinished,
+            leagueLabel, channelBadge
+        } = opts;
+
+        const stripColor = colorForLeague(leagueLabel);
+        const showScores = homeScore !== null && homeScore !== undefined && awayScore !== null && awayScore !== undefined;
+
+        return `
+            <div style="display:flex; border-radius:12px; overflow:hidden; background:linear-gradient(135deg, #10192e, #1b2947); border:1px solid rgba(255,255,255,0.08); position:relative;">
+                <div style="writing-mode:vertical-rl; transform:rotate(180deg); background:${stripColor}; color:#fff; font-size:11px; font-weight:bold; padding:10px 6px; display:flex; align-items:center; justify-content:center; white-space:nowrap; flex-shrink:0;">
+                    ${escapeHTML(leagueLabel)}
+                </div>
+                <div style="flex:1; padding:14px; position:relative;">
+                    ${isLive ? `<div style="position:absolute; top:0; left:50%; transform:translate(-50%,-1px); background:#0b0f1a; padding:2px 12px; border-radius:0 0 8px 8px; font-size:10px; color:#ff4d4d; font-weight:bold; letter-spacing:1px;">🔴 LIVE</div>` : ""}
+                    <button class="fav-btn-mini" style="position:absolute; top:6px; right:0; background:none; border:none; color:#ffd23f; font-size:15px; cursor:pointer;">★</button>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:${isLive ? "16px" : "2px"};">
+                        <div style="flex:1; text-align:center;">
+                            <img src="${escapeHTML(homeLogo)}" alt="${escapeHTML(homeName)}" style="width:38px;height:38px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px; color:#fff;">${escapeHTML(homeName)}</div>
+                            ${showScores ? `<span style="display:inline-block; margin-top:3px; background:${stripColor}; color:#fff; font-size:11px; font-weight:bold; padding:1px 7px; border-radius:5px;">${homeScore}</span>` : ""}
+                        </div>
+                        <div style="flex:0 0 54px; text-align:center;">
+                            <div style="font-size:20px; line-height:1;">⚡</div>
+                            <div style="font-size:9px; color:#9ca3af; margin-top:3px; line-height:1.3;">${statusLabel}</div>
+                        </div>
+                        <div style="flex:1; text-align:center;">
+                            <img src="${escapeHTML(awayLogo)}" alt="${escapeHTML(awayName)}" style="width:38px;height:38px;object-fit:contain; display:block; margin:0 auto 4px;">
+                            <div style="font-size:11px; color:#fff;">${escapeHTML(awayName)}</div>
+                            ${showScores ? `<span style="display:inline-block; margin-top:3px; background:${stripColor}; color:#fff; font-size:11px; font-weight:bold; padding:1px 7px; border-radius:5px;">${awayScore}</span>` : ""}
+                        </div>
+                    </div>
+                    ${channelBadge}
+                </div>
+            </div>
+        `;
+    }
+
     async function loadTeamSportEvents(container, showSportLabel, sportKey) {
         const sportInfo = TEAM_SPORTS[sportKey] || { emoji: "🏆", label: sportKey };
         try {
@@ -870,39 +923,33 @@ function setupEventListeners() {
                     const isFinished = m.status === "FINISHED";
                     // কিছু স্পোর্টে স্কোর সরাসরি সংখ্যা না হয়ে জটিল অবজেক্ট হয়ে আসতে পারে —
                     // তখন সরাসরি দেখালে "[object Object]" দেখাবে, তাই সংখ্যা কিনা যাচাই করা হচ্ছে
-                    const formatScore = v => (typeof v === "number" && !isNaN(v)) ? v : "-";
+                    const formatScore = v => (typeof v === "number" && !isNaN(v)) ? v : null;
                     const homeScore = formatScore(m.score?.fullTime?.home);
                     const awayScore = formatScore(m.score?.fullTime?.away);
 
-                    let centerHtml;
+                    let statusLabel;
                     if (isLive) {
-                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-weight:bold; font-size:16px;">${homeScore} - ${awayScore}</div>`;
+                        statusLabel = "🔴 Live";
                     } else if (isFinished) {
-                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-weight:bold; font-size:16px;">${homeScore} - ${awayScore}</div>`;
+                        statusLabel = "Ended";
                     } else {
                         const dt = new Date(m.utcDate);
                         const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                         const dateStr = dt.toLocaleDateString([], { day: "2-digit", month: "short" });
-                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:11px;">${dateStr}</div><div style="font-size:13px;">${timeStr}</div>`;
+                        statusLabel = `${dateStr}<br>${timeStr}`;
                     }
 
                     const row = document.createElement("div");
-                    row.style.cssText = "display:flex; flex-direction:column; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.style.cssText = "margin-bottom:10px; cursor:pointer;";
                     row.addEventListener("click", () => handleMatchCardClick(league, sportKey, `${home} vs ${away}`));
-                    row.innerHTML = `
-                        <div style="display:flex; align-items:center; justify-content:space-between;">
-                            <div style="flex:1; text-align:center;">
-                                <img src="${homeLogo}" alt="${home}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
-                                <div style="font-size:11px;">${home}</div>
-                            </div>
-                            <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
-                            <div style="flex:1; text-align:center;">
-                                <img src="${awayLogo}" alt="${away}" style="width:32px;height:32px;object-fit:contain; display:block; margin:0 auto 4px;">
-                                <div style="font-size:11px;">${away}</div>
-                            </div>
-                        </div>
-                        ${channelBadgeHtml(league, sportKey, `${home} vs ${away}`)}
-                    `;
+                    row.innerHTML = buildEventCardHtml({
+                        homeName: home, awayName: away, homeLogo, awayLogo,
+                        homeScore: (isLive || isFinished) ? (homeScore ?? "-") : null,
+                        awayScore: (isLive || isFinished) ? (awayScore ?? "-") : null,
+                        statusLabel, isLive, isFinished,
+                        leagueLabel: league,
+                        channelBadge: channelBadgeHtml(league, sportKey, `${home} vs ${away}`)
+                    });
                     container.appendChild(row);
                 });
             });
@@ -1006,40 +1053,34 @@ function setupEventListeners() {
                 container.appendChild(header);
 
                 byType[type].forEach(m => {
-                    const team1 = escapeHTML((m.teams && m.teams[0]) || "Team 1");
-                    const team2 = escapeHTML((m.teams && m.teams[1]) || "Team 2");
-                    const team1Info = m.teamInfo && m.teamInfo[0];
-                    const team2Info = m.teamInfo && m.teamInfo[1];
+                    const team1 = (m.teams && m.teams[0]) || "Team 1";
+                    const team2 = (m.teams && m.teams[1]) || "Team 2";
+                    const team1Logo = (m.teamInfo && m.teamInfo[0] && m.teamInfo[0].img) || "logo.png";
+                    const team2Logo = (m.teamInfo && m.teamInfo[1] && m.teamInfo[1].img) || "logo.png";
 
-                    let centerHtml;
-                    if (isGenuinelyLiveCricketMatch(m)) {
-                        centerHtml = `<div style="color:var(--primary, #ff2a4b); font-size:12px;">🔴 Live</div><div style="font-size:10px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(m.status || "")}</div>`;
-                    } else if (m.matchEnded || m.matchStarted) {
-                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:12px;">Ended</div><div style="font-size:10px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHTML(m.status || "")}</div>`;
+                    const isLive = isGenuinelyLiveCricketMatch(m);
+                    const isFinished = !isLive && (m.matchEnded || m.matchStarted);
+                    let statusLabel;
+                    if (isLive || isFinished) {
+                        const shortStatus = String(m.status || "").slice(0, 40);
+                        statusLabel = `${isLive ? "🔴 Live" : "Ended"}<br><span style="font-size:8px;">${escapeHTML(shortStatus)}</span>`;
                     } else {
                         const dt = new Date(m.dateTimeGMT);
                         const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                         const dateStr = dt.toLocaleDateString([], { day: "2-digit", month: "short" });
-                        centerHtml = `<div style="color:var(--text-muted, #888); font-size:11px;">${dateStr}</div><div style="font-size:13px;">${timeStr}</div>`;
+                        statusLabel = `${dateStr}<br>${timeStr}`;
                     }
 
                     const row = document.createElement("div");
-                    row.style.cssText = "display:flex; flex-direction:column; border:1px solid rgba(128,128,128,0.2); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;";
+                    row.style.cssText = "margin-bottom:10px; cursor:pointer;";
                     row.addEventListener("click", () => handleMatchCardClick(m.matchType || "cricket", "cricket", `${team1} vs ${team2}`));
-                    row.innerHTML = `
-                        <div style="display:flex; align-items:center; justify-content:space-between;">
-                            <div style="flex:1; text-align:center;">
-                                ${renderCricketTeamLogo(team1Info, team1)}
-                                <div style="font-size:11px;">${team1}</div>
-                            </div>
-                            <div style="flex:0 0 70px; text-align:center;">${centerHtml}</div>
-                            <div style="flex:1; text-align:center;">
-                                ${renderCricketTeamLogo(team2Info, team2)}
-                                <div style="font-size:11px;">${team2}</div>
-                            </div>
-                        </div>
-                        ${channelBadgeHtml(m.matchType || "cricket", "cricket", `${team1} vs ${team2}`)}
-                    `;
+                    row.innerHTML = buildEventCardHtml({
+                        homeName: team1, awayName: team2, homeLogo: team1Logo, awayLogo: team2Logo,
+                        homeScore: null, awayScore: null,
+                        statusLabel, isLive, isFinished,
+                        leagueLabel: type,
+                        channelBadge: channelBadgeHtml(m.matchType || "cricket", "cricket", `${team1} vs ${team2}`)
+                    });
                     container.appendChild(row);
                 });
             });
