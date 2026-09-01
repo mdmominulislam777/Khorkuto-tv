@@ -1058,6 +1058,14 @@
       "user_agent": "StreamZXTV/1.0"
     },
     {
+      "id": 121,
+      "name": "Aljazeera News",
+      "category": "News",
+      "logo": "",
+      "url": "https://live-hls-apps-aje-fa.getaj.net/AJE/index.m3u8",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
       "id": 122,
       "name": "EP TV",
       "category": "Entertainment",
@@ -1087,6 +1095,14 @@
       "category": "Sports",
       "logo": "",
       "url": "https://power8kse.xyz/s5b6tb5b8/c6a783a669/441103",
+      "user_agent": "StreamZXTV/1.0"
+    },
+    {
+      "id": 126,
+      "name": "Asian TV",
+      "category": "News & Bangla",
+      "logo": "",
+      "url": "https://tvsen6.aynaott.com/pKb5k6NnzxsKpWUs6E8M/index.m3u8",
       "user_agent": "StreamZXTV/1.0"
     },
     {
