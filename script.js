@@ -838,10 +838,17 @@ function setupEventListeners() {
         const stripColor = colorForLeague(leagueLabel);
         const showScores = homeScore !== null && homeScore !== undefined && awayScore !== null && awayScore !== undefined;
 
+        // লম্বা লিগের নাম (যেমন "Torneo Promocional Amateur") উল্লম্ব টেক্সটে
+        // অনেক বেশি উচ্চতা নিয়ে নেয়, তাতে পুরো কার্ডই বড় হয়ে যায় —
+        // তাই স্ট্রিপে দেখানোর জন্য নামটা ছোট করে নেওয়া হচ্ছে
+        const stripLabel = String(leagueLabel || "").length > 16
+            ? String(leagueLabel).slice(0, 15) + "…"
+            : leagueLabel;
+
         return `
             <div style="display:flex; border-radius:12px; overflow:hidden; background:linear-gradient(135deg, #10192e, #1b2947); border:1px solid rgba(255,255,255,0.08); position:relative;">
-                <div style="writing-mode:vertical-rl; transform:rotate(180deg); background:${stripColor}; color:#fff; font-size:11px; font-weight:bold; padding:10px 6px; display:flex; align-items:center; justify-content:center; white-space:nowrap; flex-shrink:0;">
-                    ${escapeHTML(leagueLabel)}
+                <div style="writing-mode:vertical-rl; transform:rotate(180deg); background:${stripColor}; color:#fff; font-size:11px; font-weight:bold; padding:10px 6px; display:flex; align-items:center; justify-content:center; white-space:nowrap; flex-shrink:0; max-height:150px; overflow:hidden;">
+                    ${escapeHTML(stripLabel)}
                 </div>
                 <div style="flex:1; padding:14px; position:relative;">
                     ${isLive ? `<div style="position:absolute; top:0; left:50%; transform:translate(-50%,-1px); background:#0b0f1a; padding:2px 12px; border-radius:0 0 8px 8px; font-size:10px; color:#ff4d4d; font-weight:bold; letter-spacing:1px;">🔴 LIVE</div>` : ""}
